@@ -10,10 +10,10 @@ import java.util.List;
  * Java Class is used to represent a class in Java.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaClass), Alpha v.0.4 (as newer version)
  */
-public abstract class JavaClass{
+public abstract class JavaClass implements JavaType{
 	
 	/** Whether this class is editable or not */
 	private final boolean editable;
@@ -81,6 +81,12 @@ public abstract class JavaClass{
 		this.innerClasses = innerClasses;
 		this.fields = fields;
 		this.methods = methods;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public JavaClassType getType(){
+		return JavaClassType.CLASS;
 	}
 	
 	/**

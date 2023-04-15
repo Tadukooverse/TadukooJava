@@ -50,6 +50,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testGetType(){
+		assertEquals(JavaClassType.CLASS, clazz.getType());
+	}
+	
+	@Test
 	public void testDefaultIsInnerClass(){
 		assertFalse(clazz.isInnerClass());
 	}
