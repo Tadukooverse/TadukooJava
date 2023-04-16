@@ -1,9 +1,13 @@
 package com.github.tadukoo.java;
 
+import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -25,8 +29,49 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	}
 	
 	@Test
+	public void testBuilderDefaultParameters(){
+		assertEquals(new ArrayList<>(), annotation.getParameters());
+	}
+	
+	@Test
 	public void testBuilderName(){
 		assertEquals(name, annotation.getName());
+	}
+	
+	@Test
+	public void testBuilderAddParameterPieces(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "true")
+				.parameter("derp", "false")
+				.build();
+		assertEquals(ListUtil.createList(
+				Pair.of("test", "true"), Pair.of("derp", "false")
+		), annotation.getParameters());
+	}
+	
+	@Test
+	public void testBuilderAddParameterPair(){
+		annotation = builder.get()
+				.name(name)
+				.parameter(Pair.of("test", "true"))
+				.parameter(Pair.of("derp", "false"))
+				.build();
+		assertEquals(ListUtil.createList(
+				Pair.of("test", "true"), Pair.of("derp", "false")
+		), annotation.getParameters());
+	}
+	
+	@Test
+	public void testBuilderSetParameters(){
+		annotation = builder.get()
+				.name(name)
+				.parameters(ListUtil.createList(
+				Pair.of("test", "true"), Pair.of("derp", "false")))
+				.build();
+		assertEquals(ListUtil.createList(
+				Pair.of("test", "true"), Pair.of("derp", "false")
+		), annotation.getParameters());
 	}
 	
 	@Test
@@ -42,6 +87,25 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	@Test
 	public void testToString(){
 		assertEquals("@Test", annotation.toString());
+	}
+	
+	@Test
+	public void testToStringSingleAnnotation(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "true")
+				.build();
+		assertEquals("@Test(test = true)", annotation.toString());
+	}
+	
+	@Test
+	public void testToStringMultipleAnnotations(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "true")
+				.parameter("derp", "String.class")
+				.build();
+		assertEquals("@Test(test = true, derp = String.class)", annotation.toString());
 	}
 	
 	/*

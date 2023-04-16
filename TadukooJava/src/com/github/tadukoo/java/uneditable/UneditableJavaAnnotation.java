@@ -2,12 +2,15 @@ package com.github.tadukoo.java.uneditable;
 
 import com.github.tadukoo.java.JavaAnnotation;
 import com.github.tadukoo.java.JavaAnnotationBuilder;
+import com.github.tadukoo.util.tuple.Pair;
+
+import java.util.List;
 
 /**
  * Represents a {@link JavaAnnotation} that can't be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.3 (as JavaAnnotation), Alpha v.0.4 (as UneditableJavaAnnotation)
  */
 public class UneditableJavaAnnotation extends JavaAnnotation{
@@ -16,12 +19,13 @@ public class UneditableJavaAnnotation extends JavaAnnotation{
 	 * A builder used to make an {@link UneditableJavaAnnotation}.
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Alpha v.0.4
+	 * @version Beta v.0.5
+	 * @since Alpha v.0.4
 	 * @see JavaAnnotationBuilder
 	 */
 	public static class UneditableJavaAnnotationBuilder extends JavaAnnotationBuilder<UneditableJavaAnnotation>{
 		
-		/** Not allowed to create outside of Uneditable Java Annotation */
+		/** Not allowed to create outside Uneditable Java Annotation */
 		private UneditableJavaAnnotationBuilder(){
 			super();
 		}
@@ -29,7 +33,7 @@ public class UneditableJavaAnnotation extends JavaAnnotation{
 		/** {@inheritDoc} */
 		@Override
 		public UneditableJavaAnnotation constructAnnotation(){
-			return new UneditableJavaAnnotation(name);
+			return new UneditableJavaAnnotation(name, parameters);
 		}
 	}
 	
@@ -37,9 +41,10 @@ public class UneditableJavaAnnotation extends JavaAnnotation{
 	 * Constructs an {@link UneditableJavaAnnotation} with the given parameters
 	 *
 	 * @param name The name of the annotation
+	 * @param parameters The parameters of the annotation (as Pairs of name and value)
 	 */
-	private UneditableJavaAnnotation(String name){
-		super(false, name);
+	private UneditableJavaAnnotation(String name, List<Pair<String, String>> parameters){
+		super(false, name, parameters);
 	}
 	
 	/**

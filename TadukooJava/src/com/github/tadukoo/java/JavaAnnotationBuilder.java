@@ -1,6 +1,7 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.util.StringUtil;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,15 @@ import java.util.List;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.3 (within JavaAnnotation), Alpha v.0.4 (on its own)
  */
 public abstract class JavaAnnotationBuilder<AnnotationType extends JavaAnnotation>{
 	
 	/** The name of the annotation */
 	protected String name;
+	/** The parameters of the annotation (as Pairs of name and value) */
+	protected List<Pair<String, String>> parameters = new ArrayList<>();
 	
 	/**
 	 * Constructs a new {@link JavaAnnotationBuilder}
@@ -42,6 +45,34 @@ public abstract class JavaAnnotationBuilder<AnnotationType extends JavaAnnotatio
 	 */
 	public JavaAnnotationBuilder<AnnotationType> name(String name){
 		this.name = name;
+		return this;
+	}
+	
+	/**
+	 * @param name The name of the parameter to be added
+	 * @param value The value of the parameter to be added
+	 * @return this, to continue building
+	 */
+	public JavaAnnotationBuilder<AnnotationType> parameter(String name, String value){
+		parameters.add(Pair.of(name, value));
+		return this;
+	}
+	
+	/**
+	 * @param parameter The parameter to be added (as a Pair of name and value)
+	 * @return this, to continue building
+	 */
+	public JavaAnnotationBuilder<AnnotationType> parameter(Pair<String, String> parameter){
+		parameters.add(parameter);
+		return this;
+	}
+	
+	/**
+	 * @param parameters The parameters of the annotation (as Pairs of name and value)
+	 * @return this, to continue building
+	 */
+	public JavaAnnotationBuilder<AnnotationType> parameters(List<Pair<String, String>> parameters){
+		this.parameters = parameters;
 		return this;
 	}
 	

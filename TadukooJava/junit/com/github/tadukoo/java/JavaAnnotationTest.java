@@ -1,7 +1,11 @@
 package com.github.tadukoo.java;
 
+import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JavaAnnotationTest{
 	
 	private static class TestJavaAnnotation extends JavaAnnotation{
-		private TestJavaAnnotation(boolean editable, String name){
-			super(editable, name);
+		private TestJavaAnnotation(boolean editable, String name, List<Pair<String, String>> parameters){
+			super(editable, name, parameters);
 		}
 	}
 	
@@ -26,7 +30,7 @@ public class JavaAnnotationTest{
 		
 		@Override
 		protected TestJavaAnnotation constructAnnotation(){
-			return new TestJavaAnnotation(editable, name);
+			return new TestJavaAnnotation(editable, name, parameters);
 		}
 	}
 	private JavaAnnotation annotation;
@@ -55,8 +59,32 @@ public class JavaAnnotationTest{
 	}
 	
 	@Test
+	public void testGetParameters(){
+		assertEquals(new ArrayList<>(), annotation.getParameters());
+	}
+	
+	@Test
 	public void testToString(){
 		assertEquals("@Test", annotation.toString());
+	}
+	
+	@Test
+	public void testToStringSingleAnnotation(){
+		annotation = new TestJavaAnnotationBuilder(false)
+				.name(name)
+				.parameter("test", "true")
+				.build();
+		assertEquals("@Test(test = true)", annotation.toString());
+	}
+	
+	@Test
+	public void testToStringMultipleAnnotations(){
+		annotation = new TestJavaAnnotationBuilder(false)
+				.name(name)
+				.parameter("test", "true")
+				.parameter("derp", "String.class")
+				.build();
+		assertEquals("@Test(test = true, derp = String.class)", annotation.toString());
 	}
 	
 	/*
