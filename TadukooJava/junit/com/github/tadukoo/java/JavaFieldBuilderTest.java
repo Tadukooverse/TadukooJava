@@ -73,7 +73,7 @@ public class JavaFieldBuilderTest{
 	
 	@Test
 	public void testDefaultVisibility(){
-		assertEquals(Visibility.PRIVATE, field.getVisibility());
+		assertNull(field.getVisibility());
 	}
 	
 	@Test

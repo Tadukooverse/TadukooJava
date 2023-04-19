@@ -222,8 +222,8 @@ public class JavaClassTest{
 				
 				public class AClassName{
 				\t
-					private int test;
-					private String derp;
+					int test;
+					String derp;
 				}
 				""";
 		assertEquals(javaString, clazz.toString());
@@ -248,8 +248,8 @@ public class JavaClassTest{
 				public class AClassName{
 				\t
 					/** something */
-					private int test;
-					private String derp;
+					int test;
+					String derp;
 				}
 				""";
 		assertEquals(javaString, clazz.toString());
@@ -322,8 +322,8 @@ public class JavaClassTest{
 					\t
 					}
 				\t
-					private int test;
-					private String derp;
+					int test;
+					String derp;
 				\t
 					public AClassName(){
 					}
@@ -395,8 +395,8 @@ public class JavaClassTest{
 					\t
 					}
 				\t
-					private int test;
-					private String derp;
+					int test;
+					String derp;
 				\t
 					public AClassName(){
 					}

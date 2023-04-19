@@ -33,7 +33,7 @@ import java.util.List;
  *     <tr>
  *         <td>visibility</td>
  *         <td>The {@link Visibility} of the field</td>
- *         <td>{@link Visibility#PRIVATE}</td>
+ *         <td>null</td>
  *     </tr>
  *     <tr>
  *         <td>isStatic</td>
@@ -74,7 +74,7 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	/** The {@link JavaAnnotation annotations} on the field */
 	protected List<JavaAnnotation> annotations = new ArrayList<>();
 	/** The {@link Visibility} of the field */
-	protected Visibility visibility = Visibility.PRIVATE;
+	protected Visibility visibility = null;
 	/** Whether the field is static or not */
 	protected boolean isStatic = false;
 	/** Whether the field is final or not */

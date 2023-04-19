@@ -58,7 +58,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	
 	@Test
 	public void testDefaultVisibility(){
-		assertEquals(Visibility.PRIVATE, field.getVisibility());
+		assertNull(field.getVisibility());
 	}
 	
 	@Test
@@ -225,7 +225,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	
 	@Test
 	public void testToString(){
-		assertEquals("private int test", field.toString());
+		assertEquals("int test", field.toString());
 	}
 	
 	@Test
@@ -239,7 +239,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				 * Test comment
 				 */
 				
-				private int test""";
+				int test""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -252,7 +252,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 		String javaString = """
 				/**
 				 */
-				private int test""";
+				int test""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -265,7 +265,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.build();
 		String javaString = """
 				@Test
-				private int test""";
+				int test""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -280,6 +280,17 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 		String javaString = """
 				@Test
 				@Derp
+				int test""";
+		assertEquals(javaString, field.toString());
+	}
+	
+	@Test
+	public void testToStringWithVisibility(){
+		field = builder.get()
+				.visibility(Visibility.PRIVATE)
+				.type(type).name(name)
+				.build();
+		String javaString = """
 				private int test""";
 		assertEquals(javaString, field.toString());
 	}
@@ -291,7 +302,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.isStatic()
 				.build();
 		String javaString = """
-				private static int test""";
+				static int test""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -302,7 +313,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.isFinal()
 				.build();
 		String javaString = """
-				private final int test""";
+				final int test""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -312,7 +323,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.type(type).name(name)
 				.value("42")
 				.build();
-		assertEquals("private int test = 42", field.toString());
+		assertEquals("int test = 42", field.toString());
 	}
 	
 	@Test
@@ -323,6 +334,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PRIVATE)
 				.isStatic()
 				.isFinal()
 				.value("42")
@@ -352,6 +364,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PRIVATE)
 				.isStatic()
 				.isFinal()
 				.value("42")
@@ -362,6 +375,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PRIVATE)
 				.isStatic()
 				.isFinal()
 				.value("42")
@@ -377,6 +391,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PRIVATE)
 				.isStatic()
 				.isFinal()
 				.value("42")
@@ -387,6 +402,7 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PRIVATE)
 				.isStatic()
 				.isFinal()
 				.value("41")

@@ -164,8 +164,9 @@ public abstract class JavaField{
 		}
 		
 		// Add field declaration
-		String declaration = visibility.getText() + (isStatic?" static":"") + (isFinal?" final":"") +
-				" " + type + " " + name;
+		String declaration = (visibility != null?visibility.getText() + " ":"") +
+				(isStatic?"static ":"") + (isFinal?"final ":"") +
+				type + " " + name;
 		// Add value to declaration if we have one
 		if(StringUtil.isNotBlank(value)){
 			declaration += " = " + value;
