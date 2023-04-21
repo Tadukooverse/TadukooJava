@@ -1,15 +1,15 @@
 package com.github.tadukoo.java;
 
 /**
- * Java Type represents a main Java type (class, interface, enum, record, annotation class)
+ * Represents a generic type in Java
  *
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.5
  */
-public interface JavaType{
+public interface JavaType extends JavaTokens{
 	
 	/**
-	 * @return What {@link JavaClassType} this is
+	 * @return What {@link JavaTypes type} this is
 	 */
-	JavaClassType getType();
+	JavaTypes getType();
 }
