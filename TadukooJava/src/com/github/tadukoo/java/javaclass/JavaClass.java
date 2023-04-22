@@ -251,7 +251,7 @@ public abstract class JavaClass implements JavaClassType{
 		}
 		
 		// Class Declaration
-		content.add(visibility.getText() + (isStatic?" static":"") + " class " + className +
+		content.add(visibility.getToken() + (isStatic?" static":"") + " class " + className +
 				(StringUtil.isNotBlank(superClassName)?" extends " + superClassName:"") + "{");
 		
 		// Newline at start of class

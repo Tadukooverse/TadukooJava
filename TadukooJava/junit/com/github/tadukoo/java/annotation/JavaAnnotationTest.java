@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.annotation;
 
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,11 @@ public class JavaAnnotationTest{
 	public void setup(){
 		name = "Test";
 		annotation = new TestJavaAnnotationBuilder(true).name(name).build();
+	}
+	
+	@Test
+	public void testGetType(){
+		assertEquals(JavaTypes.ANNOTATION, annotation.getType());
 	}
 	
 	@Test

@@ -76,7 +76,7 @@ public class JavaFieldBuilderTest{
 	
 	@Test
 	public void testDefaultVisibility(){
-		assertNull(field.getVisibility());
+		assertEquals(Visibility.NONE, field.getVisibility());
 	}
 	
 	@Test
@@ -207,6 +207,19 @@ public class JavaFieldBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderNullVisibility(){
+		try{
+			field = new TestJavaFieldBuilder()
+					.type(type).name(name)
+					.visibility(null)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testNullType(){
 		try{
 			field = new TestJavaFieldBuilder()
@@ -231,13 +244,17 @@ public class JavaFieldBuilderTest{
 	}
 	
 	@Test
-	public void testNullTypeAndName(){
+	public void testBuilderAllErrors(){
 		try{
 			field = new TestJavaFieldBuilder()
+					.visibility(null)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
-			assertEquals("Must specify type!\nMust specify name!", e.getMessage());
+			assertEquals("""
+					Visibility is required!
+					Must specify type!
+					Must specify name!""", e.getMessage());
 		}
 	}
 }

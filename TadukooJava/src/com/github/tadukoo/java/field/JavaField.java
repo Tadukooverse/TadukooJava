@@ -167,15 +167,31 @@ public abstract class JavaField{
 			}
 		}
 		
-		// Add field declaration
-		String declaration = (visibility != null?visibility.getText() + " ":"") +
-				(isStatic?"static ":"") + (isFinal?"final ":"") +
-				type + " " + name;
+		// Add field declaration - starting with visibility
+		StringBuilder declaration = new StringBuilder(visibility.getToken());
+		if(!declaration.isEmpty()){
+			// Declaration could be empty if visibility is NONE
+			declaration.append(' ');
+		}
+		
+		// Add static to declaration optionally
+		if(isStatic){
+			declaration.append("static ");
+		}
+		
+		// Add final to declaration optionally
+		if(isFinal){
+			declaration.append("final ");
+		}
+		
+		// Add type and name to the declaration
+		declaration.append(type).append(' ').append(name);
+		
 		// Add value to declaration if we have one
 		if(StringUtil.isNotBlank(value)){
-			declaration += " = " + value;
+			declaration.append(" = ").append(value);
 		}
-		content.add(declaration);
+		content.add(declaration.toString());
 		
 		return StringUtil.buildStringWithNewLines(content);
 	}

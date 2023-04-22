@@ -175,7 +175,7 @@ public class EditableJavaFieldTest extends DefaultJavaFieldTest<EditableJavaFiel
 	
 	@Test
 	public void testSetVisibility(){
-		assertNull(field.getVisibility());
+		assertEquals(Visibility.NONE, field.getVisibility());
 		field.setVisibility(Visibility.PUBLIC);
 		assertEquals(Visibility.PUBLIC, field.getVisibility());
 	}

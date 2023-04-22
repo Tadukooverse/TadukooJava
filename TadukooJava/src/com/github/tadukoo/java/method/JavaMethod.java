@@ -181,7 +181,7 @@ public abstract class JavaMethod{
 		/*
 		 * Declaration
 		 */
-		StringBuilder declaration = new StringBuilder(visibility.getText() + (isStatic?" static":"") + " " + returnType);
+		StringBuilder declaration = new StringBuilder(visibility.getToken() + (isStatic?" static":"") + " " + returnType);
 		
 		// Add name to declaration if we have it
 		if(StringUtil.isNotBlank(name)){

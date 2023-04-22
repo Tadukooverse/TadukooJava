@@ -1,5 +1,6 @@
 package com.github.tadukoo.java;
 
+import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
@@ -27,6 +28,12 @@ public class JavaTypesTest{
 	public void testIMPORT_STATEMENT(){
 		assertEquals("IMPORT_STATEMENT", IMPORT_STATEMENT.toString());
 		assertEquals(JavaImportStatement.class, IMPORT_STATEMENT.getJavaTypeClass());
+	}
+	
+	@Test
+	public void testANNOTATION(){
+		assertEquals("ANNOTATION", ANNOTATION.toString());
+		assertEquals(JavaAnnotation.class, ANNOTATION.getJavaTypeClass());
 	}
 	
 	@Test

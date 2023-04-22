@@ -1,5 +1,6 @@
 package com.github.tadukoo.java;
 
+import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
@@ -29,6 +30,12 @@ public enum JavaTypes{
 	 * Main {@link JavaType} class: {@link JavaImportStatement}
 	 */
 	IMPORT_STATEMENT(JavaImportStatement.class),
+	
+	/**
+	 * Represents an annotation in Java
+	 * Main {@link JavaType} class: {@link JavaAnnotation}
+	 */
+	ANNOTATION(JavaAnnotation.class),
 	
 	/**
 	 * Represents a class in Java

@@ -36,7 +36,7 @@ import java.util.List;
  *     <tr>
  *         <td>visibility</td>
  *         <td>The {@link Visibility} of the field</td>
- *         <td>null</td>
+ *         <td>{@link Visibility#NONE}</td>
  *     </tr>
  *     <tr>
  *         <td>isStatic</td>
@@ -77,7 +77,7 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	/** The {@link JavaAnnotation annotations} on the field */
 	protected List<JavaAnnotation> annotations = new ArrayList<>();
 	/** The {@link Visibility} of the field */
-	protected Visibility visibility = null;
+	protected Visibility visibility = Visibility.NONE;
 	/** Whether the field is static or not */
 	protected boolean isStatic = false;
 	/** Whether the field is final or not */
@@ -212,10 +212,17 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	private void checkForErrors(){
 		List<String> errors = new ArrayList<>();
 		
+		// Visibility is required (none can be used)
+		if(visibility == null){
+			errors.add("Visibility is required!");
+		}
+		
+		// Must specify type
 		if(StringUtil.isBlank(type)){
 			errors.add("Must specify type!");
 		}
 		
+		// Must specify name
 		if(StringUtil.isBlank(name)){
 			errors.add("Must specify name!");
 		}

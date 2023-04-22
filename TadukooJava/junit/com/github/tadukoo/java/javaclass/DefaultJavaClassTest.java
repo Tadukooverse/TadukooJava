@@ -299,7 +299,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		List<JavaField> fields = clazz.getFields();
 		assertEquals(1, fields.size());
 		JavaField field = fields.get(0);
-		assertNull(field.getVisibility());
+		assertEquals(Visibility.NONE, field.getVisibility());
 		assertEquals("int", field.getType());
 		assertEquals("test", field.getName());
 	}

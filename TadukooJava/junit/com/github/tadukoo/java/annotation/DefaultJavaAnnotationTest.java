@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.annotation;
 
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
@@ -26,6 +27,11 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	public void setup(){
 		name = "Test";
 		annotation = builder.get().name(name).build();
+	}
+	
+	@Test
+	public void testGetType(){
+		assertEquals(JavaTypes.ANNOTATION, annotation.getType());
 	}
 	
 	@Test

@@ -302,7 +302,7 @@ public class JavaClassBuilderTest{
 		List<JavaField> fields = clazz.getFields();
 		assertEquals(1, fields.size());
 		JavaField field = fields.get(0);
-		assertNull(field.getVisibility());
+		assertEquals(Visibility.NONE, field.getVisibility());
 		assertEquals("int", field.getType());
 		assertEquals("test", field.getName());
 	}
