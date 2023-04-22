@@ -4,6 +4,9 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.field.UneditableJavaField;
 import com.github.tadukoo.java.method.JavaMethod;
@@ -31,11 +34,12 @@ public class JavaClassBuilderTest{
 	private static class TestJavaClass extends JavaClass{
 		
 		private TestJavaClass(
-				boolean editable, boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
+				boolean editable, boolean isInnerClass,
+				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, String className, String superClassName,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
-			super(editable, isInnerClass, packageDeclaration, imports, staticImports,
+			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -52,7 +56,7 @@ public class JavaClassBuilderTest{
 		
 		@Override
 		protected TestJavaClass constructClass(){
-			return new TestJavaClass(false, isInnerClass, packageDeclaration, imports, staticImports,
+			return new TestJavaClass(false, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -81,15 +85,8 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
-	public void testDefaultImports(){
-		assertNotNull(clazz.getImports());
-		assertTrue(clazz.getImports().isEmpty());
-	}
-	
-	@Test
-	public void testDefaultStaticImports(){
-		assertNotNull(clazz.getStaticImports());
-		assertTrue(clazz.getStaticImports().isEmpty());
+	public void testDefaultImportStatements(){
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
 	}
 	
 	@Test
@@ -160,45 +157,32 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
-	public void testSetImports(){
-		List<String> imports = ListUtil.createList("com.example.*", "com.github.tadukoo.*");
-		clazz = new TestJavaClassBuilder()
-				.className(className)
-				.imports(imports)
+	public void testBuilderSingleImportStatement(){
+		JavaImportStatement importStatement = UneditableJavaImportStatement.builder()
+				.importName("com.example")
 				.build();
-		assertEquals(imports, clazz.getImports());
+		clazz = new TestJavaClassBuilder()
+				.importStatement(importStatement)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(importStatement), clazz.getImportStatements());
 	}
 	
 	@Test
-	public void testSetSingleImport(){
+	public void testBuilderSetImportStatements(){
+		List<JavaImportStatement> importStatements = ListUtil.createList(
+				UneditableJavaImportStatement.builder()
+						.importName("com.example")
+						.build(),
+				UneditableJavaImportStatement.builder()
+						.isStatic()
+						.importName("com.other")
+						.build());
 		clazz = new TestJavaClassBuilder()
+				.importStatements(importStatements)
 				.className(className)
-				.singleImport("com.example.*")
 				.build();
-		List<String> imports = clazz.getImports();
-		assertEquals(1, imports.size());
-		assertEquals("com.example.*", imports.get(0));
-	}
-	
-	@Test
-	public void testSetStaticImports(){
-		List<String> staticImports = ListUtil.createList("com.example.Test", "com.github.tadukoo.*");
-		clazz = new TestJavaClassBuilder()
-				.className(className)
-				.staticImports(staticImports)
-				.build();
-		assertEquals(staticImports, clazz.getStaticImports());
-	}
-	
-	@Test
-	public void testSetSingleStaticImport(){
-		clazz = new TestJavaClassBuilder()
-				.className(className)
-				.staticImport("com.github.tadukoo.*")
-				.build();
-		List<String> staticImports = clazz.getStaticImports();
-		assertEquals(1, staticImports.size());
-		assertEquals("com.github.tadukoo.*", staticImports.get(0));
+		assertEquals(importStatements, clazz.getImportStatements());
 	}
 	
 	@Test
@@ -460,25 +444,13 @@ public class JavaClassBuilderTest{
 			clazz = new TestJavaClassBuilder()
 					.innerClass()
 					.className(className)
-					.singleImport("an.import")
+					.importStatement(EditableJavaImportStatement.builder()
+							.importName("some.name")
+							.build())
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
-			assertEquals("Not allowed to have imports for an inner class!", e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testSetStaticImportInnerClass(){
-		try{
-			clazz = new TestJavaClassBuilder()
-					.innerClass()
-					.className(className)
-					.staticImport("an.other.import")
-					.build();
-			fail();
-		}catch(IllegalArgumentException e){
-			assertEquals("Not allowed to have static imports for an inner class!", e.getMessage());
+			assertEquals("Not allowed to have import statements for an inner class!", e.getMessage());
 		}
 	}
 	
@@ -493,9 +465,10 @@ public class JavaClassBuilderTest{
 					.packageDeclaration(EditableJavaPackageDeclaration.builder()
 							.packageName("some.package")
 							.build())
+					.importStatement(EditableJavaImportStatement.builder()
+							.importName("some.name")
+							.build())
 					.innerClass(inner)
-					.singleImport("an.import")
-					.staticImport("an.other.import")
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
@@ -503,8 +476,7 @@ public class JavaClassBuilderTest{
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
 					Not allowed to have package declaration for an inner class!
-					Not allowed to have imports for an inner class!
-					Not allowed to have static imports for an inner class!""", e.getMessage());
+					Not allowed to have import statements for an inner class!""", e.getMessage());
 		}
 	}
 }

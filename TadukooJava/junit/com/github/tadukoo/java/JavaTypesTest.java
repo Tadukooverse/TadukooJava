@@ -46,6 +46,12 @@ public class JavaTypesTest{
 	}
 	
 	@Test
+	public void testTYPE_WITH_MODIFIERS(){
+		assertEquals("TYPE_WITH_MODIFIERS", TYPE_WITH_MODIFIERS.toString());
+		assertNull(TYPE_WITH_MODIFIERS.getJavaTypeClass());
+	}
+	
+	@Test
 	public void testFIELD(){
 		assertEquals("FIELD", FIELD.toString());
 		assertEquals(JavaField.class, FIELD.getJavaTypeClass());

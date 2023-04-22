@@ -10,15 +10,15 @@
 	</parent>
 	<artifactId>TadukooJava</artifactId>
 	<dependencies>
-		<!-- Tadukoo Lang -->
-		<dependency>
-			<groupId>${tadukoo.util.groupID}</groupId>
-			<artifactId>${tadukoo.util.lang.artifactID}</artifactId>
-		</dependency>
 		<!-- Tadukoo Functions -->
 		<dependency>
 			<groupId>${tadukoo.util.groupID}</groupId>
 			<artifactId>${tadukoo.util.functions.artifactID}</artifactId>
+		</dependency>
+		<!-- Tadukoo Util -->
+		<dependency>
+			<groupId>${tadukoo.util.groupID}</groupId>
+			<artifactId>${tadukoo.util.util.artifactID}</artifactId>
 		</dependency>
 		<!-- JUnit Stuff -->
 		<dependency>

@@ -47,6 +47,12 @@ public enum JavaTypes{
 	ANNOTATION(JavaAnnotation.class),
 	
 	/**
+	 * Represents a Java type with modifiers (e.g. field, method, class, interface)
+	 * Main {@link JavaType} class: None
+	 */
+	TYPE_WITH_MODIFIERS(),
+	
+	/**
 	 * Represents a field in Java
 	 * Main {@link JavaType} class: {@link JavaField}
 	 */

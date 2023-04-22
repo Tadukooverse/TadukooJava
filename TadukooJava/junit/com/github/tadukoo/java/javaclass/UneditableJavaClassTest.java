@@ -3,6 +3,7 @@ package com.github.tadukoo.java.javaclass;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
+import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.field.UneditableJavaField;
@@ -42,6 +43,21 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("package declaration is not uneditable in this uneditable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderEditableImportStatementError(){
+		try{
+			UneditableJavaClass.builder()
+					.importStatement(EditableJavaImportStatement.builder()
+							.importName("com.example")
+							.build())
+					.className(className)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("some import statements are not uneditable in this uneditable JavaClass", e.getMessage());
 		}
 	}
 	
@@ -124,6 +140,9 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 					.packageDeclaration(EditableJavaPackageDeclaration.builder()
 							.packageName("some.package")
 							.build())
+					.importStatement(EditableJavaImportStatement.builder()
+							.importName("com.example")
+							.build())
 					.className(className)
 					.javadoc(EditableJavadoc.builder().build())
 					.annotation(EditableJavaAnnotation.builder().name("Test").build())
@@ -142,6 +161,7 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 		}catch(IllegalArgumentException e){
 			assertEquals("""
 					package declaration is not uneditable in this uneditable JavaClass
+					some import statements are not uneditable in this uneditable JavaClass
 					javadoc is not uneditable in this uneditable JavaClass
 					some annotations are not uneditable in this uneditable JavaClass
 					some inner classes are not uneditable in this uneditable JavaClass

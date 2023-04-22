@@ -5,11 +5,14 @@ import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
+import com.github.tadukoo.util.map.HashMultiMap;
+import com.github.tadukoo.util.map.MultiMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +32,8 @@ public abstract class JavaClass implements JavaClassType{
 	protected boolean isInnerClass;
 	/** The {@link JavaPackageDeclaration package declaration} of the class */
 	protected JavaPackageDeclaration packageDeclaration;
-	/** The classes imported by the class */
-	protected List<String> imports;
-	/** The classes imported statically by the class */
-	protected List<String> staticImports;
+	/** The {@link JavaImportStatement import statements} of the class */
+	protected List<JavaImportStatement> importStatements;
 	/** The {@link Javadoc} for the class */
 	protected Javadoc javadoc;
 	/** The {@link JavaAnnotation annotations} on the class */
@@ -58,8 +59,7 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param editable Whether this class is editable or not
 	 * @param isInnerClass Whether this is an inner class or not
 	 * @param packageDeclaration The {@link JavaPackageDeclaration package declaration} of the class
-	 * @param imports The classes imported by the class
-	 * @param staticImports The classes imported statically by the class
+	 * @param importStatements The {@link JavaImportStatement import statements} of the class
 	 * @param javadoc The {@link Javadoc} for the class
 	 * @param annotations The {@link JavaAnnotation annotations} on the class
 	 * @param visibility The {@link Visibility} of the class
@@ -71,15 +71,15 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param methods The {@link JavaMethod methods} in the class
 	 */
 	protected JavaClass(
-			boolean editable, boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
+			boolean editable, boolean isInnerClass,
+			JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, String className, String superClassName,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		this.editable = editable;
 		this.isInnerClass = isInnerClass;
 		this.packageDeclaration = packageDeclaration;
-		this.imports = imports;
-		this.staticImports = staticImports;
+		this.importStatements = importStatements;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
 		this.visibility = visibility;
@@ -119,17 +119,10 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
-	 * @return The classes imported by the class
+	 * @return The {@link JavaImportStatement import statements} of the class
 	 */
-	public List<String> getImports(){
-		return imports;
-	}
-	
-	/**
-	 * @return The classes imported statically by the class
-	 */
-	public List<String> getStaticImports(){
-		return staticImports;
+	public List<JavaImportStatement> getImportStatements(){
+		return importStatements;
 	}
 	
 	/**
@@ -211,29 +204,45 @@ public abstract class JavaClass implements JavaClassType{
 		}
 		
 		// Import Statements
-		if(ListUtil.isNotBlank(imports)){
-			for(String singleImport: imports){
-				if(StringUtil.isNotBlank(singleImport)){
-					content.add("import " + singleImport + ";");
+		if(ListUtil.isNotBlank(importStatements)){
+			// Separate into regular and static imports
+			List<JavaImportStatement> regularImports = new ArrayList<>();
+			List<JavaImportStatement> staticImports = new ArrayList<>();
+			importStatements.forEach(stmt -> {
+				if(stmt.isStatic()){
+					staticImports.add(stmt);
 				}else{
+					regularImports.add(stmt);
+				}
+			});
+			
+			// Handle regular imports if we have them
+			if(ListUtil.isNotBlank(regularImports)){
+				MultiMap<String, JavaImportStatement> sortedImports = sortImports(regularImports);
+				List<String> alphabetizedKeys = sortedImports.keySet().stream().sorted().toList();
+				for(String key: alphabetizedKeys){
+					List<String> alphabetizedImports = sortedImports.get(key).stream()
+							.map(JavaImportStatement::toString)
+							.sorted().toList();
+					content.addAll(alphabetizedImports);
+					// Add newline after each section
 					content.add("");
 				}
 			}
-			// Newline between imports and whatever's next
-			content.add("");
-		}
-		
-		// Static Import Statements
-		if(ListUtil.isNotBlank(staticImports)){
-			for(String staticImport: staticImports){
-				if(StringUtil.isNotBlank(staticImport)){
-					content.add("import static " + staticImport + ";");
-				}else{
+			
+			// Handle static imports if we have them
+			if(ListUtil.isNotBlank(staticImports)){
+				MultiMap<String, JavaImportStatement> sortedImports = sortImports(staticImports);
+				List<String> alphabetizedKeys = sortedImports.keySet().stream().sorted().toList();
+				for(String key: alphabetizedKeys){
+					List<String> alphabetizedImports = sortedImports.get(key).stream()
+							.map(JavaImportStatement::toString)
+							.sorted().toList();
+					content.addAll(alphabetizedImports);
+					// Add newline after each section
 					content.add("");
 				}
 			}
-			// Newline between static imports and whatever's next
-			content.add("");
 		}
 		
 		// Javadoc
@@ -318,6 +327,24 @@ public abstract class JavaClass implements JavaClassType{
 		
 		// Build the full string
 		return StringUtil.buildStringWithNewLines(content);
+	}
+	
+	/**
+	 * Sorts the given List of {@link JavaImportStatement import statements} by the first part of their package name
+	 *
+	 * @param importStatements The {@link JavaImportStatement import statements} to be sorted
+	 * @return A MultiMap of starting part of package name to the import statements
+	 */
+	private MultiMap<String, JavaImportStatement> sortImports(List<JavaImportStatement> importStatements){
+		MultiMap<String, JavaImportStatement> mappedStatements = new HashMultiMap<>();
+		
+		// Iterate over the statements, adding them to the map by their first part of their package
+		for(JavaImportStatement importStatement: importStatements){
+			String start = importStatement.getImportName().split("\\.")[0];
+			mappedStatements.put(start, importStatement);
+		}
+		
+		return mappedStatements;
 	}
 	
 	/** {@inheritDoc} */

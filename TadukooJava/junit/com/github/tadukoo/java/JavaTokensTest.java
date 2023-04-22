@@ -115,6 +115,11 @@ public class JavaTokensTest{
 		assertEquals("public", PUBLIC_MODIFIER);
 	}
 	
+	@Test
+	public void testVISIBILITY_MODIFIERS(){
+		assertEquals(SetUtil.createSet(PRIVATE_MODIFIER, PROTECTED_MODIFIER, PUBLIC_MODIFIER), VISIBILITY_MODIFIERS);
+	}
+	
 	/*
 	 * Other "Modifiers"
 	 */

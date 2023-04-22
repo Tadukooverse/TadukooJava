@@ -5,6 +5,8 @@ import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.Visibility;
@@ -52,6 +54,21 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("package declaration is not editable in this editable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testAllBuilderUneditableImportStatementError(){
+		try{
+			EditableJavaClass.builder()
+					.importStatement(UneditableJavaImportStatement.builder()
+							.importName("some.import")
+							.build())
+					.className(className)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("some import statements are not editable in this editable JavaClass", e.getMessage());
 		}
 	}
 	
@@ -134,6 +151,9 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 					.packageDeclaration(UneditableJavaPackageDeclaration.builder()
 							.packageName("some.package")
 							.build())
+					.importStatement(UneditableJavaImportStatement.builder()
+							.importName("some.import")
+							.build())
 					.className(className)
 					.javadoc(UneditableJavadoc.builder().build())
 					.annotation(UneditableJavaAnnotation.builder().name("Test").build())
@@ -152,6 +172,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 		}catch(IllegalArgumentException e){
 			assertEquals("""
 					package declaration is not editable in this editable JavaClass
+					some import statements are not editable in this editable JavaClass
 					javadoc is not editable in this editable JavaClass
 					some annotations are not editable in this editable JavaClass
 					some inner classes are not editable in this editable JavaClass
@@ -192,59 +213,105 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
-	public void testAddImport(){
-		assertEquals(new ArrayList<>(), clazz.getImports());
-		clazz.addImport("some.import");
-		assertEquals(ListUtil.createList("some.import"), clazz.getImports());
-		clazz.addImport("some.other.import");
-		assertEquals(ListUtil.createList("some.import", "some.other.import"), clazz.getImports());
+	public void testAddImportStatement(){
+		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
+				.importName("com.example")
+				.build();
+		JavaImportStatement importStatement2 = EditableJavaImportStatement.builder()
+				.importName("org.test")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
+		clazz.addImportStatement(importStatement);
+		assertEquals(ListUtil.createList(importStatement), clazz.getImportStatements());
+		clazz.addImportStatement(importStatement2);
+		assertEquals(ListUtil.createList(importStatement, importStatement2), clazz.getImportStatements());
 	}
 	
 	@Test
-	public void testAddImports(){
-		assertEquals(new ArrayList<>(), clazz.getImports());
-		clazz.addImports(ListUtil.createList("some.import", "some.other.import"));
-		assertEquals(ListUtil.createList("some.import", "some.other.import"), clazz.getImports());
-		clazz.addImports(ListUtil.createList("com.github.tadukoo", "derp.yep"));
-		assertEquals(ListUtil.createList("some.import", "some.other.import", "com.github.tadukoo", "derp.yep"),
-				clazz.getImports());
+	public void testAddImportStatementUneditable(){
+		try{
+			clazz.addImportStatement(UneditableJavaImportStatement.builder()
+					.importName("com.example")
+					.build());
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable import statements", e.getMessage());
+		}
 	}
 	
 	@Test
-	public void testSetImports(){
-		assertEquals(new ArrayList<>(), clazz.getImports());
-		clazz.setImports(ListUtil.createList("some.import", "some.other.import"));
-		assertEquals(ListUtil.createList("some.import", "some.other.import"), clazz.getImports());
-		clazz.setImports(ListUtil.createList("com.github.tadukoo", "derp.yep"));
-		assertEquals(ListUtil.createList("com.github.tadukoo", "derp.yep"), clazz.getImports());
+	public void testAddImportStatements(){
+		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
+				.importName("com.example")
+				.build();
+		JavaImportStatement importStatement2 = EditableJavaImportStatement.builder()
+				.importName("org.test")
+				.build();
+		JavaImportStatement importStatement3 = EditableJavaImportStatement.builder()
+				.importName("java.whatever")
+				.build();
+		JavaImportStatement importStatement4 = EditableJavaImportStatement.builder()
+				.importName("org.yep")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
+		clazz.addImportStatements(ListUtil.createList(importStatement, importStatement2));
+		assertEquals(ListUtil.createList(importStatement, importStatement2), clazz.getImportStatements());
+		clazz.addImportStatements(ListUtil.createList(importStatement3, importStatement4));
+		assertEquals(ListUtil.createList(importStatement, importStatement2, importStatement3, importStatement4),
+				clazz.getImportStatements());
 	}
 	
 	@Test
-	public void testAddStaticImport(){
-		assertEquals(new ArrayList<>(), clazz.getStaticImports());
-		clazz.addStaticImport("some.import");
-		assertEquals(ListUtil.createList("some.import"), clazz.getStaticImports());
-		clazz.addStaticImport("some.other.import");
-		assertEquals(ListUtil.createList("some.import", "some.other.import"), clazz.getStaticImports());
+	public void testAddImportStatementsUneditable(){
+		try{
+			clazz.addImportStatements(ListUtil.createList(
+					UneditableJavaImportStatement.builder()
+							.importName("com.example")
+							.build(),
+					UneditableJavaImportStatement.builder()
+							.importName("yep")
+							.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable import statements", e.getMessage());
+		}
 	}
 	
 	@Test
-	public void testAddStaticImports(){
-		assertEquals(new ArrayList<>(), clazz.getStaticImports());
-		clazz.addStaticImports(ListUtil.createList("some.import", "some.other.import"));
-		assertEquals(ListUtil.createList("some.import", "some.other.import"), clazz.getStaticImports());
-		clazz.addStaticImports(ListUtil.createList("com.github.tadukoo", "derp.yep"));
-		assertEquals(ListUtil.createList("some.import", "some.other.import", "com.github.tadukoo", "derp.yep"),
-				clazz.getStaticImports());
+	public void testSetImportStatements(){
+		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
+				.importName("com.example")
+				.build();
+		JavaImportStatement importStatement2 = EditableJavaImportStatement.builder()
+				.importName("org.test")
+				.build();
+		JavaImportStatement importStatement3 = EditableJavaImportStatement.builder()
+				.importName("java.whatever")
+				.build();
+		JavaImportStatement importStatement4 = EditableJavaImportStatement.builder()
+				.importName("org.yep")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
+		clazz.setImportStatements(ListUtil.createList(importStatement, importStatement2));
+		assertEquals(ListUtil.createList(importStatement, importStatement2), clazz.getImportStatements());
+		clazz.setImportStatements(ListUtil.createList(importStatement3, importStatement4));
+		assertEquals(ListUtil.createList(importStatement3, importStatement4), clazz.getImportStatements());
 	}
 	
 	@Test
-	public void testSetStaticImports(){
-		assertEquals(new ArrayList<>(), clazz.getStaticImports());
-		clazz.setStaticImports(ListUtil.createList("some.import", "some.other.import"));
-		assertEquals(ListUtil.createList("some.import", "some.other.import"), clazz.getStaticImports());
-		clazz.setStaticImports(ListUtil.createList("com.github.tadukoo", "derp.yep"));
-		assertEquals(ListUtil.createList("com.github.tadukoo", "derp.yep"), clazz.getStaticImports());
+	public void testSetImportStatementsUneditable(){
+		try{
+			clazz.setImportStatements(ListUtil.createList(
+					UneditableJavaImportStatement.builder()
+							.importName("com.example")
+							.build(),
+					UneditableJavaImportStatement.builder()
+							.importName("yep")
+							.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable import statements", e.getMessage());
+		}
 	}
 	
 	@Test

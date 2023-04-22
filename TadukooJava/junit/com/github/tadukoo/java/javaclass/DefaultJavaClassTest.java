@@ -6,6 +6,7 @@ import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.field.JavaFieldBuilder;
+import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.javadoc.JavadocBuilder;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,15 +86,8 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testDefaultImports(){
-		assertNotNull(clazz.getImports());
-		assertTrue(clazz.getImports().isEmpty());
-	}
-	
-	@Test
-	public void testDefaultStaticImports(){
-		assertNotNull(clazz.getStaticImports());
-		assertTrue(clazz.getStaticImports().isEmpty());
+	public void testDefaultImportStatements(){
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
 	}
 	
 	@Test
@@ -163,45 +158,32 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testBuilderSetImports(){
-		List<String> imports = ListUtil.createList("com.example.*", "com.github.tadukoo.*");
-		clazz = builder.get()
-				.className(className)
-				.imports(imports)
+	public void testBuilderSingleImportStatement(){
+		JavaImportStatement importStatement = javaImportStatementBuilder.get()
+				.importName("com.example")
 				.build();
-		assertEquals(imports, clazz.getImports());
+		clazz = builder.get()
+				.importStatement(importStatement)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(importStatement), clazz.getImportStatements());
 	}
 	
 	@Test
-	public void testBuilderSetSingleImport(){
+	public void testBuilderSetImportStatements(){
+		List<JavaImportStatement> importStatements = ListUtil.createList(
+				javaImportStatementBuilder.get()
+						.importName("com.example")
+						.build(),
+				javaImportStatementBuilder.get()
+						.isStatic()
+						.importName("com.other")
+						.build());
 		clazz = builder.get()
+				.importStatements(importStatements)
 				.className(className)
-				.singleImport("com.example.*")
 				.build();
-		List<String> imports = clazz.getImports();
-		assertEquals(1, imports.size());
-		assertEquals("com.example.*", imports.get(0));
-	}
-	
-	@Test
-	public void testBuilderSetStaticImports(){
-		List<String> staticImports = ListUtil.createList("com.example.Test", "com.github.tadukoo.*");
-		clazz = builder.get()
-				.className(className)
-				.staticImports(staticImports)
-				.build();
-		assertEquals(staticImports, clazz.getStaticImports());
-	}
-	
-	@Test
-	public void testBuilderSetSingleStaticImport(){
-		clazz = builder.get()
-				.className(className)
-				.staticImport("com.github.tadukoo.*")
-				.build();
-		List<String> staticImports = clazz.getStaticImports();
-		assertEquals(1, staticImports.size());
-		assertEquals("com.github.tadukoo.*", staticImports.get(0));
+		assertEquals(importStatements, clazz.getImportStatements());
 	}
 	
 	@Test
@@ -487,30 +469,18 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testBuilderSetImportInnerClass(){
+	public void testBuilderSetImportStatementInnerClass(){
 		try{
 			clazz = builder.get()
 					.innerClass()
 					.className(className)
-					.singleImport("an.import")
+					.importStatement(javaImportStatementBuilder.get()
+							.importName("com.example")
+							.build())
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
-			assertEquals("Not allowed to have imports for an inner class!", e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testBuilderSetStaticImportInnerClass(){
-		try{
-			clazz = builder.get()
-					.innerClass()
-					.className(className)
-					.staticImport("an.other.import")
-					.build();
-			fail();
-		}catch(IllegalArgumentException e){
-			assertEquals("Not allowed to have static imports for an inner class!", e.getMessage());
+			assertEquals("Not allowed to have import statements for an inner class!", e.getMessage());
 		}
 	}
 	
@@ -529,8 +499,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 							.packageName("some.package")
 							.build())
 					.innerClass(inner)
-					.singleImport("an.import")
-					.staticImport("an.other.import")
+					.importStatement(javaImportStatementBuilder.get()
+							.importName("com.example")
+							.build())
 					.visibility(null)
 					.build();
 			fail();
@@ -540,8 +511,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
 					Not allowed to have package declaration for an inner class!
-					Not allowed to have imports for an inner class!
-					Not allowed to have static imports for an inner class!""", e.getMessage());
+					Not allowed to have import statements for an inner class!""", e.getMessage());
 		}
 	}
 	
@@ -622,15 +592,15 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testToStringWithImports(){
+	public void testToStringWithImport(){
 		clazz = builder.get()
 				.className(className)
-				.imports(ListUtil.createList("com.example.*", null, "com.github.tadukoo.*"))
+				.importStatement(javaImportStatementBuilder.get()
+						.importName("com.example.*")
+						.build())
 				.build();
 		String javaString = """
 				import com.example.*;
-				
-				import com.github.tadukoo.*;
 				
 				class AClassName{
 				\t
@@ -640,15 +610,234 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testToStringWithStaticImports(){
+	public void testToStringWithImportsSameBaseInOrder(){
 		clazz = builder.get()
 				.className(className)
-				.staticImports(ListUtil.createList("com.example.Test", null, "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build()))
 				.build();
 		String javaString = """
-				import static com.example.Test;
+				import com.example.*;
+				import com.whatever;
 				
-				import static com.github.tadukoo.test.*;
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithImportsSameBaseReverseOrder(){
+		clazz = builder.get()
+				.className(className)
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build()))
+				.build();
+		String javaString = """
+				import com.example.*;
+				import com.whatever;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithImportsDifferentBaseStrangeOrder(){
+		clazz = builder.get()
+				.className(className)
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.yep")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.test")
+								.build()))
+				.build();
+		String javaString = """
+				import com.example.*;
+				import com.whatever;
+				
+				import org.test;
+				import org.yep;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImport(){
+		clazz = builder.get()
+				.className(className)
+				.importStatement(javaImportStatementBuilder.get()
+						.isStatic()
+						.importName("com.example.*")
+						.build())
+				.build();
+		String javaString = """
+				import static com.example.*;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImportsSameBaseInOrder(){
+		clazz = builder.get()
+				.className(className)
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever")
+								.build()))
+				.build();
+		String javaString = """
+				import static com.example.*;
+				import static com.whatever;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImportsSameBaseReverseOrder(){
+		clazz = builder.get()
+				.className(className)
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.*")
+								.build()))
+				.build();
+		String javaString = """
+				import static com.example.*;
+				import static com.whatever;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImportsDifferentBaseStrangeOrder(){
+		clazz = builder.get()
+				.className(className)
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.yep")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.test")
+								.build()))
+				.build();
+		String javaString = """
+				import static com.example.*;
+				import static com.whatever;
+				
+				import static org.test;
+				import static org.yep;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithRegularAndStaticImportsDifferentBaseStrangeOrder(){
+		clazz = builder.get()
+				.className(className)
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.yep")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.test")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
+				.build();
+		String javaString = """
+				import com.example.*;
+				import com.whatever;
+				
+				import org.test;
+				import org.yep;
+				
+				import static com.example.test.*;
+				import static com.whatever.electric_boogaloo;
+				
+				import static org.test.yep;
+				import static org.yep.dope;
 				
 				class AClassName{
 				\t
@@ -763,8 +952,35 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.packageDeclaration(javaPackageDeclarationBuilder.get()
 						.packageName("some.package")
 						.build())
-				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
-				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.yep")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.test")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
@@ -782,12 +998,16 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				package some.package;
 				
 				import com.example.*;
+				import com.whatever;
 				
-				import com.github.tadukoo.*;
+				import org.test;
+				import org.yep;
 				
-				import static com.example.Test;
+				import static com.example.test.*;
+				import static com.whatever.electric_boogaloo;
 				
-				import static com.github.tadukoo.test.*;
+				import static org.test.yep;
+				import static org.yep.dope;
 				
 				/**
 				 */
@@ -897,8 +1117,35 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.packageDeclaration(javaPackageDeclarationBuilder.get()
 						.packageName("some.package")
 						.build())
-				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
-				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.yep")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.test")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
@@ -915,8 +1162,35 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.packageDeclaration(javaPackageDeclarationBuilder.get()
 						.packageName("some.package")
 						.build())
-				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
-				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						javaImportStatementBuilder.get()
+								.importName("com.whatever")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.yep")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("com.example.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.importName("org.test")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						javaImportStatementBuilder.get()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())

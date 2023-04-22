@@ -5,6 +5,8 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.field.UneditableJavaField;
 import com.github.tadukoo.java.method.JavaMethod;
@@ -29,11 +31,12 @@ public class JavaClassTest{
 	private static class TestJavaClass extends JavaClass{
 		
 		private TestJavaClass(
-				boolean editable, boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
+				boolean editable, boolean isInnerClass,
+				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, String className, String superClassName,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
-			super(editable, isInnerClass, packageDeclaration, imports, staticImports,
+			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -55,7 +58,7 @@ public class JavaClassTest{
 		
 		@Override
 		protected TestJavaClass constructClass(){
-			return new TestJavaClass(editable, isInnerClass, packageDeclaration, imports, staticImports,
+			return new TestJavaClass(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -168,15 +171,15 @@ public class JavaClassTest{
 	}
 	
 	@Test
-	public void testToStringWithImports(){
+	public void testToStringWithImport(){
 		clazz = new TestJavaClassBuilder(false)
 				.className(className)
-				.imports(ListUtil.createList("com.example.*", null, "com.github.tadukoo.*"))
+				.importStatement(UneditableJavaImportStatement.builder()
+						.importName("com.example.*")
+						.build())
 				.build();
 		String javaString = """
 				import com.example.*;
-				
-				import com.github.tadukoo.*;
 				
 				class AClassName{
 				\t
@@ -186,15 +189,234 @@ public class JavaClassTest{
 	}
 	
 	@Test
-	public void testToStringWithStaticImports(){
+	public void testToStringWithImportsSameBaseInOrder(){
 		clazz = new TestJavaClassBuilder(false)
 				.className(className)
-				.staticImports(ListUtil.createList("com.example.Test", null, "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build()))
 				.build();
 		String javaString = """
-				import static com.example.Test;
+				import com.example.*;
+				import com.whatever;
 				
-				import static com.github.tadukoo.test.*;
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithImportsSameBaseReverseOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build()))
+				.build();
+		String javaString = """
+				import com.example.*;
+				import com.whatever;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithImportsDifferentBaseStrangeOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build()))
+				.build();
+		String javaString = """
+				import com.example.*;
+				import com.whatever;
+				
+				import org.test;
+				import org.yep;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImport(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatement(UneditableJavaImportStatement.builder()
+						.isStatic()
+						.importName("com.example.*")
+						.build())
+				.build();
+		String javaString = """
+				import static com.example.*;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImportsSameBaseInOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever")
+								.build()))
+				.build();
+		String javaString = """
+				import static com.example.*;
+				import static com.whatever;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImportsSameBaseReverseOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.*")
+								.build()))
+				.build();
+		String javaString = """
+				import static com.example.*;
+				import static com.whatever;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithStaticImportsDifferentBaseStrangeOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test")
+								.build()))
+				.build();
+		String javaString = """
+				import static com.example.*;
+				import static com.whatever;
+				
+				import static org.test;
+				import static org.yep;
+				
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithRegularAndStaticImportsDifferentBaseStrangeOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
+				.build();
+		String javaString = """
+				import com.example.*;
+				import com.whatever;
+				
+				import org.test;
+				import org.yep;
+				
+				import static com.example.test.*;
+				import static com.whatever.electric_boogaloo;
+				
+				import static org.test.yep;
+				import static org.yep.dope;
 				
 				class AClassName{
 				\t
@@ -309,8 +531,35 @@ public class JavaClassTest{
 				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
 						.packageName("some.package")
 						.build())
-				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
-				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
@@ -328,12 +577,16 @@ public class JavaClassTest{
 				package some.package;
 				
 				import com.example.*;
+				import com.whatever;
 				
-				import com.github.tadukoo.*;
+				import org.test;
+				import org.yep;
 				
-				import static com.example.Test;
+				import static com.example.test.*;
+				import static com.whatever.electric_boogaloo;
 				
-				import static com.github.tadukoo.test.*;
+				import static org.test.yep;
+				import static org.yep.dope;
 				
 				/**
 				 */
@@ -443,8 +696,35 @@ public class JavaClassTest{
 				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
 						.packageName("some.package")
 						.build())
-				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
-				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
@@ -461,8 +741,35 @@ public class JavaClassTest{
 				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
 						.packageName("some.package")
 						.build())
-				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
-				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())

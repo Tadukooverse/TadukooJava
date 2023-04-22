@@ -3,6 +3,7 @@ package com.github.tadukoo.java.javaclass;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
@@ -33,13 +34,8 @@ import java.util.List;
  *         <td>Defaults to null</td>
  *     </tr>
  *     <tr>
- *         <td>imports</td>
- *         <td>The classes imported by the class</td>
- *         <td>An empty list</td>
- *     </tr>
- *     <tr>
- *         <td>staticImports</td>
- *         <td>The classes imported statically by the class</td>
+ *         <td>importStatements</td>
+ *         <td>The {@link JavaImportStatement import statements} of the class</td>
  *         <td>An empty list</td>
  *     </tr>
  *     <tr>
@@ -99,10 +95,8 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected boolean isInnerClass = false;
 	/** The {@link JavaPackageDeclaration package declaration} of the class */
 	protected JavaPackageDeclaration packageDeclaration = null;
-	/** The classes imported by the class */
-	protected List<String> imports = new ArrayList<>();
-	/** The classes imported statically by the class */
-	protected List<String> staticImports = new ArrayList<>();
+	/** The {@link JavaImportStatement import statements} of the class */
+	protected List<JavaImportStatement> importStatements = new ArrayList<>();
 	/** The {@link Javadoc} for the class */
 	protected Javadoc javadoc = null;
 	/** The {@link JavaAnnotation annotations} on the class */
@@ -156,38 +150,20 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
-	 * @param imports The classes imported by the class
+	 * @param importStatement An {@link JavaImportStatement import statement} of the class
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> imports(List<String> imports){
-		this.imports = imports;
+	public JavaClassBuilder<ClassType> importStatement(JavaImportStatement importStatement){
+		importStatements.add(importStatement);
 		return this;
 	}
 	
 	/**
-	 * @param singleImport A single class imported by the class, to be added to the list
+	 * @param importStatements The {@link JavaImportStatement import statements} of the class
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> singleImport(String singleImport){
-		imports.add(singleImport);
-		return this;
-	}
-	
-	/**
-	 * @param staticImports The classes imported statically by the class
-	 * @return this, to continue building
-	 */
-	public JavaClassBuilder<ClassType> staticImports(List<String> staticImports){
-		this.staticImports = staticImports;
-		return this;
-	}
-	
-	/**
-	 * @param staticImport A single class imported statically by the class, to be added to the list
-	 * @return this, to continue building
-	 */
-	public JavaClassBuilder<ClassType> staticImport(String staticImport){
-		staticImports.add(staticImport);
+	public JavaClassBuilder<ClassType> importStatements(List<JavaImportStatement> importStatements){
+		this.importStatements = importStatements;
 		return this;
 	}
 	
@@ -349,12 +325,8 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 				errors.add("Not allowed to have package declaration for an inner class!");
 			}
 			
-			if(ListUtil.isNotBlank(imports)){
-				errors.add("Not allowed to have imports for an inner class!");
-			}
-			
-			if(ListUtil.isNotBlank(staticImports)){
-				errors.add("Not allowed to have static imports for an inner class!");
+			if(ListUtil.isNotBlank(importStatements)){
+				errors.add("Not allowed to have import statements for an inner class!");
 			}
 		}else{
 			// Regular class problems
