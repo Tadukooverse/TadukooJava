@@ -54,7 +54,7 @@ import java.util.List;
  *     <tr>
  *         <td>visibility</td>
  *         <td>The {@link Visibility} of the class</td>
- *         <td>{@link Visibility#PUBLIC}</td>
+ *         <td>{@link Visibility#NONE}</td>
  *     </tr>
  *     <tr>
  *         <td>isStatic</td>
@@ -107,7 +107,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	/** The {@link JavaAnnotation annotations} on the class */
 	protected List<JavaAnnotation> annotations = new ArrayList<>();
 	/** The {@link Visibility} of the class */
-	protected Visibility visibility = Visibility.PUBLIC;
+	protected Visibility visibility = Visibility.NONE;
 	/** Whether the class is static or not */
 	protected boolean isStatic = false;
 	/** The name of the class */
@@ -326,6 +326,10 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		List<String> errors = new ArrayList<>();
 		
 		// Generic problems
+		if(visibility == null){
+			errors.add("Visibility is required!");
+		}
+		
 		if(StringUtil.isBlank(className)){
 			errors.add("Must specify className!");
 		}

@@ -250,9 +250,32 @@ public abstract class JavaClass implements JavaClassType{
 			}
 		}
 		
-		// Class Declaration
-		content.add(visibility.getToken() + (isStatic?" static":"") + " class " + className +
-				(StringUtil.isNotBlank(superClassName)?" extends " + superClassName:"") + "{");
+		/*
+		 * Class Declaration
+		 */
+		// Start with visibility
+		StringBuilder declaration = new StringBuilder(visibility.getToken());
+		if(!declaration.isEmpty()){
+			// If visibility is not NONE, we need a space after it
+			declaration.append(' ');
+		}
+		
+		// Optionally add static to the class declaration
+		if(isStatic){
+			declaration.append(STATIC_MODIFIER).append(' ');
+		}
+		
+		// Append class token and name to the declaration
+		declaration.append(CLASS_TOKEN).append(' ').append(className);
+		
+		// Optionally append super class name to the declaration
+		if(StringUtil.isNotBlank(superClassName)){
+			declaration.append(' ').append(EXTENDS_TOKEN).append(' ').append(superClassName);
+		}
+		
+		// End the declaration by opening the code block
+		declaration.append(BLOCK_OPEN_TOKEN);
+		content.add(declaration.toString());
 		
 		// Newline at start of class
 		content.add("\t");
@@ -279,7 +302,7 @@ public abstract class JavaClass implements JavaClassType{
 				content.add("\t");
 			}
 			for(JavaMethod method: methods){
-				// Split the method into its lines so we can add it to our lines
+				// Split the method into its lines, so we can add it to our lines
 				List<String> lines = StringUtil.parseListFromStringWithSeparator(
 						method.toString(), "\n", false);
 				for(String line: lines){
@@ -292,7 +315,7 @@ public abstract class JavaClass implements JavaClassType{
 		}
 		
 		// Closing brace at end of class and empty newline at end of file
-		content.add("}");
+		content.add(BLOCK_CLOSE_TOKEN);
 		content.add("");
 		
 		// Build the full string

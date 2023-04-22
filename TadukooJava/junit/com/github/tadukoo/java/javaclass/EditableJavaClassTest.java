@@ -298,7 +298,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	
 	@Test
 	public void testSetVisibility(){
-		assertEquals(Visibility.PUBLIC, clazz.getVisibility());
+		assertEquals(Visibility.NONE, clazz.getVisibility());
 		clazz.setVisibility(Visibility.PRIVATE);
 		assertEquals(Visibility.PRIVATE, clazz.getVisibility());
 	}

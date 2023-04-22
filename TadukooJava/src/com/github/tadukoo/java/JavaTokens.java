@@ -27,6 +27,8 @@ public interface JavaTokens{
 	String CLASS_TOKEN = "class";
 	/** Used for throwing throwables - throws */
 	String THROWS_TOKEN = "throws";
+	/** Used for extending class types - extends */
+	String EXTENDS_TOKEN = "extends";
 	
 	/*
 	 * Not-So-Proper "Tokens"

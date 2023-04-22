@@ -95,7 +95,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
 	@Test
 	public void testDefaultVisibility(){
-		Assertions.assertEquals(Visibility.PUBLIC, clazz.getVisibility());
+		Assertions.assertEquals(Visibility.NONE, clazz.getVisibility());
 	}
 	
 	@Test
@@ -346,6 +346,19 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testBuilderNullVisibility(){
+		try{
+			clazz = builder.get()
+					.visibility(null)
+					.packageName(packageName).className("AClassName")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderNullClassName(){
 		try{
 			clazz = builder.get()
@@ -395,14 +408,30 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 			clazz = builder.get()
 					.isStatic()
 					.innerClass(inner)
+					.visibility(null)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("""
+					Visibility is required!
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
 					Must specify packageName when not making an inner class!
 					Only inner classes can be static!""", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderNullVisibilityInnerClass(){
+		try{
+			clazz = builder.get()
+					.innerClass()
+					.visibility(null)
+					.className("AClassName")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!", e.getMessage());
 		}
 	}
 	
@@ -489,10 +518,12 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					.innerClass(inner)
 					.singleImport("an.import")
 					.staticImport("an.other.import")
+					.visibility(null)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("""
+					Visibility is required!
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
 					Not allowed to have packageName for an inner class!
@@ -506,7 +537,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -521,7 +552,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName extends AnotherClassName{
+				class AClassName extends AnotherClassName{
 				\t
 				}
 				""";
@@ -539,7 +570,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				
 				/**
 				 */
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -560,7 +591,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				
 				@Test
 				@Derp
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -580,7 +611,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				
 				import com.github.tadukoo.*;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -600,7 +631,23 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				
 				import static com.github.tadukoo.test.*;
 				
-				public class AClassName{
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithVisibility(){
+		clazz = builder.get()
+				.packageName(packageName).className(className)
+				.visibility(Visibility.PROTECTED)
+				.build();
+		String javaString = """
+				package some.package;
+				
+				protected class AClassName{
 				\t
 				}
 				""";
@@ -617,13 +664,13 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
-					public class BClassName{
+					class BClassName{
 					\t
 					}
 				\t
-					public class CClassName{
+					class CClassName{
 					\t
 					}
 				\t
@@ -642,7 +689,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 					int test;
 					String derp;
@@ -667,7 +714,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 					/** something */
 					int test;
@@ -688,7 +735,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 					AClassName(){
 					}
@@ -710,6 +757,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PUBLIC)
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(builder.get().innerClass().className("BClassName").build())
 				.innerClass(builder.get().innerClass().className("CClassName").build())
@@ -736,11 +784,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				@Derp
 				public class AClassName extends AnotherClassName{
 				\t
-					public class BClassName{
+					class BClassName{
 					\t
 					}
 				\t
-					public class CClassName{
+					class CClassName{
 					\t
 					}
 				\t
@@ -765,7 +813,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.className(className)
 				.build();
 		assertEquals("""
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""", clazz.toString());
@@ -779,7 +827,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.className(className)
 				.build();
 		assertEquals("""
-				public static class AClassName{
+				static class AClassName{
 				\t
 				}
 				""", clazz.toString());
@@ -792,6 +840,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
+				.visibility(Visibility.PUBLIC)
 				.isStatic()
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(builder.get().innerClass().className("BClassName").build())
@@ -809,11 +858,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				@Derp
 				public static class AClassName extends AnotherClassName{
 				\t
-					public class BClassName{
+					class BClassName{
 					\t
 					}
 				\t
-					public class CClassName{
+					class CClassName{
 					\t
 					}
 				\t

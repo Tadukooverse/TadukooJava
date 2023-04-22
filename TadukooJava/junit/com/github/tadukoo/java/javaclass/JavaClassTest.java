@@ -95,7 +95,7 @@ public class JavaClassTest{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -110,7 +110,7 @@ public class JavaClassTest{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName extends AnotherClassName{
+				class AClassName extends AnotherClassName{
 				\t
 				}
 				""";
@@ -128,7 +128,7 @@ public class JavaClassTest{
 				
 				/**
 				 */
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -149,7 +149,7 @@ public class JavaClassTest{
 				
 				@Test
 				@Derp
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -169,7 +169,7 @@ public class JavaClassTest{
 				
 				import com.github.tadukoo.*;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""";
@@ -189,7 +189,23 @@ public class JavaClassTest{
 				
 				import static com.github.tadukoo.test.*;
 				
-				public class AClassName{
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithVisibility(){
+		clazz = new TestJavaClassBuilder(false)
+				.packageName(packageName).className(className)
+				.visibility(Visibility.PROTECTED)
+				.build();
+		String javaString = """
+				package some.package;
+				
+				protected class AClassName{
 				\t
 				}
 				""";
@@ -206,13 +222,13 @@ public class JavaClassTest{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
-					public class BClassName{
+					class BClassName{
 					\t
 					}
 				\t
-					public class CClassName{
+					class CClassName{
 					\t
 					}
 				\t
@@ -231,7 +247,7 @@ public class JavaClassTest{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 					int test;
 					String derp;
@@ -256,7 +272,7 @@ public class JavaClassTest{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 					/** something */
 					int test;
@@ -277,7 +293,7 @@ public class JavaClassTest{
 		String javaString = """
 				package some.package;
 				
-				public class AClassName{
+				class AClassName{
 				\t
 					AClassName(){
 					}
@@ -299,6 +315,7 @@ public class JavaClassTest{
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
+				.visibility(Visibility.PUBLIC)
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
@@ -325,11 +342,11 @@ public class JavaClassTest{
 				@Derp
 				public class AClassName extends AnotherClassName{
 				\t
-					public class BClassName{
+					class BClassName{
 					\t
 					}
 				\t
-					public class CClassName{
+					class CClassName{
 					\t
 					}
 				\t
@@ -354,7 +371,7 @@ public class JavaClassTest{
 				.className(className)
 				.build();
 		assertEquals("""
-				public class AClassName{
+				class AClassName{
 				\t
 				}
 				""", clazz.toString());
@@ -368,7 +385,7 @@ public class JavaClassTest{
 				.className(className)
 				.build();
 		assertEquals("""
-				public static class AClassName{
+				static class AClassName{
 				\t
 				}
 				""", clazz.toString());
@@ -381,6 +398,7 @@ public class JavaClassTest{
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
+				.visibility(Visibility.PUBLIC)
 				.isStatic()
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
@@ -398,11 +416,11 @@ public class JavaClassTest{
 				@Derp
 				public static class AClassName extends AnotherClassName{
 				\t
-					public class BClassName{
+					class BClassName{
 					\t
 					}
 				\t
-					public class CClassName{
+					class CClassName{
 					\t
 					}
 				\t

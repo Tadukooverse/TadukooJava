@@ -37,6 +37,11 @@ public class JavaTokensTest{
 		assertEquals("throws", THROWS_TOKEN);
 	}
 	
+	@Test
+	public void testEXTENDS_TOKEN(){
+		assertEquals("extends", EXTENDS_TOKEN);
+	}
+	
 	/*
 	 * Not-So-Proper "Tokens"
 	 */

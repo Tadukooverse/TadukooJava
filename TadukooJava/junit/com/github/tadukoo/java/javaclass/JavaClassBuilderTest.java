@@ -98,7 +98,7 @@ public class JavaClassBuilderTest{
 	
 	@Test
 	public void testDefaultVisibility(){
-		assertEquals(Visibility.PUBLIC, clazz.getVisibility());
+		assertEquals(Visibility.NONE, clazz.getVisibility());
 	}
 	
 	@Test
