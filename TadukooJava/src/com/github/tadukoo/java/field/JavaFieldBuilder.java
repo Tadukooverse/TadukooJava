@@ -19,11 +19,6 @@ import java.util.List;
  *         <th>Default or Required</th>
  *     </tr>
  *     <tr>
- *         <td>sectionComment</td>
- *         <td>The section comment above the field</td>
- *         <td>null</td>
- *     </tr>
- *     <tr>
  *         <td>javadoc</td>
  *         <td>The {@link Javadoc} on the field</td>
  *         <td>null</td>
@@ -66,12 +61,10 @@ import java.util.List;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (within JavaField), Alpha v.0.4 (as separate)
  */
 public abstract class JavaFieldBuilder<FieldType extends JavaField>{
-	/** The section comment above the field */
-	protected String sectionComment = null;
 	/** The {@link Javadoc} on the field */
 	protected Javadoc javadoc = null;
 	/** The {@link JavaAnnotation annotations} on the field */
@@ -93,15 +86,6 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	 * Constructs a new JavaFieldBuilder
 	 */
 	protected JavaFieldBuilder(){ }
-	
-	/**
-	 * @param sectionComment The section comment above the field
-	 * @return this, to continue building
-	 */
-	public JavaFieldBuilder<FieldType> sectionComment(String sectionComment){
-		this.sectionComment = sectionComment;
-		return this;
-	}
 	
 	/**
 	 * @param javadoc The {@link Javadoc} on the field

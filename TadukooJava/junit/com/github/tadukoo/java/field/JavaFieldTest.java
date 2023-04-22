@@ -22,10 +22,10 @@ public class JavaFieldTest{
 	private static class TestJavaField extends JavaField{
 		
 		protected TestJavaField(
-				boolean editable, String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, boolean isFinal,
 				String type, String name, String value){
-			super(editable, sectionComment, javadoc, annotations,
+			super(editable, javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);
 		}
@@ -46,7 +46,7 @@ public class JavaFieldTest{
 		
 		@Override
 		protected TestJavaField constructField(){
-			return new TestJavaField(editable, sectionComment, javadoc, annotations,
+			return new TestJavaField(editable, javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);
 		}
@@ -86,21 +86,6 @@ public class JavaFieldTest{
 	@Test
 	public void testToString(){
 		assertEquals("int test", field.toString());
-	}
-	
-	@Test
-	public void testToStringWithSectionComment(){
-		field = new TestJavaFieldBuilder(false)
-				.type(type).name(name)
-				.sectionComment("Test comment")
-				.build();
-		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
-				int test""";
-		assertEquals(javaString, field.toString());
 	}
 	
 	@Test
@@ -190,7 +175,6 @@ public class JavaFieldTest{
 	public void testToStringWithEverything(){
 		field = new TestJavaFieldBuilder(false)
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
@@ -199,10 +183,6 @@ public class JavaFieldTest{
 				.value("42")
 				.build();
 		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
 				/**
 				 */
 				@Test
@@ -219,7 +199,6 @@ public class JavaFieldTest{
 	public void testEquals(){
 		field = new TestJavaFieldBuilder(false)
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
@@ -229,7 +208,6 @@ public class JavaFieldTest{
 				.build();
 		JavaField otherField = new TestJavaFieldBuilder(false)
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
@@ -244,7 +222,6 @@ public class JavaFieldTest{
 	public void testEqualsNotEqual(){
 		field = new TestJavaFieldBuilder(false)
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
@@ -254,7 +231,6 @@ public class JavaFieldTest{
 				.build();
 		JavaField otherField = new TestJavaFieldBuilder(false)
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())

@@ -71,15 +71,6 @@ public class EditableJavaFieldTest extends DefaultJavaFieldTest<EditableJavaFiel
 	}
 	
 	@Test
-	public void testSetSectionComment(){
-		assertNull(field.getSectionComment());
-		field.setSectionComment("Test");
-		assertEquals("Test", field.getSectionComment());
-		field.setSectionComment("Derp");
-		assertEquals("Derp", field.getSectionComment());
-	}
-	
-	@Test
 	public void testSetJavadoc(){
 		Javadoc doc1 = EditableJavadoc.builder().build();
 		Javadoc doc2 = EditableJavadoc.builder().author("Me").build();

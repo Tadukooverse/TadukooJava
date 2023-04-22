@@ -23,10 +23,10 @@ public class JavaFieldBuilderTest{
 	private static class TestJavaField extends JavaField{
 		
 		protected TestJavaField(
-				String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, boolean isFinal,
 				String type, String name, String value){
-			super(false, sectionComment, javadoc, annotations,
+			super(false, javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);
 		}
@@ -41,7 +41,7 @@ public class JavaFieldBuilderTest{
 		
 		@Override
 		protected TestJavaField constructField(){
-			return new TestJavaField(sectionComment, javadoc, annotations,
+			return new TestJavaField(javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);
 		}
@@ -57,11 +57,6 @@ public class JavaFieldBuilderTest{
 		field = new TestJavaFieldBuilder()
 				.type(type).name(name)
 				.build();
-	}
-	
-	@Test
-	public void testDefaultSectionComment(){
-		assertNull(field.getSectionComment());
 	}
 	
 	@Test
@@ -102,15 +97,6 @@ public class JavaFieldBuilderTest{
 	@Test
 	public void testSetName(){
 		assertEquals("test", field.getName());
-	}
-	
-	@Test
-	public void testSetSectionComment(){
-		field = new TestJavaFieldBuilder()
-				.type(type).name(name)
-				.sectionComment("Test comment")
-				.build();
-		assertEquals("Test comment", field.getSectionComment());
 	}
 	
 	@Test

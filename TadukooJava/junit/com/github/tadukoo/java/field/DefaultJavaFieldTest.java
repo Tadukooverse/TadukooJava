@@ -53,11 +53,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	}
 	
 	@Test
-	public void testDefaultSectionComment(){
-		assertNull(field.getSectionComment());
-	}
-	
-	@Test
 	public void testDefaultJavadoc(){
 		assertNull(field.getJavadoc());
 	}
@@ -95,15 +90,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	@Test
 	public void testSetName(){
 		assertEquals("test", field.getName());
-	}
-	
-	@Test
-	public void testBuilderSetSectionComment(){
-		field = builder.get()
-				.type(type).name(name)
-				.sectionComment("Test comment")
-				.build();
-		assertEquals("Test comment", field.getSectionComment());
 	}
 	
 	@Test
@@ -257,21 +243,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	}
 	
 	@Test
-	public void testToStringWithSectionComment(){
-		field = builder.get()
-				.type(type).name(name)
-				.sectionComment("Test comment")
-				.build();
-		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
-				int test""";
-		assertEquals(javaString, field.toString());
-	}
-	
-	@Test
 	public void testToStringWithJavadoc(){
 		field = builder.get()
 				.type(type).name(name)
@@ -358,7 +329,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	public void testToStringWithEverything(){
 		field = builder.get()
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
@@ -368,10 +338,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.value("42")
 				.build();
 		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
 				/**
 				 */
 				@Test
@@ -388,7 +354,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	public void testEquals(){
 		field = builder.get()
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
@@ -399,7 +364,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.build();
 		JavaField otherField = builder.get()
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
@@ -415,7 +379,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	public void testEqualsNotEqual(){
 		field = builder.get()
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
@@ -426,7 +389,6 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 				.build();
 		JavaField otherField = builder.get()
 				.type(type).name(name)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())

@@ -11,7 +11,7 @@ import java.util.List;
  * Represents a field in Java that is not modifiable
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (as JavaField), Alpha v.0.4 (as UneditableJavaField)
  */
 public class UneditableJavaField extends JavaField{
@@ -20,7 +20,8 @@ public class UneditableJavaField extends JavaField{
 	 * A builder used to make an {@link UneditableJavaField}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Alpha v.0.4
+	 * @version Beta v.0.5
+	 * @since Alpha v.0.4
 	 * @see JavaFieldBuilder
 	 */
 	public static class UneditableJavaFieldBuilder extends JavaFieldBuilder<UneditableJavaField>{
@@ -54,7 +55,7 @@ public class UneditableJavaField extends JavaField{
 		/** {@inheritDoc} */
 		@Override
 		protected UneditableJavaField constructField(){
-			return new UneditableJavaField(sectionComment, javadoc, annotations,
+			return new UneditableJavaField(javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);
 		}
@@ -63,7 +64,6 @@ public class UneditableJavaField extends JavaField{
 	/**
 	 * Constructs a Java Field with the given parameters
 	 *
-	 * @param sectionComment The section comment above the field
 	 * @param javadoc The {@link Javadoc} on the field
 	 * @param annotations The {@link JavaAnnotation annotations} on the field
 	 * @param visibility The {@link Visibility} of the field
@@ -74,10 +74,10 @@ public class UneditableJavaField extends JavaField{
 	 * @param value The value assigned to the field
 	 */
 	private UneditableJavaField(
-			String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal,
 			String type, String name, String value){
-		super(false, sectionComment, javadoc, annotations,
+		super(false, javadoc, annotations,
 				visibility, isStatic, isFinal,
 				type, name, value);
 	}

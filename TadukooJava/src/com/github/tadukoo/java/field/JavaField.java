@@ -23,8 +23,6 @@ public abstract class JavaField implements JavaType{
 	
 	/** Whether the field is editable or not */
 	private final boolean editable;
-	/** The section comment above the field */
-	protected String sectionComment;
 	/** The {@link Javadoc} on the field */
 	protected Javadoc javadoc;
 	/** The {@link JavaAnnotation annotations} on the field */
@@ -46,7 +44,6 @@ public abstract class JavaField implements JavaType{
 	 * Constructs a Java Field with the given parameters
 	 *
 	 * @param editable Whether the field is editable or not
-	 * @param sectionComment The section comment above the field
 	 * @param javadoc The {@link Javadoc} on the field
 	 * @param annotations The {@link JavaAnnotation annotations} on the field
 	 * @param visibility The {@link Visibility} of the field
@@ -57,11 +54,10 @@ public abstract class JavaField implements JavaType{
 	 * @param value The value assigned to the field
 	 */
 	protected JavaField(
-			boolean editable, String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal,
 			String type, String name, String value){
 		this.editable = editable;
-		this.sectionComment = sectionComment;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
 		this.visibility = visibility;
@@ -83,13 +79,6 @@ public abstract class JavaField implements JavaType{
 	 */
 	public boolean isEditable(){
 		return editable;
-	}
-	
-	/**
-	 * @return The section comment above the field
-	 */
-	public String getSectionComment(){
-		return sectionComment;
 	}
 	
 	/**
@@ -154,14 +143,6 @@ public abstract class JavaField implements JavaType{
 	@Override
 	public String toString(){
 		List<String> content = new ArrayList<>();
-		
-		// Section comment
-		if(StringUtil.isNotBlank(sectionComment)){
-			content.add("/*");
-			content.add(" * " + sectionComment);
-			content.add(" */");
-			content.add("");
-		}
 		
 		// Javadoc
 		if(javadoc != null){

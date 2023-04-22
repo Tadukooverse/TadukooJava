@@ -11,7 +11,8 @@ import java.util.List;
  * Represents a field in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
+ * @since Alpha v.0.4
  */
 public class EditableJavaField extends JavaField{
 	
@@ -19,7 +20,8 @@ public class EditableJavaField extends JavaField{
 	 * A builder used to make an {@link EditableJavaField}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Alpha v.0.4
+	 * @version Beta v.0.5
+	 * @since Alpha v.0.4
 	 * @see JavaFieldBuilder
 	 */
 	public static class EditableJavaFieldBuilder extends JavaFieldBuilder<EditableJavaField>{
@@ -47,7 +49,7 @@ public class EditableJavaField extends JavaField{
 		/** {@inheritDoc} */
 		@Override
 		protected EditableJavaField constructField(){
-			return new EditableJavaField(sectionComment, javadoc, annotations,
+			return new EditableJavaField(javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);
 		}
@@ -56,7 +58,6 @@ public class EditableJavaField extends JavaField{
 	/**
 	 * Constructs a Java Field with the given parameters
 	 *
-	 * @param sectionComment The section comment above the field
 	 * @param javadoc The {@link Javadoc} on the field
 	 * @param annotations The {@link JavaAnnotation annotations} on the field
 	 * @param visibility The {@link Visibility} of the field
@@ -67,10 +68,10 @@ public class EditableJavaField extends JavaField{
 	 * @param value The value assigned to the field
 	 */
 	private EditableJavaField(
-			String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal,
 			String type, String name, String value){
-		super(true, sectionComment, javadoc, annotations,
+		super(true, javadoc, annotations,
 				visibility, isStatic, isFinal,
 				type, name, value);
 	}
@@ -80,13 +81,6 @@ public class EditableJavaField extends JavaField{
 	 */
 	public static EditableJavaFieldBuilder builder(){
 		return new EditableJavaFieldBuilder();
-	}
-	
-	/**
-	 * @param sectionComment The section comment above the field
-	 */
-	public void setSectionComment(String sectionComment){
-		this.sectionComment = sectionComment;
 	}
 	
 	/**
