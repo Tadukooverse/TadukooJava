@@ -45,7 +45,7 @@ public class JavaAnnotationTest{
 	
 	@Test
 	public void testGetType(){
-		assertEquals(JavaTypes.ANNOTATION, annotation.getType());
+		assertEquals(JavaTypes.ANNOTATION, annotation.getJavaType());
 	}
 	
 	@Test

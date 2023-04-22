@@ -1,5 +1,7 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -14,10 +16,10 @@ import java.util.List;
  * Java Method represents a method in a Java class or interface, etc.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaMethod), Alpha v.0.4 (as newer version)
  */
-public abstract class JavaMethod{
+public abstract class JavaMethod implements JavaType{
 	
 	/** Whether the method is editable or not */
 	private final boolean editable;
@@ -72,6 +74,12 @@ public abstract class JavaMethod{
 		this.parameters = parameters;
 		this.throwTypes = throwTypes;
 		this.lines = lines;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public JavaTypes getJavaType(){
+		return JavaTypes.METHOD;
 	}
 	
 	/**

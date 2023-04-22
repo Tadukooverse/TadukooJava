@@ -39,7 +39,7 @@ public abstract class JavaAnnotation implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getType(){
+	public JavaTypes getJavaType(){
 		return JavaTypes.ANNOTATION;
 	}
 	

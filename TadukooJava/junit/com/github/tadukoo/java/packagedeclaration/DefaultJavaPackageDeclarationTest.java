@@ -32,7 +32,7 @@ public abstract class DefaultJavaPackageDeclarationTest<PackageDeclarationType e
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.PACKAGE_DECLARATION, packageDeclaration.getType());
+		Assertions.assertEquals(JavaTypes.PACKAGE_DECLARATION, packageDeclaration.getJavaType());
 	}
 	
 	@Test

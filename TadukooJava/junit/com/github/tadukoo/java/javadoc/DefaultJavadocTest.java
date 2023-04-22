@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.javadoc;
 
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
@@ -28,6 +29,11 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	@BeforeEach
 	public void setup(){
 		doc = builder.get().build();
+	}
+	
+	@Test
+	public void testGetType(){
+		assertEquals(JavaTypes.JAVADOC, doc.getJavaType());
 	}
 	
 	@Test

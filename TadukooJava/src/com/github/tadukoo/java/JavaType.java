@@ -11,5 +11,5 @@ public interface JavaType extends JavaTokens{
 	/**
 	 * @return What {@link JavaTypes type} this is
 	 */
-	JavaTypes getType();
+	JavaTypes getJavaType();
 }

@@ -34,7 +34,7 @@ public abstract class JavaImportStatement implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getType(){
+	public JavaTypes getJavaType(){
 		return JavaTypes.IMPORT_STATEMENT;
 	}
 	

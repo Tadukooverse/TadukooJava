@@ -1,8 +1,11 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
+import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 
 /**
@@ -32,10 +35,28 @@ public enum JavaTypes{
 	IMPORT_STATEMENT(JavaImportStatement.class),
 	
 	/**
+	 * Represents a Javadoc in Java
+	 * Main {@link JavaType} class: {@link Javadoc}
+	 */
+	JAVADOC(Javadoc.class),
+	
+	/**
 	 * Represents an annotation in Java
 	 * Main {@link JavaType} class: {@link JavaAnnotation}
 	 */
 	ANNOTATION(JavaAnnotation.class),
+	
+	/**
+	 * Represents a field in Java
+	 * Main {@link JavaType} class: {@link JavaField}
+	 */
+	FIELD(JavaField.class),
+	
+	/**
+	 * Represents a method in Java
+	 * Main {@link JavaType} class: {@link JavaMethod}
+	 */
+	METHOD(JavaMethod.class),
 	
 	/**
 	 * Represents a class in Java

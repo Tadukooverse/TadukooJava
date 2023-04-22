@@ -31,7 +31,7 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	
 	@Test
 	public void testGetType(){
-		assertEquals(JavaTypes.ANNOTATION, annotation.getType());
+		assertEquals(JavaTypes.ANNOTATION, annotation.getJavaType());
 	}
 	
 	@Test

@@ -19,7 +19,7 @@ public abstract class JavaPackageDeclaration implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getType(){
+	public JavaTypes getJavaType(){
 		return JavaTypes.PACKAGE_DECLARATION;
 	}
 	

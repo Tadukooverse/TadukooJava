@@ -34,7 +34,7 @@ public abstract class DefaultJavaImportStatementTest<ImportStatementType extends
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.IMPORT_STATEMENT, importStatement.getType());
+		Assertions.assertEquals(JavaTypes.IMPORT_STATEMENT, importStatement.getJavaType());
 	}
 	
 	@Test

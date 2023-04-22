@@ -92,7 +92,7 @@ public abstract class JavaClass implements JavaClassType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getType(){
+	public JavaTypes getJavaType(){
 		return JavaTypes.CLASS;
 	}
 	

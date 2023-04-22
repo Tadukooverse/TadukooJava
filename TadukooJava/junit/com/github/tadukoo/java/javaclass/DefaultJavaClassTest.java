@@ -62,7 +62,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.CLASS, clazz.getType());
+		Assertions.assertEquals(JavaTypes.CLASS, clazz.getJavaType());
 	}
 	
 	@Test

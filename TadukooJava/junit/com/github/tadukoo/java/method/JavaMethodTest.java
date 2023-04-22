@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
@@ -61,6 +62,11 @@ public class JavaMethodTest{
 		method = new TestJavaMethodBuilder(false)
 				.returnType(returnType)
 				.build();
+	}
+	
+	@Test
+	public void testGetJavaType(){
+		assertEquals(JavaTypes.METHOD, method.getJavaType());
 	}
 	
 	@Test

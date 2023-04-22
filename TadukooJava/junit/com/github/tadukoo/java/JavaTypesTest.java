@@ -1,8 +1,11 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
+import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +34,27 @@ public class JavaTypesTest{
 	}
 	
 	@Test
+	public void testJAVADOC(){
+		assertEquals("JAVADOC", JAVADOC.toString());
+		assertEquals(Javadoc.class, JAVADOC.getJavaTypeClass());
+	}
+	
+	@Test
 	public void testANNOTATION(){
 		assertEquals("ANNOTATION", ANNOTATION.toString());
 		assertEquals(JavaAnnotation.class, ANNOTATION.getJavaTypeClass());
+	}
+	
+	@Test
+	public void testFIELD(){
+		assertEquals("FIELD", FIELD.toString());
+		assertEquals(JavaField.class, FIELD.getJavaTypeClass());
+	}
+	
+	@Test
+	public void testMETHOD(){
+		assertEquals("METHOD", METHOD.toString());
+		assertEquals(JavaMethod.class, METHOD.getJavaTypeClass());
 	}
 	
 	@Test

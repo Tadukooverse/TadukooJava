@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.field;
 
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
@@ -44,6 +45,11 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 		field = builder.get()
 				.type(type).name(name)
 				.build();
+	}
+	
+	@Test
+	public void testGetJavaType(){
+		assertEquals(JavaTypes.FIELD, field.getJavaType());
 	}
 	
 	@Test

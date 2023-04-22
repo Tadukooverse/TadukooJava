@@ -1,5 +1,7 @@
 package com.github.tadukoo.java.javadoc;
 
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.tuple.Pair;
@@ -10,10 +12,10 @@ import java.util.List;
  * Javadoc represents a Javadoc in Java.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.3.3 (as old version that is now more like UneditableJavadoc), Alpha v.0.4 (as newer version)
  */
-public abstract class Javadoc{
+public abstract class Javadoc implements JavaType{
 	
 	/** Whether the {@link Javadoc} is editable or not */
 	private final boolean editable;
@@ -55,6 +57,12 @@ public abstract class Javadoc{
 		this.since = since;
 		this.params = params;
 		this.returnVal = returnVal;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public JavaTypes getJavaType(){
+		return JavaTypes.JAVADOC;
 	}
 	
 	/**
