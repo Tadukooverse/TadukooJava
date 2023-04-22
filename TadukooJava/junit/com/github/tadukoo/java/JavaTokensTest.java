@@ -51,6 +51,11 @@ public class JavaTokensTest{
 		assertEquals("@", ANNOTATION_START_TOKEN);
 	}
 	
+	@Test
+	public void testASSIGNMENT_OPERATOR_TOKEN(){
+		assertEquals("=", ASSIGNMENT_OPERATOR_TOKEN);
+	}
+	
 	/*
 	 * Visibility "Modifiers"
 	 */
@@ -80,9 +85,14 @@ public class JavaTokensTest{
 	}
 	
 	@Test
+	public void testFINAL_MODIFIER(){
+		assertEquals("final", FINAL_MODIFIER);
+	}
+	
+	@Test
 	public void testMODIFIERS(){
 		assertEquals(SetUtil.createSet(PRIVATE_MODIFIER, PROTECTED_MODIFIER, PUBLIC_MODIFIER,
-				STATIC_MODIFIER),
+				STATIC_MODIFIER, FINAL_MODIFIER),
 				MODIFIERS);
 	}
 }

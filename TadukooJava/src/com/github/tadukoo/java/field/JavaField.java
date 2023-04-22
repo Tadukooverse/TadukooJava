@@ -184,12 +184,12 @@ public abstract class JavaField implements JavaType{
 		
 		// Add static to declaration optionally
 		if(isStatic){
-			declaration.append("static ");
+			declaration.append(STATIC_MODIFIER).append(' ');
 		}
 		
 		// Add final to declaration optionally
 		if(isFinal){
-			declaration.append("final ");
+			declaration.append(FINAL_MODIFIER).append(' ');
 		}
 		
 		// Add type and name to the declaration
@@ -197,7 +197,7 @@ public abstract class JavaField implements JavaType{
 		
 		// Add value to declaration if we have one
 		if(StringUtil.isNotBlank(value)){
-			declaration.append(" = ").append(value);
+			declaration.append(' ').append(ASSIGNMENT_OPERATOR_TOKEN).append(' ').append(value);
 		}
 		content.add(declaration.toString());
 		

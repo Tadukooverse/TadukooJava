@@ -36,6 +36,8 @@ public interface JavaTokens{
 	String SINGLE_LINE_COMMENT_TOKEN = "//";
 	/** Used to start an annotation - @ */
 	String ANNOTATION_START_TOKEN = "@";
+	/** Used to make an assignment - = */
+	String ASSIGNMENT_OPERATOR_TOKEN = "=";
 	
 	/*
 	 * Visibility "Modifiers"
@@ -54,8 +56,10 @@ public interface JavaTokens{
 	
 	/** Used as a modifier on some types - static */
 	String STATIC_MODIFIER = "static";
+	/** Used as a modifier on some types - final */
+	String FINAL_MODIFIER = "final";
 	
 	/** All the modifiers that exist */
 	Set<String> MODIFIERS = SetUtil.createSet(PRIVATE_MODIFIER, PROTECTED_MODIFIER, PUBLIC_MODIFIER,
-			STATIC_MODIFIER);
+			STATIC_MODIFIER, FINAL_MODIFIER);
 }
