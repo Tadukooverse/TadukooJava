@@ -279,10 +279,10 @@ public class JavaClassTest{
 				
 				public class AClassName{
 				\t
-					public AClassName(){
+					AClassName(){
 					}
 				\t
-					public String getSomething(int test){
+					String getSomething(int test){
 						return doSomething();
 					}
 				}
@@ -336,10 +336,10 @@ public class JavaClassTest{
 					int test;
 					String derp;
 				\t
-					public AClassName(){
+					AClassName(){
 					}
 				\t
-					public String getSomething(int test){
+					String getSomething(int test){
 						return doSomething();
 					}
 				}
@@ -409,10 +409,10 @@ public class JavaClassTest{
 					int test;
 					String derp;
 				\t
-					public AClassName(){
+					AClassName(){
 					}
 				\t
-					public String getSomething(int test){
+					String getSomething(int test){
 						return doSomething();
 					}
 				}

@@ -23,10 +23,10 @@ public class JavaMethodTest{
 	private static class TestJavaMethod extends JavaMethod{
 		
 		private TestJavaMethod(
-				boolean editable, String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, String returnType, String name,
 				List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
-			super(editable, sectionComment, javadoc, annotations,
+			super(editable, javadoc, annotations,
 					visibility, isStatic, returnType, name,
 					parameters, throwTypes, lines);
 		}
@@ -47,7 +47,7 @@ public class JavaMethodTest{
 		
 		@Override
 		protected TestJavaMethod constructMethod(){
-			return new TestJavaMethod(editable, sectionComment, javadoc, annotations,
+			return new TestJavaMethod(editable, javadoc, annotations,
 					visibility, isStatic, returnType, name,
 					parameters, throwTypes, lines);
 		}
@@ -85,23 +85,7 @@ public class JavaMethodTest{
 	@Test
 	public void testToString(){
 		String javaString = """
-				public int(){
-				}""";
-		assertEquals(javaString, method.toString());
-	}
-	
-	@Test
-	public void testToStringWithSectionComment(){
-		method = new TestJavaMethodBuilder(false)
-				.returnType(returnType)
-				.sectionComment("Test comment")
-				.build();
-		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
-				public int(){
+				int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -115,7 +99,7 @@ public class JavaMethodTest{
 		String javaString = """
 				/**
 				 */
-				public int(){
+				int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -126,7 +110,7 @@ public class JavaMethodTest{
 		method = new TestJavaMethodBuilder(false).returnType(returnType).annotation(test).build();
 		String javaString = """
 				@Test
-				public int(){
+				int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -139,7 +123,19 @@ public class JavaMethodTest{
 		String javaString = """
 				@Test
 				@Derp
-				public int(){
+				int(){
+				}""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
+	public void testToStringWithVisibility(){
+		method = new TestJavaMethodBuilder(false)
+				.visibility(Visibility.PROTECTED)
+				.returnType(returnType)
+				.build();
+		String javaString = """
+				protected int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -150,7 +146,7 @@ public class JavaMethodTest{
 				.returnType(returnType).isStatic()
 				.build();
 		String javaString = """
-				public static int(){
+				static int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -159,7 +155,7 @@ public class JavaMethodTest{
 	public void testToStringWithName(){
 		method = new TestJavaMethodBuilder(false).returnType(returnType).name("someMethod").build();
 		String javaString = """
-				public int someMethod(){
+				int someMethod(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -168,7 +164,7 @@ public class JavaMethodTest{
 	public void testToStringWithSingleParameter(){
 		method = new TestJavaMethodBuilder(false).returnType(returnType).parameter("String", "text").build();
 		String javaString = """
-				public int(String text){
+				int(String text){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -178,7 +174,7 @@ public class JavaMethodTest{
 		method = new TestJavaMethodBuilder(false).returnType(returnType).parameter("String", "text")
 				.parameter("int", "something").build();
 		String javaString = """
-				public int(String text, int something){
+				int(String text, int something){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -187,7 +183,7 @@ public class JavaMethodTest{
 	public void testToStringWithSingleThrowType(){
 		method = new TestJavaMethodBuilder(false).returnType(returnType).throwType("Throwable").build();
 		String javaString = """
-				public int() throws Throwable{
+				int() throws Throwable{
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -196,7 +192,7 @@ public class JavaMethodTest{
 	public void testToStringWithThrowTypes(){
 		method = new TestJavaMethodBuilder(false).returnType(returnType).throwType("Throwable").throwType("Exception").build();
 		String javaString = """
-				public int() throws Throwable, Exception{
+				int() throws Throwable, Exception{
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -205,7 +201,7 @@ public class JavaMethodTest{
 	public void testToStringWithLines(){
 		method = new TestJavaMethodBuilder(false).returnType(returnType).line("doSomething();").line("return 42;").build();
 		String javaString = """
-				public int(){
+				int(){
 					doSomething();
 					return 42;
 				}""";
@@ -217,18 +213,14 @@ public class JavaMethodTest{
 		JavaAnnotation test = UneditableJavaAnnotation.builder().name("Test").build();
 		JavaAnnotation derp = UneditableJavaAnnotation.builder().name("Derp").build();
 		method = new TestJavaMethodBuilder(false).returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
+				.visibility(Visibility.PUBLIC)
 				.isStatic()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
 				/**
 				 */
 				@Test
@@ -249,7 +241,6 @@ public class JavaMethodTest{
 		JavaAnnotation test = UneditableJavaAnnotation.builder().name("Test").build();
 		JavaAnnotation derp = UneditableJavaAnnotation.builder().name("Derp").build();
 		method = new TestJavaMethodBuilder(false).returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()
@@ -257,7 +248,6 @@ public class JavaMethodTest{
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = new TestJavaMethodBuilder(false).returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()
@@ -272,7 +262,6 @@ public class JavaMethodTest{
 		JavaAnnotation test = UneditableJavaAnnotation.builder().name("Test").build();
 		JavaAnnotation derp = UneditableJavaAnnotation.builder().name("Derp").build();
 		method = new TestJavaMethodBuilder(false).returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()
@@ -280,7 +269,6 @@ public class JavaMethodTest{
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = new TestJavaMethodBuilder(false).returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()

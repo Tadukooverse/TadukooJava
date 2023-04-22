@@ -24,10 +24,10 @@ public class JavaMethodBuilderTest{
 	private static class TestJavaMethod extends JavaMethod{
 		
 		private TestJavaMethod(
-				boolean editable, String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, String returnType, String name,
 				List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
-			super(editable, sectionComment, javadoc, annotations,
+			super(editable, javadoc, annotations,
 					visibility, isStatic, returnType, name,
 					parameters, throwTypes, lines);
 		}
@@ -43,7 +43,7 @@ public class JavaMethodBuilderTest{
 		
 		@Override
 		protected TestJavaMethod constructMethod(){
-			return new TestJavaMethod(false, sectionComment, javadoc, annotations,
+			return new TestJavaMethod(false, javadoc, annotations,
 					visibility, isStatic, returnType, name,
 					parameters, throwTypes, lines);
 		}
@@ -61,11 +61,6 @@ public class JavaMethodBuilderTest{
 	}
 	
 	@Test
-	public void testDefaultSectionComment(){
-		assertNull(method.getSectionComment());
-	}
-	
-	@Test
 	public void testDefaultJavadoc(){
 		assertNull(method.getJavadoc());
 	}
@@ -77,7 +72,7 @@ public class JavaMethodBuilderTest{
 	
 	@Test
 	public void testDefaultVisibility(){
-		assertEquals(Visibility.PUBLIC, method.getVisibility());
+		assertEquals(Visibility.NONE, method.getVisibility());
 	}
 	
 	@Test
@@ -103,15 +98,6 @@ public class JavaMethodBuilderTest{
 	@Test
 	public void testDefaultLines(){
 		assertTrue(method.getLines().isEmpty());
-	}
-	
-	@Test
-	public void testBuilderSetSectionComment(){
-		method = new TestJavaMethodBuilder()
-				.returnType(returnType)
-				.sectionComment("Test section")
-				.build();
-		assertEquals("Test section", method.getSectionComment());
 	}
 	
 	@Test
@@ -244,12 +230,38 @@ public class JavaMethodBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderNullVisibility(){
+		try{
+			method = new TestJavaMethodBuilder()
+					.visibility(null)
+					.returnType(returnType)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderNullReturnType(){
 		try{
 			method = new TestJavaMethodBuilder().build();
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("Must specify returnType!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAllErrors(){
+		try{
+			method = new TestJavaMethodBuilder()
+					.visibility(null)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!\n" +
+					"Must specify returnType!", e.getMessage());
 		}
 	}
 }

@@ -324,7 +324,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		List<JavaMethod> methods = clazz.getMethods();
 		assertEquals(1, methods.size());
 		JavaMethod method = methods.get(0);
-		assertEquals(Visibility.PUBLIC, method.getVisibility());
+		assertEquals(Visibility.NONE, method.getVisibility());
 		assertEquals("int", method.getReturnType());
 		assertEquals("someMethod", method.getName());
 		assertTrue(method.getParameters().isEmpty());
@@ -690,10 +690,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				
 				public class AClassName{
 				\t
-					public AClassName(){
+					AClassName(){
 					}
 				\t
-					public String getSomething(int test){
+					String getSomething(int test){
 						return doSomething();
 					}
 				}
@@ -747,10 +747,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					int test;
 					String derp;
 				\t
-					public AClassName(){
+					AClassName(){
 					}
 				\t
-					public String getSomething(int test){
+					String getSomething(int test){
 						return doSomething();
 					}
 				}
@@ -820,10 +820,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					int test;
 					String derp;
 				\t
-					public AClassName(){
+					AClassName(){
 					}
 				\t
-					public String getSomething(int test){
+					String getSomething(int test){
 						return doSomething();
 					}
 				}

@@ -327,7 +327,7 @@ public class JavaClassBuilderTest{
 		List<JavaMethod> methods = clazz.getMethods();
 		assertEquals(1, methods.size());
 		JavaMethod method = methods.get(0);
-		assertEquals(Visibility.PUBLIC, method.getVisibility());
+		assertEquals(Visibility.NONE, method.getVisibility());
 		assertEquals("int", method.getReturnType());
 		assertEquals("someMethod", method.getName());
 		assertTrue(method.getParameters().isEmpty());

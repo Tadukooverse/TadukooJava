@@ -71,15 +71,6 @@ public class EditableJavaMethodTest extends DefaultJavaMethodTest<EditableJavaMe
 	}
 	
 	@Test
-	public void testSetSectionComment(){
-		assertNull(method.getSectionComment());
-		method.setSectionComment("Test");
-		assertEquals("Test", method.getSectionComment());
-		method.setSectionComment("Derp");
-		assertEquals("Derp", method.getSectionComment());
-	}
-	
-	@Test
 	public void testSetJavadoc(){
 		assertNull(method.getJavadoc());
 		method.setJavadoc(EditableJavadoc.builder().build());
@@ -170,7 +161,7 @@ public class EditableJavaMethodTest extends DefaultJavaMethodTest<EditableJavaMe
 	
 	@Test
 	public void testSetVisibility(){
-		assertEquals(Visibility.PUBLIC, method.getVisibility());
+		assertEquals(Visibility.NONE, method.getVisibility());
 		method.setVisibility(Visibility.PRIVATE);
 		assertEquals(Visibility.PRIVATE, method.getVisibility());
 	}

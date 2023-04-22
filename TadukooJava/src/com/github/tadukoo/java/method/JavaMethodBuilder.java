@@ -20,11 +20,6 @@ import java.util.List;
  *         <th>Default or Required</th>
  *     </tr>
  *     <tr>
- *         <td>sectionComment</td>
- *         <td>The section comment above the method</td>
- *         <td>null</td>
- *     </tr>
- *     <tr>
  *         <td>javadoc</td>
  *         <td>The {@link Javadoc} on the method</td>
  *         <td>null</td>
@@ -37,7 +32,7 @@ import java.util.List;
  *     <tr>
  *         <td>visibility</td>
  *         <td>The {@link Visibility} of the method</td>
- *         <td>{@link Visibility#PUBLIC}</td>
+ *         <td>{@link Visibility#NONE}</td>
  *     </tr>
  *     <tr>
  *         <td>isStatic</td>
@@ -72,19 +67,17 @@ import java.util.List;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (within JavaMethod), Alpha v.0.4 (as a separate class)
  */
 public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	
-	/** The section comment above the method */
-	protected String sectionComment = null;
 	/** The {@link Javadoc} on the method */
 	protected Javadoc javadoc = null;
 	/** The {@link JavaAnnotation annotations} on the method */
 	protected List<JavaAnnotation> annotations = new ArrayList<>();
 	/** The {@link Visibility} of the method */
-	protected Visibility visibility = Visibility.PUBLIC;
+	protected Visibility visibility = Visibility.NONE;
 	/** Whether the method is static or not */
 	protected boolean isStatic = false;
 	/** The return type of the method */
@@ -102,15 +95,6 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	 * Constructs a new JavaMethodBuilder
 	 */
 	protected JavaMethodBuilder(){ }
-	
-	/**
-	 * @param sectionComment The section comment above the method
-	 * @return this, to continue building
-	 */
-	public JavaMethodBuilder<MethodType> sectionComment(String sectionComment){
-		this.sectionComment = sectionComment;
-		return this;
-	}
 	
 	/**
 	 * @param javadoc The {@link Javadoc} on the method
@@ -257,6 +241,12 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	private void checkForErrors(){
 		List<String> errors = new ArrayList<>();
 		
+		// Visibility is required
+		if(visibility == null){
+			errors.add("Visibility is required!");
+		}
+		
+		// Must specify return type
 		if(StringUtil.isBlank(returnType)){
 			errors.add("Must specify returnType!");
 		}

@@ -23,8 +23,6 @@ public abstract class JavaMethod implements JavaType{
 	
 	/** Whether the method is editable or not */
 	private final boolean editable;
-	/** The section comment above the method */
-	protected String sectionComment;
 	/** The {@link Javadoc} on the method */
 	protected Javadoc javadoc;
 	/** The {@link JavaAnnotation annotations} on the method */
@@ -48,7 +46,6 @@ public abstract class JavaMethod implements JavaType{
 	 * Constructs a new Java Method with the given parameters
 	 *
 	 * @param editable Whether the method is editable or not
-	 * @param sectionComment The section comment above the method
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
@@ -60,11 +57,10 @@ public abstract class JavaMethod implements JavaType{
 	 * @param lines The actual lines of code in the method
 	 */
 	protected JavaMethod(
-			boolean editable, String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
-		this.sectionComment = sectionComment;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
 		this.visibility = visibility;
@@ -87,13 +83,6 @@ public abstract class JavaMethod implements JavaType{
 	 */
 	public boolean isEditable(){
 		return editable;
-	}
-	
-	/**
-	 * @return The section comment above the method
-	 */
-	public String getSectionComment(){
-		return sectionComment;
 	}
 	
 	/**
@@ -165,14 +154,6 @@ public abstract class JavaMethod implements JavaType{
 	@Override
 	public String toString(){
 		List<String> content = new ArrayList<>();
-		
-		// Section Comment
-		if(StringUtil.isNotBlank(sectionComment)){
-			content.add("/*");
-			content.add(" * " + sectionComment);
-			content.add(" */");
-			content.add("");
-		}
 		
 		// Javadoc
 		if(javadoc != null){

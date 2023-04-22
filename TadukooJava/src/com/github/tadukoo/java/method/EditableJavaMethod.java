@@ -12,7 +12,8 @@ import java.util.List;
  * Represents a method in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
+ * @since Alpha v.0.4
  */
 public class EditableJavaMethod extends JavaMethod{
 	
@@ -20,7 +21,8 @@ public class EditableJavaMethod extends JavaMethod{
 	 * A builder used to make an {@link EditableJavaMethod}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Alpha v.0.4
+	 * @version Beta v.0.5
+	 * @since Alpha v.0.4
 	 * @see JavaMethodBuilder
 	 */
 	public static class EditableJavaMethodBuilder extends JavaMethodBuilder<EditableJavaMethod>{
@@ -53,7 +55,7 @@ public class EditableJavaMethod extends JavaMethod{
 		/** {@inheritDoc} */
 		@Override
 		protected EditableJavaMethod constructMethod(){
-			return new EditableJavaMethod(sectionComment, javadoc, annotations,
+			return new EditableJavaMethod(javadoc, annotations,
 					visibility, isStatic, returnType, name,
 					parameters, throwTypes, lines);
 		}
@@ -62,7 +64,6 @@ public class EditableJavaMethod extends JavaMethod{
 	/**
 	 * Constructs a new Java Method with the given parameters
 	 *
-	 * @param sectionComment The section comment above the method
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
@@ -74,10 +75,10 @@ public class EditableJavaMethod extends JavaMethod{
 	 * @param lines The actual lines of code in the method
 	 */
 	private EditableJavaMethod(
-			String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
-		super(true, sectionComment, javadoc, annotations,
+		super(true, javadoc, annotations,
 				visibility, isStatic, returnType, name,
 				parameters, throwTypes, lines);
 	}
@@ -87,13 +88,6 @@ public class EditableJavaMethod extends JavaMethod{
 	 */
 	public static EditableJavaMethodBuilder builder(){
 		return new EditableJavaMethodBuilder();
-	}
-	
-	/**
-	 * @param sectionComment The section comment above the method
-	 */
-	public void setSectionComment(String sectionComment){
-		this.sectionComment = sectionComment;
 	}
 	
 	/**

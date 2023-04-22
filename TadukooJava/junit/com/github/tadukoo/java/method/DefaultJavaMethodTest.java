@@ -53,11 +53,6 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
-	public void testDefaultSectionComment(){
-		assertNull(method.getSectionComment());
-	}
-	
-	@Test
 	public void testDefaultJavadoc(){
 		assertNull(method.getJavadoc());
 	}
@@ -69,7 +64,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	
 	@Test
 	public void testDefaultVisibility(){
-		Assertions.assertEquals(Visibility.PUBLIC, method.getVisibility());
+		Assertions.assertEquals(Visibility.NONE, method.getVisibility());
 	}
 	
 	@Test
@@ -95,15 +90,6 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	@Test
 	public void testDefaultLines(){
 		assertTrue(method.getLines().isEmpty());
-	}
-	
-	@Test
-	public void testBuilderSetSectionComment(){
-		method = builder.get()
-				.returnType(returnType)
-				.sectionComment("Test section")
-				.build();
-		assertEquals("Test section", method.getSectionComment());
 	}
 	
 	@Test
@@ -236,6 +222,19 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testBuilderNullVisibility(){
+		try{
+			method = builder.get()
+					.visibility(null)
+					.returnType(returnType)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderNullReturnType(){
 		try{
 			method = builder.get().build();
@@ -246,25 +245,22 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
-	public void testToString(){
-		String javaString = """
-				public int(){
-				}""";
-		assertEquals(javaString, method.toString());
+	public void testBuilderAllErrors(){
+		try{
+			method = builder.get()
+					.visibility(null)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Visibility is required!\n" +
+					"Must specify returnType!", e.getMessage());
+		}
 	}
 	
 	@Test
-	public void testToStringWithSectionComment(){
-		method = builder.get()
-				.returnType(returnType)
-				.sectionComment("Test comment")
-				.build();
+	public void testToString(){
 		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
-				public int(){
+				int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -278,7 +274,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		String javaString = """
 				/**
 				 */
-				public int(){
+				int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -289,7 +285,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		method = builder.get().returnType(returnType).annotation(test).build();
 		String javaString = """
 				@Test
-				public int(){
+				int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -302,7 +298,19 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		String javaString = """
 				@Test
 				@Derp
-				public int(){
+				int(){
+				}""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
+	public void testToStringWithVisibility(){
+		method = builder.get()
+				.visibility(Visibility.PRIVATE)
+				.returnType(returnType)
+				.build();
+		String javaString = """
+				private int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -313,7 +321,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.returnType(returnType).isStatic()
 				.build();
 		String javaString = """
-				public static int(){
+				static int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -322,7 +330,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithName(){
 		method = builder.get().returnType(returnType).name("someMethod").build();
 		String javaString = """
-				public int someMethod(){
+				int someMethod(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -331,7 +339,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithSingleParameter(){
 		method = builder.get().returnType(returnType).parameter("String", "text").build();
 		String javaString = """
-				public int(String text){
+				int(String text){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -341,7 +349,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		method = builder.get().returnType(returnType).parameter("String", "text")
 				.parameter("int", "something").build();
 		String javaString = """
-				public int(String text, int something){
+				int(String text, int something){
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -350,7 +358,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithSingleThrowType(){
 		method = builder.get().returnType(returnType).throwType("Throwable").build();
 		String javaString = """
-				public int() throws Throwable{
+				int() throws Throwable{
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -359,7 +367,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithThrowTypes(){
 		method = builder.get().returnType(returnType).throwType("Throwable").throwType("Exception").build();
 		String javaString = """
-				public int() throws Throwable, Exception{
+				int() throws Throwable, Exception{
 				}""";
 		assertEquals(javaString, method.toString());
 	}
@@ -368,7 +376,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithLines(){
 		method = builder.get().returnType(returnType).line("doSomething();").line("return 42;").build();
 		String javaString = """
-				public int(){
+				int(){
 					doSomething();
 					return 42;
 				}""";
@@ -380,18 +388,14 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		JavaAnnotation test = javaAnnotationBuilder.get().name("Test").build();
 		JavaAnnotation derp = javaAnnotationBuilder.get().name("Derp").build();
 		method = builder.get().returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
+				.visibility(Visibility.PUBLIC)
 				.isStatic()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		String javaString = """
-				/*
-				 * Test comment
-				 */
-				
 				/**
 				 */
 				@Test
@@ -412,7 +416,6 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		JavaAnnotation test = javaAnnotationBuilder.get().name("Test").build();
 		JavaAnnotation derp = javaAnnotationBuilder.get().name("Derp").build();
 		method = builder.get().returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()
@@ -420,7 +423,6 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = builder.get().returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()
@@ -435,7 +437,6 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		JavaAnnotation test = javaAnnotationBuilder.get().name("Test").build();
 		JavaAnnotation derp = javaAnnotationBuilder.get().name("Derp").build();
 		method = builder.get().returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()
@@ -443,7 +444,6 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = builder.get().returnType(returnType)
-				.sectionComment("Test comment")
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic()

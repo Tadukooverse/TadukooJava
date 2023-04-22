@@ -12,7 +12,7 @@ import java.util.List;
  * Represents a method in Java that is not modifiable
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (as JavaMethod), Alpha v.0.4 (as UneditableJavaMethod)
  */
 public class UneditableJavaMethod extends JavaMethod{
@@ -21,7 +21,8 @@ public class UneditableJavaMethod extends JavaMethod{
 	 * A builder used to make an {@link UneditableJavaMethod}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Alpha v.0.4
+	 * @version Beta v.0.5
+	 * @since Alpha v.0.4
 	 * @see JavaMethodBuilder
 	 */
 	public static class UneditableJavaMethodBuilder extends JavaMethodBuilder<UneditableJavaMethod>{
@@ -55,7 +56,7 @@ public class UneditableJavaMethod extends JavaMethod{
 		/** {@inheritDoc} */
 		@Override
 		protected UneditableJavaMethod constructMethod(){
-			return new UneditableJavaMethod(sectionComment, javadoc, annotations,
+			return new UneditableJavaMethod(javadoc, annotations,
 					visibility, isStatic, returnType, name,
 					parameters, throwTypes, lines);
 		}
@@ -64,7 +65,6 @@ public class UneditableJavaMethod extends JavaMethod{
 	/**
 	 * Constructs a new Java Method with the given parameters
 	 *
-	 * @param sectionComment The section comment above the method
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
@@ -76,10 +76,10 @@ public class UneditableJavaMethod extends JavaMethod{
 	 * @param lines The actual lines of code in the method
 	 */
 	private UneditableJavaMethod(
-			String sectionComment, Javadoc javadoc, List<JavaAnnotation> annotations,
+			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
-		super(false, sectionComment, javadoc, annotations,
+		super(false, javadoc, annotations,
 				visibility, isStatic, returnType, name,
 				parameters, throwTypes, lines);
 	}
