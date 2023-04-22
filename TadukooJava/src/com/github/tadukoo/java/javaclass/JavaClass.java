@@ -268,7 +268,7 @@ public abstract class JavaClass implements JavaClassType{
 		if(ListUtil.isNotBlank(fields)){
 			for(JavaField field: fields){
 				// Use indent all lines because Javadoc may make it multiline
-				content.add(StringUtil.indentAllLines(field.toString()) + ";");
+				content.add(StringUtil.indentAllLines(field.toString()) + SEMICOLON);
 			}
 		}
 		

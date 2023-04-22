@@ -76,7 +76,9 @@ public abstract class JavaAnnotation implements JavaType{
 		if(ListUtil.isNotBlank(parameters)){
 			annotation.append('(');
 			for(Pair<String, String> parameter: parameters){
-				annotation.append(parameter.getLeft()).append(" = ").append(parameter.getRight()).append(", ");
+				annotation.append(parameter.getLeft())
+						.append(' ').append(ASSIGNMENT_OPERATOR_TOKEN).append(' ')
+						.append(parameter.getRight()).append(", ");
 			}
 			annotation.delete(annotation.length()-2, annotation.length()).append(')');
 		}

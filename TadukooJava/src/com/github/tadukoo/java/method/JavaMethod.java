@@ -189,20 +189,33 @@ public abstract class JavaMethod implements JavaType{
 		/*
 		 * Declaration
 		 */
-		StringBuilder declaration = new StringBuilder(visibility.getToken() + (isStatic?" static":"") + " " + returnType);
+		// Start with the visibility
+		StringBuilder declaration = new StringBuilder(visibility.getToken());
+		if(!declaration.isEmpty()){
+			// Add a space is visibility is not empty
+			declaration.append(' ');
+		}
+		
+		// optionally add static to the declaration
+		if(isStatic){
+			declaration.append(STATIC_MODIFIER).append(' ');
+		}
+		
+		// add return type to the declaration
+		declaration.append(returnType);
 		
 		// Add name to declaration if we have it
 		if(StringUtil.isNotBlank(name)){
-			declaration.append(" ").append(name);
+			declaration.append(' ').append(name);
 		}
 		
 		// Start of parameter section
-		declaration.append("(");
+		declaration.append('(');
 		
 		// Add parameters to the declaration
 		if(ListUtil.isNotBlank(parameters)){
 			for(Pair<String, String> parameter: parameters){
-				declaration.append(parameter.getLeft()).append(" ").append(parameter.getRight()).append(", ");
+				declaration.append(parameter.getLeft()).append(' ').append(parameter.getRight()).append(", ");
 			}
 			// Remove final comma + space
 			declaration.setLength(declaration.length()-2);
