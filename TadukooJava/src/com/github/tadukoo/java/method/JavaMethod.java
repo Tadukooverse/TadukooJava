@@ -191,12 +191,13 @@ public abstract class JavaMethod implements JavaType{
 		}
 		
 		// Start of parameter section
-		declaration.append('(');
+		declaration.append(PARAMETER_OPEN_TOKEN);
 		
 		// Add parameters to the declaration
 		if(ListUtil.isNotBlank(parameters)){
 			for(Pair<String, String> parameter: parameters){
-				declaration.append(parameter.getLeft()).append(' ').append(parameter.getRight()).append(", ");
+				declaration.append(parameter.getLeft()).append(' ').append(parameter.getRight())
+						.append(LIST_SEPARATOR_TOKEN).append(' ');
 			}
 			// Remove final comma + space
 			declaration.setLength(declaration.length()-2);
@@ -204,17 +205,17 @@ public abstract class JavaMethod implements JavaType{
 		
 		// If we have throw types, add them to the end of the declaration
 		if(ListUtil.isNotBlank(throwTypes)){
-			declaration.append(") throws ");
+			declaration.append(PARAMETER_CLOSE_TOKEN).append(' ').append(THROWS_TOKEN).append(' ');
 			for(String throwType: throwTypes){
-				declaration.append(throwType).append(", ");
+				declaration.append(throwType).append(LIST_SEPARATOR_TOKEN).append(' ');
 			}
 			// Remove the final comma and space
 			declaration.delete(declaration.length() - 2, declaration.length());
 			// Add the opening brace
-			declaration.append('{');
+			declaration.append(BLOCK_OPEN_TOKEN);
 		}else{
 			// If no throw types, just end the declaration
-			declaration.append("){");
+			declaration.append(PARAMETER_CLOSE_TOKEN).append(BLOCK_OPEN_TOKEN);
 		}
 		// Add the declaration to the content
 		content.add(declaration.toString());
@@ -227,7 +228,7 @@ public abstract class JavaMethod implements JavaType{
 		}
 		
 		// Closing brace of the method
-		content.add("}");
+		content.add(BLOCK_CLOSE_TOKEN);
 		
 		return StringUtil.buildStringWithNewLines(content);
 	}

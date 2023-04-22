@@ -27,6 +27,16 @@ public class JavaTokensTest{
 		assertEquals("import", IMPORT_TOKEN);
 	}
 	
+	@Test
+	public void testCLASS_TOKEN(){
+		assertEquals("class", CLASS_TOKEN);
+	}
+	
+	@Test
+	public void testTHROWS_TOKEN(){
+		assertEquals("throws", THROWS_TOKEN);
+	}
+	
 	/*
 	 * Not-So-Proper "Tokens"
 	 */
@@ -49,6 +59,31 @@ public class JavaTokensTest{
 	@Test
 	public void testANNOTATION_START_TOKEN(){
 		assertEquals("@", ANNOTATION_START_TOKEN);
+	}
+	
+	@Test
+	public void testPARAMETER_OPEN_TOKEN(){
+		assertEquals("(", PARAMETER_OPEN_TOKEN);
+	}
+	
+	@Test
+	public void testPARAMETER_CLOSE_TOKEN(){
+		assertEquals(")", PARAMETER_CLOSE_TOKEN);
+	}
+	
+	@Test
+	public void testLIST_SEPARATOR_TOKEN(){
+		assertEquals(",", LIST_SEPARATOR_TOKEN);
+	}
+	
+	@Test
+	public void testBLOCK_OPEN_TOKEN(){
+		assertEquals("{", BLOCK_OPEN_TOKEN);
+	}
+	
+	@Test
+	public void testBLOCK_CLOSE_TOKEN(){
+		assertEquals("}", BLOCK_CLOSE_TOKEN);
 	}
 	
 	@Test

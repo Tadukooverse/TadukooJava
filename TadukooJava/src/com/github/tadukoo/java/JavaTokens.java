@@ -23,6 +23,10 @@ public interface JavaTokens{
 	String PACKAGE_TOKEN = "package";
 	/** Used in import statements - import */
 	String IMPORT_TOKEN = "import";
+	/** Used to declare a class - class */
+	String CLASS_TOKEN = "class";
+	/** Used for throwing throwables - throws */
+	String THROWS_TOKEN = "throws";
 	
 	/*
 	 * Not-So-Proper "Tokens"
@@ -36,6 +40,16 @@ public interface JavaTokens{
 	String SINGLE_LINE_COMMENT_TOKEN = "//";
 	/** Used to start an annotation - @ */
 	String ANNOTATION_START_TOKEN = "@";
+	/** Used to start a list of parameters - ( */
+	String PARAMETER_OPEN_TOKEN = "(";
+	/** Used to end a list of parameters - ) */
+	String PARAMETER_CLOSE_TOKEN = ")";
+	/** Used to separate items in a list - , */
+	String LIST_SEPARATOR_TOKEN = ",";
+	/** Used to start a block of code - { */
+	String BLOCK_OPEN_TOKEN = "{";
+	/** Used to end a block of code - } */
+	String BLOCK_CLOSE_TOKEN = "}";
 	/** Used to make an assignment - = */
 	String ASSIGNMENT_OPERATOR_TOKEN = "=";
 	
