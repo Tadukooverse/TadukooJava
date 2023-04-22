@@ -7,6 +7,7 @@ import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 
@@ -26,8 +27,8 @@ public abstract class JavaClass implements JavaClassType{
 	private final boolean editable;
 	/** Whether this is an inner class or not */
 	protected boolean isInnerClass;
-	/** The name of the package the class is in */
-	protected String packageName;
+	/** The {@link JavaPackageDeclaration package declaration} of the class */
+	protected JavaPackageDeclaration packageDeclaration;
 	/** The classes imported by the class */
 	protected List<String> imports;
 	/** The classes imported statically by the class */
@@ -56,7 +57,7 @@ public abstract class JavaClass implements JavaClassType{
 	 *
 	 * @param editable Whether this class is editable or not
 	 * @param isInnerClass Whether this is an inner class or not
-	 * @param packageName The name of the package the class is in
+	 * @param packageDeclaration The {@link JavaPackageDeclaration package declaration} of the class
 	 * @param imports The classes imported by the class
 	 * @param staticImports The classes imported statically by the class
 	 * @param javadoc The {@link Javadoc} for the class
@@ -70,13 +71,13 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param methods The {@link JavaMethod methods} in the class
 	 */
 	protected JavaClass(
-			boolean editable, boolean isInnerClass, String packageName, List<String> imports, List<String> staticImports,
+			boolean editable, boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, String className, String superClassName,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		this.editable = editable;
 		this.isInnerClass = isInnerClass;
-		this.packageName = packageName;
+		this.packageDeclaration = packageDeclaration;
 		this.imports = imports;
 		this.staticImports = staticImports;
 		this.javadoc = javadoc;
@@ -111,10 +112,10 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
-	 * @return The name of the package the class is in
+	 * @return The {@link JavaPackageDeclaration package declaration} of the class
 	 */
-	public String getPackageName(){
-		return packageName;
+	public JavaPackageDeclaration getPackageDeclaration(){
+		return packageDeclaration;
 	}
 	
 	/**
@@ -203,14 +204,14 @@ public abstract class JavaClass implements JavaClassType{
 		List<String> content = new ArrayList<>();
 		
 		// Package Declaration
-		if(!isInnerClass){
-			content.add("package " + packageName + ";");
+		if(packageDeclaration != null){
+			content.add(packageDeclaration.toString());
+			// Newline between package declaration and whatever's next
+			content.add("");
 		}
 		
 		// Import Statements
 		if(ListUtil.isNotBlank(imports)){
-			// Newline between package declaration + imports
-			content.add("");
 			for(String singleImport: imports){
 				if(StringUtil.isNotBlank(singleImport)){
 					content.add("import " + singleImport + ";");
@@ -218,12 +219,12 @@ public abstract class JavaClass implements JavaClassType{
 					content.add("");
 				}
 			}
+			// Newline between imports and whatever's next
+			content.add("");
 		}
 		
 		// Static Import Statements
 		if(ListUtil.isNotBlank(staticImports)){
-			// Newline between package declaration/imports + static imports
-			content.add("");
 			for(String staticImport: staticImports){
 				if(StringUtil.isNotBlank(staticImport)){
 					content.add("import static " + staticImport + ";");
@@ -231,10 +232,7 @@ public abstract class JavaClass implements JavaClassType{
 					content.add("");
 				}
 			}
-		}
-		
-		// Newline between package declaration/imports + javadoc/annotations/class declaration
-		if(!isInnerClass){
+			// Newline between static imports and whatever's next
 			content.add("");
 		}
 		

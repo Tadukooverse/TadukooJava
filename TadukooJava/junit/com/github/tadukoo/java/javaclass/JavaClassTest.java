@@ -10,6 +10,8 @@ import com.github.tadukoo.java.field.UneditableJavaField;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,11 +29,11 @@ public class JavaClassTest{
 	private static class TestJavaClass extends JavaClass{
 		
 		private TestJavaClass(
-				boolean editable, boolean isInnerClass, String packageName, List<String> imports, List<String> staticImports,
+				boolean editable, boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, String className, String superClassName,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
-			super(editable, isInnerClass, packageName, imports, staticImports,
+			super(editable, isInnerClass, packageDeclaration, imports, staticImports,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -53,22 +55,21 @@ public class JavaClassTest{
 		
 		@Override
 		protected TestJavaClass constructClass(){
-			return new TestJavaClass(editable, isInnerClass, packageName, imports, staticImports,
+			return new TestJavaClass(editable, isInnerClass, packageDeclaration, imports, staticImports,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
 	
-	private String packageName, className;
+	private String className;
 	private JavaClass clazz;
 	
 	@BeforeEach
 	public void setup(){
-		packageName = "some.package";
 		className = "AClassName";
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.build();
 	}
 	
@@ -85,13 +86,29 @@ public class JavaClassTest{
 	@Test
 	public void testIsEditableTrue(){
 		clazz = new TestJavaClassBuilder(true)
-				.packageName(packageName).className(className)
+				.className(className)
 				.build();
 		assertTrue(clazz.isEditable());
 	}
 	
 	@Test
 	public void testToString(){
+		String javaString = """
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithPackageDeclaration(){
+		clazz = new TestJavaClassBuilder(false)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
+				.className(className)
+				.build();
 		String javaString = """
 				package some.package;
 				
@@ -105,11 +122,9 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithSuperClassName(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className).superClassName("AnotherClassName")
+				.className(className).superClassName("AnotherClassName")
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName extends AnotherClassName{
 				\t
 				}
@@ -120,12 +135,10 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithJavadoc(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.javadoc(UneditableJavadoc.builder().build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				/**
 				 */
 				class AClassName{
@@ -141,12 +154,10 @@ public class JavaClassTest{
 		JavaAnnotation derp = UneditableJavaAnnotation.builder().name("Derp").build();
 		List<JavaAnnotation> annotations = ListUtil.createList(test, derp);
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.annotations(annotations)
 				.build();
 		String javaString = """
-				package some.package;
-				
 				@Test
 				@Derp
 				class AClassName{
@@ -159,12 +170,10 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithImports(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.imports(ListUtil.createList("com.example.*", null, "com.github.tadukoo.*"))
 				.build();
 		String javaString = """
-				package some.package;
-				
 				import com.example.*;
 				
 				import com.github.tadukoo.*;
@@ -179,12 +188,10 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithStaticImports(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.staticImports(ListUtil.createList("com.example.Test", null, "com.github.tadukoo.test.*"))
 				.build();
 		String javaString = """
-				package some.package;
-				
 				import static com.example.Test;
 				
 				import static com.github.tadukoo.test.*;
@@ -199,12 +206,10 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithVisibility(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.visibility(Visibility.PROTECTED)
 				.build();
 		String javaString = """
-				package some.package;
-				
 				protected class AClassName{
 				\t
 				}
@@ -215,13 +220,11 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithInnerClasses(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					class BClassName{
@@ -240,13 +243,11 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithFields(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.field(UneditableJavaField.builder().type("int").name("test").build())
 				.field(UneditableJavaField.builder().type("String").name("derp").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					int test;
@@ -259,7 +260,7 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithFieldsWithJavadocsOnFields(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.field(UneditableJavaField.builder()
 						.javadoc(UneditableJavadoc.builder()
 								.condensed()
@@ -270,8 +271,6 @@ public class JavaClassTest{
 				.field(UneditableJavaField.builder().type("String").name("derp").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					/** something */
@@ -285,14 +284,12 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithMethods(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName).className(className)
+				.className(className)
 				.method(UneditableJavaMethod.builder().returnType(className).build())
 				.method(UneditableJavaMethod.builder().returnType("String").name("getSomething")
 						.parameter("int", "test").line("return doSomething();").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					AClassName(){
@@ -309,7 +306,9 @@ public class JavaClassTest{
 	@Test
 	public void testToStringWithEverything(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
 				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
 				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
 				.javadoc(UneditableJavadoc.builder().build())
@@ -441,7 +440,9 @@ public class JavaClassTest{
 	@Test
 	public void testEquals(){
 		clazz = new TestJavaClassBuilder(false)
-				.packageName(packageName)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
 				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
 				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
 				.javadoc(UneditableJavadoc.builder().build())
@@ -457,7 +458,9 @@ public class JavaClassTest{
 						.parameter("int", "test").line("return doSomething();").build())
 				.build();
 		JavaClass otherClass = new TestJavaClassBuilder(false)
-				.packageName(packageName)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
 				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
 				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
 				.javadoc(UneditableJavadoc.builder().build())
@@ -478,7 +481,10 @@ public class JavaClassTest{
 	@Test
 	public void testEqualsNotEqual(){
 		JavaClass otherClass = new TestJavaClassBuilder(false)
-				.packageName("some.package.different").className(className)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package.different")
+						.build())
+				.className(className)
 				.build();
 		assertNotEquals(clazz, otherClass);
 	}

@@ -4,6 +4,7 @@ import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.Visibility;
@@ -12,6 +13,9 @@ import com.github.tadukoo.java.javadoc.EditableJavadoc;
 import com.github.tadukoo.java.field.UneditableJavaField;
 import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
+import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +30,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClass>{
 	
 	public EditableJavaClassTest(){
-		super(EditableJavaClass::builder, EditableJavaAnnotation::builder, EditableJavadoc::builder,
+		super(EditableJavaClass::builder, EditableJavaPackageDeclaration::builder, EditableJavaImportStatement::builder,
+				EditableJavaAnnotation::builder, EditableJavadoc::builder,
 				EditableJavaField::builder, EditableJavaMethod::builder);
 	}
 	
@@ -36,10 +41,25 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testBuilderUneditablePackageDeclarationError(){
+		try{
+			EditableJavaClass.builder()
+					.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+							.packageName("some.package")
+							.build())
+					.className(className)
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("package declaration is not editable in this editable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderUneditableJavadocError(){
 		try{
 			EditableJavaClass.builder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.javadoc(UneditableJavadoc.builder().build())
 					.build();
 			fail();
@@ -52,7 +72,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public void testBuilderUneditableAnnotationError(){
 		try{
 			EditableJavaClass.builder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 					.build();
 			fail();
@@ -65,7 +85,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public void testBuilderUneditableInnerClassError(){
 		try{
 			EditableJavaClass.builder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.innerClass(UneditableJavaClass.builder()
 							.innerClass()
 							.className(className)
@@ -81,7 +101,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public void testBuilderUneditableFieldError(){
 		try{
 			EditableJavaClass.builder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.field(UneditableJavaField.builder()
 							.type("String").name("test")
 							.build())
@@ -96,7 +116,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public void testBuilderUneditableMethodError(){
 		try{
 			EditableJavaClass.builder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.method(UneditableJavaMethod.builder()
 							.returnType("String").name("test")
 							.build())
@@ -111,7 +131,10 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public void testAllBuilderSpecificErrors(){
 		try{
 			EditableJavaClass.builder()
-					.packageName(packageName).className(className)
+					.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+							.packageName("some.package")
+							.build())
+					.className(className)
 					.javadoc(UneditableJavadoc.builder().build())
 					.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 					.innerClass(UneditableJavaClass.builder()
@@ -128,6 +151,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("""
+					package declaration is not editable in this editable JavaClass
 					javadoc is not editable in this editable JavaClass
 					some annotations are not editable in this editable JavaClass
 					some inner classes are not editable in this editable JavaClass
@@ -146,10 +170,25 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
-	public void testSetPackageName(){
-		assertEquals(packageName, clazz.getPackageName());
-		clazz.setPackageName("some.random.package.name");
-		assertEquals("some.random.package.name", clazz.getPackageName());
+	public void testSetPackageDeclaration(){
+		JavaPackageDeclaration packageDeclaration = EditableJavaPackageDeclaration.builder()
+				.packageName("some.random.package.name")
+				.build();
+		assertNull(clazz.getPackageDeclaration());
+		clazz.setPackageDeclaration(packageDeclaration);
+		assertEquals(packageDeclaration, clazz.getPackageDeclaration());
+	}
+	
+	@Test
+	public void testSetPackageDeclarationUneditable(){
+		try{
+			clazz.setPackageDeclaration(UneditableJavaPackageDeclaration.builder()
+					.packageName("some.package")
+					.build());
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable package declaration", e.getMessage());
+		}
 	}
 	
 	@Test
@@ -329,10 +368,10 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	@Test
 	public void testAddInnerClass(){
 		JavaClass clazz1 = EditableJavaClass.builder()
-				.packageName("a.package").className("Test")
+				.className("Test")
 				.build();
 		JavaClass clazz2 = EditableJavaClass.builder()
-				.packageName("package.b").className("Derp")
+				.className("Derp")
 				.build();
 		assertEquals(new ArrayList<>(), clazz.getInnerClasses());
 		clazz.addInnerClass(clazz1);
@@ -345,7 +384,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public void testAddInnerClassUneditable(){
 		try{
 			clazz.addInnerClass(UneditableJavaClass.builder()
-					.packageName("a.package").className("Test")
+					.className("Test")
 					.build());
 			fail();
 		}catch(IllegalArgumentException e){
@@ -356,16 +395,16 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	@Test
 	public void testAddInnerClasses(){
 		JavaClass clazz1 = EditableJavaClass.builder()
-				.packageName("a.package").className("Test")
+				.className("Test")
 				.build();
 		JavaClass clazz2 = EditableJavaClass.builder()
-				.packageName("package.b").className("Derp")
+				.className("Derp")
 				.build();
 		JavaClass clazz3 = EditableJavaClass.builder()
-				.packageName("package.c").className("Blah")
+				.className("Blah")
 				.build();
 		JavaClass clazz4 = EditableJavaClass.builder()
-				.packageName("package.d").className("Yep")
+				.className("Yep")
 				.build();
 		assertEquals(new ArrayList<>(), clazz.getInnerClasses());
 		clazz.addInnerClasses(ListUtil.createList(clazz1, clazz2));
@@ -379,10 +418,10 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 		try{
 			clazz.addInnerClasses(ListUtil.createList(
 					UneditableJavaClass.builder()
-							.packageName("a.package").className("Test")
+							.className("Test")
 							.build(),
 					UneditableJavaClass.builder()
-							.packageName("b.package").className("Derp")
+							.className("Derp")
 							.build()));
 			fail();
 		}catch(IllegalArgumentException e){
@@ -393,16 +432,16 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	@Test
 	public void testSetInnerClasses(){
 		JavaClass clazz1 = EditableJavaClass.builder()
-				.packageName("a.package").className("Test")
+				.className("Test")
 				.build();
 		JavaClass clazz2 = EditableJavaClass.builder()
-				.packageName("package.b").className("Derp")
+				.className("Derp")
 				.build();
 		JavaClass clazz3 = EditableJavaClass.builder()
-				.packageName("package.c").className("Blah")
+				.className("Blah")
 				.build();
 		JavaClass clazz4 = EditableJavaClass.builder()
-				.packageName("package.d").className("Yep")
+				.className("Yep")
 				.build();
 		assertEquals(new ArrayList<>(), clazz.getInnerClasses());
 		clazz.setInnerClasses(ListUtil.createList(clazz1, clazz2));
@@ -416,10 +455,10 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 		try{
 			clazz.setInnerClasses(ListUtil.createList(
 					UneditableJavaClass.builder()
-							.packageName("a.package").className("Test")
+							.className("Test")
 							.build(),
 					UneditableJavaClass.builder()
-							.packageName("b.package").className("Derp")
+							.className("Derp")
 							.build()));
 			fail();
 		}catch(IllegalArgumentException e){

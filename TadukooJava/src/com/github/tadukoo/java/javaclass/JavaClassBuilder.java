@@ -5,6 +5,7 @@ import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 
@@ -27,9 +28,9 @@ import java.util.List;
  *         <td>Defaults to false</td>
  *     </tr>
  *     <tr>
- *         <td>packageName</td>
- *         <td>The name of the package the class is in</td>
- *         <td>Required</td>
+ *         <td>packageDeclaration</td>
+ *         <td>The {@link JavaPackageDeclaration package declaration} of the class</td>
+ *         <td>Defaults to null</td>
  *     </tr>
  *     <tr>
  *         <td>imports</td>
@@ -89,15 +90,15 @@ import java.util.List;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.2 (in JavaClass), Alpha v.0.4 (as a separate class)
  */
 public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	
 	/** Whether the class is an inner class or not */
 	protected boolean isInnerClass = false;
-	/** The name of the package the class is in */
-	protected String packageName = null;
+	/** The {@link JavaPackageDeclaration package declaration} of the class */
+	protected JavaPackageDeclaration packageDeclaration = null;
 	/** The classes imported by the class */
 	protected List<String> imports = new ArrayList<>();
 	/** The classes imported statically by the class */
@@ -146,11 +147,11 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
-	 * @param packageName The name of the package the class is in
+	 * @param packageDeclaration The {@link JavaPackageDeclaration package declaration} of the class
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> packageName(String packageName){
-		this.packageName = packageName;
+	public JavaClassBuilder<ClassType> packageDeclaration(JavaPackageDeclaration packageDeclaration){
+		this.packageDeclaration = packageDeclaration;
 		return this;
 	}
 	
@@ -344,8 +345,8 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		
 		// Inner class problems
 		if(isInnerClass){
-			if(StringUtil.isNotBlank(packageName)){
-				errors.add("Not allowed to have packageName for an inner class!");
+			if(packageDeclaration != null){
+				errors.add("Not allowed to have package declaration for an inner class!");
 			}
 			
 			if(ListUtil.isNotBlank(imports)){
@@ -357,10 +358,6 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 			}
 		}else{
 			// Regular class problems
-			if(StringUtil.isBlank(packageName)){
-				errors.add("Must specify packageName when not making an inner class!");
-			}
-			
 			if(isStatic){
 				errors.add("Only inner classes can be static!");
 			}

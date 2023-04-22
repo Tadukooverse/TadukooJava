@@ -9,6 +9,9 @@ import com.github.tadukoo.java.field.UneditableJavaField;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
+import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +31,11 @@ public class JavaClassBuilderTest{
 	private static class TestJavaClass extends JavaClass{
 		
 		private TestJavaClass(
-				boolean editable, boolean isInnerClass, String packageName, List<String> imports, List<String> staticImports,
+				boolean editable, boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, String className, String superClassName,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
-			super(editable, isInnerClass, packageName, imports, staticImports,
+			super(editable, isInnerClass, packageDeclaration, imports, staticImports,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -49,28 +52,32 @@ public class JavaClassBuilderTest{
 		
 		@Override
 		protected TestJavaClass constructClass(){
-			return new TestJavaClass(false, isInnerClass, packageName, imports, staticImports,
+			return new TestJavaClass(false, isInnerClass, packageDeclaration, imports, staticImports,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
 	
-	private String packageName, className;
+	private String className;
 	private JavaClass clazz;
 	
 	@BeforeEach
 	public void setup(){
-		packageName = "some.package";
 		className = "AClassName";
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.build();
 	}
 	
 	@Test
 	public void testDefaultIsInnerClass(){
 		assertFalse(clazz.isInnerClass());
+	}
+	
+	@Test
+	public void testDefaultPackageDeclaration(){
+		assertNull(clazz.getPackageDeclaration());
 	}
 	
 	@Test
@@ -136,8 +143,15 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
-	public void testSetPackageName(){
-		assertEquals(packageName, clazz.getPackageName());
+	public void testSetPackageDeclartion(){
+		JavaPackageDeclaration packageDeclaration = UneditableJavaPackageDeclaration.builder()
+				.packageName("some.package")
+				.build();
+		clazz = new TestJavaClassBuilder()
+				.packageDeclaration(packageDeclaration)
+				.className(className)
+				.build();
+		assertEquals(packageDeclaration, clazz.getPackageDeclaration());
 	}
 	
 	@Test
@@ -149,7 +163,7 @@ public class JavaClassBuilderTest{
 	public void testSetImports(){
 		List<String> imports = ListUtil.createList("com.example.*", "com.github.tadukoo.*");
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.imports(imports)
 				.build();
 		assertEquals(imports, clazz.getImports());
@@ -158,7 +172,7 @@ public class JavaClassBuilderTest{
 	@Test
 	public void testSetSingleImport(){
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.singleImport("com.example.*")
 				.build();
 		List<String> imports = clazz.getImports();
@@ -170,7 +184,7 @@ public class JavaClassBuilderTest{
 	public void testSetStaticImports(){
 		List<String> staticImports = ListUtil.createList("com.example.Test", "com.github.tadukoo.*");
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.staticImports(staticImports)
 				.build();
 		assertEquals(staticImports, clazz.getStaticImports());
@@ -179,7 +193,7 @@ public class JavaClassBuilderTest{
 	@Test
 	public void testSetSingleStaticImport(){
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.staticImport("com.github.tadukoo.*")
 				.build();
 		List<String> staticImports = clazz.getStaticImports();
@@ -191,7 +205,7 @@ public class JavaClassBuilderTest{
 	public void testSetJavadoc(){
 		Javadoc doc = UneditableJavadoc.builder().build();
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.javadoc(doc)
 				.build();
 		assertEquals(doc, clazz.getJavadoc());
@@ -203,7 +217,7 @@ public class JavaClassBuilderTest{
 		JavaAnnotation derp = UneditableJavaAnnotation.builder().name("Derp").build();
 		List<JavaAnnotation> annotations = ListUtil.createList(test, derp);
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.annotations(annotations)
 				.build();
 		assertEquals(annotations, clazz.getAnnotations());
@@ -213,7 +227,7 @@ public class JavaClassBuilderTest{
 	public void testSetSingleAnnotation(){
 		JavaAnnotation test = UneditableJavaAnnotation.builder().name("Test").build();
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.annotation(test)
 				.build();
 		List<JavaAnnotation> annotations = clazz.getAnnotations();
@@ -224,7 +238,7 @@ public class JavaClassBuilderTest{
 	@Test
 	public void testSetVisibility(){
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.visibility(Visibility.PRIVATE)
 				.build();
 		assertEquals(Visibility.PRIVATE, clazz.getVisibility());
@@ -253,7 +267,7 @@ public class JavaClassBuilderTest{
 	@Test
 	public void testSetSuperClassName(){
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.superClassName("AnotherClassName")
 				.build();
 		assertEquals("AnotherClassName", clazz.getSuperClassName());
@@ -264,7 +278,7 @@ public class JavaClassBuilderTest{
 		List<JavaClass> classes = ListUtil.createList(new TestJavaClassBuilder().innerClass().className("AClass").build(),
 				new TestJavaClassBuilder().innerClass().className("BClass").build());
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className("CClassName")
+				.className("CClassName")
 				.innerClasses(classes)
 				.build();
 		assertEquals(classes, clazz.getInnerClasses());
@@ -274,7 +288,7 @@ public class JavaClassBuilderTest{
 	public void testSet1InnerClass(){
 		JavaClass class2 = new TestJavaClassBuilder().innerClass().className("AClass").build();
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className("BClassName")
+				.className("BClassName")
 				.innerClass(class2)
 				.build();
 		List<JavaClass> innerClasses = clazz.getInnerClasses();
@@ -287,7 +301,7 @@ public class JavaClassBuilderTest{
 		List<JavaField> fields = ListUtil.createList(UneditableJavaField.builder().type("int").name("test").build(),
 				UneditableJavaField.builder().type("String").name("derp").build());
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.fields(fields)
 				.build();
 		assertEquals(fields, clazz.getFields());
@@ -296,7 +310,7 @@ public class JavaClassBuilderTest{
 	@Test
 	public void testSetField(){
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.field(UneditableJavaField.builder().type("int").name("test").build())
 				.build();
 		List<JavaField> fields = clazz.getFields();
@@ -312,7 +326,7 @@ public class JavaClassBuilderTest{
 		List<JavaMethod> methods = ListUtil.createList(UneditableJavaMethod.builder().returnType("int").build(),
 				UneditableJavaMethod.builder().returnType("String").build());
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.methods(methods)
 				.build();
 		assertEquals(methods, clazz.getMethods());
@@ -321,7 +335,7 @@ public class JavaClassBuilderTest{
 	@Test
 	public void testSetMethod(){
 		clazz = new TestJavaClassBuilder()
-				.packageName(packageName).className(className)
+				.className(className)
 				.method(UneditableJavaMethod.builder().returnType("int").name("someMethod").line("return 42;").build())
 				.build();
 		List<JavaMethod> methods = clazz.getMethods();
@@ -337,22 +351,9 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
-	public void testNullPackageName(){
-		try{
-			clazz = new TestJavaClassBuilder()
-					.className(className)
-					.build();
-			fail();
-		}catch(IllegalArgumentException e){
-			assertEquals("Must specify packageName when not making an inner class!", e.getMessage());
-		}
-	}
-	
-	@Test
 	public void testNullClassName(){
 		try{
 			clazz = new TestJavaClassBuilder()
-					.packageName(packageName)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
@@ -364,10 +365,10 @@ public class JavaClassBuilderTest{
 	public void testInnerClassNotInnerClass(){
 		try{
 			JavaClass inner = new TestJavaClassBuilder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = new TestJavaClassBuilder()
-					.packageName(packageName).className("BClassName")
+					.className("BClassName")
 					.innerClass(inner)
 					.build();
 			fail();
@@ -381,7 +382,7 @@ public class JavaClassBuilderTest{
 		try{
 			clazz = new TestJavaClassBuilder()
 					.isStatic()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
@@ -393,7 +394,7 @@ public class JavaClassBuilderTest{
 	public void testAllOuterClassErrors(){
 		try{
 			JavaClass inner = new TestJavaClassBuilder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = new TestJavaClassBuilder()
 					.isStatic()
@@ -404,7 +405,6 @@ public class JavaClassBuilderTest{
 			assertEquals("""
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
-					Must specify packageName when not making an inner class!
 					Only inner classes can be static!""", e.getMessage());
 		}
 	}
@@ -425,7 +425,7 @@ public class JavaClassBuilderTest{
 	public void testInnerClassNotInnerClassInInnerClass(){
 		try{
 			JavaClass inner = new TestJavaClassBuilder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = new TestJavaClassBuilder()
 					.innerClass()
@@ -443,12 +443,14 @@ public class JavaClassBuilderTest{
 		try{
 			clazz = new TestJavaClassBuilder()
 					.innerClass()
-					.packageName(packageName)
+					.packageDeclaration(EditableJavaPackageDeclaration.builder()
+							.packageName("some.package")
+							.build())
 					.className(className)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
-			assertEquals("Not allowed to have packageName for an inner class!", e.getMessage());
+			assertEquals("Not allowed to have package declaration for an inner class!", e.getMessage());
 		}
 	}
 	
@@ -484,11 +486,13 @@ public class JavaClassBuilderTest{
 	public void testAllInnerClassBuilderErrors(){
 		try{
 			JavaClass inner = new TestJavaClassBuilder()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = new TestJavaClassBuilder()
 					.innerClass()
-					.packageName(packageName)
+					.packageDeclaration(EditableJavaPackageDeclaration.builder()
+							.packageName("some.package")
+							.build())
 					.innerClass(inner)
 					.singleImport("an.import")
 					.staticImport("an.other.import")
@@ -498,7 +502,7 @@ public class JavaClassBuilderTest{
 			assertEquals("""
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
-					Not allowed to have packageName for an inner class!
+					Not allowed to have package declaration for an inner class!
 					Not allowed to have imports for an inner class!
 					Not allowed to have static imports for an inner class!""", e.getMessage());
 		}

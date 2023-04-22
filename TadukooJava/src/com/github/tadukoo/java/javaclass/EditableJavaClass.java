@@ -5,6 +5,7 @@ import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.List;
  * Represents a class in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
+ * @since Alpha v.0.4
  */
 public class EditableJavaClass extends JavaClass{
 	
@@ -21,7 +23,8 @@ public class EditableJavaClass extends JavaClass{
 	 * A builder used to make an {@link EditableJavaClass}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Alpha v.0.4
+	 * @version Beta v.0.5
+	 * @since Alpha v.0.4
 	 * @see JavaClassBuilder
 	 */
 	public static class EditableJavaClassBuilder extends JavaClassBuilder<EditableJavaClass>{
@@ -35,6 +38,11 @@ public class EditableJavaClass extends JavaClass{
 		@Override
 		protected List<String> checkForSpecificErrors(){
 			List<String> errors = new ArrayList<>();
+			
+			// Package Declaration can't be uneditable
+			if(packageDeclaration != null && !packageDeclaration.isEditable()){
+				errors.add("package declaration is not editable in this editable JavaClass");
+			}
 			
 			// Javadoc can't be uneditable
 			if(javadoc != null && !javadoc.isEditable()){
@@ -78,7 +86,7 @@ public class EditableJavaClass extends JavaClass{
 		/** {@inheritDoc} */
 		@Override
 		protected EditableJavaClass constructClass(){
-			return new EditableJavaClass(isInnerClass, packageName, imports, staticImports,
+			return new EditableJavaClass(isInnerClass, packageDeclaration, imports, staticImports,
 					javadoc, annotations,
 					visibility, isStatic, className, superClassName,
 					innerClasses, fields, methods);
@@ -89,7 +97,7 @@ public class EditableJavaClass extends JavaClass{
 	 * Constructs a new Java Class with the given parameters
 	 *
 	 * @param isInnerClass Whether this is an inner class or not
-	 * @param packageName The name of the package the class is in
+	 * @param packageDeclaration The {@link JavaPackageDeclaration package declaration} of the class
 	 * @param imports The classes imported by the class
 	 * @param staticImports The classes imported statically by the class
 	 * @param javadoc The {@link Javadoc} for the class
@@ -103,11 +111,11 @@ public class EditableJavaClass extends JavaClass{
 	 * @param methods The {@link JavaMethod methods} in the class
 	 */
 	private EditableJavaClass(
-			boolean isInnerClass, String packageName, List<String> imports, List<String> staticImports,
+			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<String> imports, List<String> staticImports,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, String className, String superClassName,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
-		super(true, isInnerClass, packageName, imports, staticImports,
+		super(true, isInnerClass, packageDeclaration, imports, staticImports,
 				javadoc, annotations,
 				visibility, isStatic, className, superClassName,
 				innerClasses, fields, methods);
@@ -128,10 +136,13 @@ public class EditableJavaClass extends JavaClass{
 	}
 	
 	/**
-	 * @param packageName The name of the package the class is in
+	 * @param packageDeclaration The {@link JavaPackageDeclaration package declaration} of the class
 	 */
-	public void setPackageName(String packageName){
-		this.packageName = packageName;
+	public void setPackageDeclaration(JavaPackageDeclaration packageDeclaration){
+		if(!packageDeclaration.isEditable()){
+			throw new IllegalArgumentException("editable Java Class requires editable package declaration");
+		}
+		this.packageDeclaration = packageDeclaration;
 	}
 	
 	/**

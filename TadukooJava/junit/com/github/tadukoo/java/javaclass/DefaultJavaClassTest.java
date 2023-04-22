@@ -6,10 +6,13 @@ import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.field.JavaFieldBuilder;
+import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.method.JavaMethodBuilder;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
@@ -30,21 +33,27 @@ import static org.junit.jupiter.api.Assertions.fail;
 public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
 	private final ThrowingSupplier<JavaClassBuilder<ClassType>, NoException> builder;
+	private final ThrowingSupplier<JavaPackageDeclarationBuilder<?>, NoException> javaPackageDeclarationBuilder;
+	private final ThrowingSupplier<JavaImportStatementBuilder<?>, NoException> javaImportStatementBuilder;
 	private final ThrowingSupplier<JavaAnnotationBuilder<?>, NoException> javaAnnotationBuilder;
 	private final ThrowingSupplier<JavadocBuilder<?>, NoException> javadocBuilder;
 	private final ThrowingSupplier<JavaFieldBuilder<?>, NoException> javaFieldBuilder;
 	private final ThrowingSupplier<JavaMethodBuilder<?>, NoException> javaMethodBuilder;
 	
 	protected ClassType clazz;
-	protected String packageName, className;
+	protected String className;
 	
 	protected DefaultJavaClassTest(
 			ThrowingSupplier<JavaClassBuilder<ClassType>, NoException> builder,
+			ThrowingSupplier<JavaPackageDeclarationBuilder<?>, NoException> javaPackageDeclarationBuilder,
+			ThrowingSupplier<JavaImportStatementBuilder<?>, NoException> javaImportStatementBuilder,
 			ThrowingSupplier<JavaAnnotationBuilder<?>, NoException> javaAnnotationBuilder,
 			ThrowingSupplier<JavadocBuilder<?>, NoException> javadocBuilder,
 			ThrowingSupplier<JavaFieldBuilder<?>, NoException> javaFieldBuilder,
 			ThrowingSupplier<JavaMethodBuilder<?>, NoException> javaMethodBuilder){
 		this.builder = builder;
+		this.javaPackageDeclarationBuilder = javaPackageDeclarationBuilder;
+		this.javaImportStatementBuilder = javaImportStatementBuilder;
 		this.javaAnnotationBuilder = javaAnnotationBuilder;
 		this.javadocBuilder = javadocBuilder;
 		this.javaFieldBuilder = javaFieldBuilder;
@@ -53,10 +62,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
 	@BeforeEach
 	public void setup(){
-		packageName = "some.package";
 		className = "AClassName";
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.build();
 	}
 	
@@ -68,6 +76,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testDefaultIsInnerClass(){
 		assertFalse(clazz.isInnerClass());
+	}
+	
+	@Test
+	public void testDefaultPackageDeclaration(){
+		assertNull(clazz.getPackageDeclaration());
 	}
 	
 	@Test
@@ -133,8 +146,15 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testBuilderSetPackageName(){
-		assertEquals(packageName, clazz.getPackageName());
+	public void testBuilderSetPackageDeclaration(){
+		JavaPackageDeclaration packageDeclaration = javaPackageDeclarationBuilder.get()
+				.packageName("some.package")
+				.build();
+		clazz = builder.get()
+				.packageDeclaration(packageDeclaration)
+				.className(className)
+				.build();
+		assertEquals(packageDeclaration, clazz.getPackageDeclaration());
 	}
 	
 	@Test
@@ -146,7 +166,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderSetImports(){
 		List<String> imports = ListUtil.createList("com.example.*", "com.github.tadukoo.*");
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.imports(imports)
 				.build();
 		assertEquals(imports, clazz.getImports());
@@ -155,7 +175,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testBuilderSetSingleImport(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.singleImport("com.example.*")
 				.build();
 		List<String> imports = clazz.getImports();
@@ -167,7 +187,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderSetStaticImports(){
 		List<String> staticImports = ListUtil.createList("com.example.Test", "com.github.tadukoo.*");
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.staticImports(staticImports)
 				.build();
 		assertEquals(staticImports, clazz.getStaticImports());
@@ -176,7 +196,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testBuilderSetSingleStaticImport(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.staticImport("com.github.tadukoo.*")
 				.build();
 		List<String> staticImports = clazz.getStaticImports();
@@ -188,7 +208,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderSetJavadoc(){
 		Javadoc doc = javadocBuilder.get().build();
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.javadoc(doc)
 				.build();
 		assertEquals(doc, clazz.getJavadoc());
@@ -200,7 +220,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		JavaAnnotation derp = javaAnnotationBuilder.get().name("Derp").build();
 		List<JavaAnnotation> annotations = ListUtil.createList(test, derp);
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.annotations(annotations)
 				.build();
 		assertEquals(annotations, clazz.getAnnotations());
@@ -210,7 +230,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderSetSingleAnnotation(){
 		JavaAnnotation test = javaAnnotationBuilder.get().name("Test").build();
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.annotation(test)
 				.build();
 		List<JavaAnnotation> annotations = clazz.getAnnotations();
@@ -221,7 +241,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testBuilderSetVisibility(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.visibility(Visibility.PRIVATE)
 				.build();
 		assertEquals(Visibility.PRIVATE, clazz.getVisibility());
@@ -250,7 +270,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testBuilderSetSuperClassName(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.superClassName("AnotherClassName")
 				.build();
 		assertEquals("AnotherClassName", clazz.getSuperClassName());
@@ -261,7 +281,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		List<JavaClass> classes = ListUtil.createList(builder.get().innerClass().className("AClass").build(),
 				builder.get().innerClass().className("BClass").build());
 		clazz = builder.get()
-				.packageName(packageName).className("CClassName")
+				.className("CClassName")
 				.innerClasses(classes)
 				.build();
 		assertEquals(classes, clazz.getInnerClasses());
@@ -271,7 +291,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderSet1InnerClass(){
 		JavaClass class2 = builder.get().innerClass().className("AClass").build();
 		clazz = builder.get()
-				.packageName(packageName).className("BClassName")
+				.className("BClassName")
 				.innerClass(class2)
 				.build();
 		List<JavaClass> innerClasses = clazz.getInnerClasses();
@@ -284,7 +304,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		List<JavaField> fields = ListUtil.createList(javaFieldBuilder.get().type("int").name("test").build(),
 				javaFieldBuilder.get().type("String").name("derp").build());
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.fields(fields)
 				.build();
 		assertEquals(fields, clazz.getFields());
@@ -293,7 +313,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testBuilderSetField(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.field(javaFieldBuilder.get().type("int").name("test").build())
 				.build();
 		List<JavaField> fields = clazz.getFields();
@@ -309,7 +329,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		List<JavaMethod> methods = ListUtil.createList(javaMethodBuilder.get().returnType("int").build(),
 				javaMethodBuilder.get().returnType("String").build());
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.methods(methods)
 				.build();
 		assertEquals(methods, clazz.getMethods());
@@ -318,7 +338,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testBuilderSetMethod(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.method(javaMethodBuilder.get().returnType("int").name("someMethod").line("return 42;").build())
 				.build();
 		List<JavaMethod> methods = clazz.getMethods();
@@ -334,23 +354,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testBuilderNullPackageName(){
-		try{
-			clazz = builder.get()
-					.className(className)
-					.build();
-			fail();
-		}catch(IllegalArgumentException e){
-			assertEquals("Must specify packageName when not making an inner class!", e.getMessage());
-		}
-	}
-	
-	@Test
 	public void testBuilderNullVisibility(){
 		try{
 			clazz = builder.get()
 					.visibility(null)
-					.packageName(packageName).className("AClassName")
+					.className("AClassName")
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
@@ -362,7 +370,6 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderNullClassName(){
 		try{
 			clazz = builder.get()
-					.packageName(packageName)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
@@ -374,10 +381,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderInnerClassNotInnerClass(){
 		try{
 			JavaClass inner = builder.get()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = builder.get()
-					.packageName(packageName).className("BClassName")
+					.className("BClassName")
 					.innerClass(inner)
 					.build();
 			fail();
@@ -391,7 +398,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		try{
 			clazz = builder.get()
 					.isStatic()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
@@ -403,7 +410,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderAllOuterClassErrors(){
 		try{
 			JavaClass inner = builder.get()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = builder.get()
 					.isStatic()
@@ -416,7 +423,6 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					Visibility is required!
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
-					Must specify packageName when not making an inner class!
 					Only inner classes can be static!""", e.getMessage());
 		}
 	}
@@ -451,7 +457,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderInnerClassNotInnerClassInInnerClass(){
 		try{
 			JavaClass inner = builder.get()
-					.packageName(packageName).className(className)
+					.className(className)
 					.build();
 			clazz = builder.get()
 					.innerClass()
@@ -465,16 +471,18 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testBuilderSetPackageNameInnerClass(){
+	public void testBuilderSetPackageDeclarationInnerClass(){
 		try{
 			clazz = builder.get()
 					.innerClass()
-					.packageName(packageName)
+					.packageDeclaration(javaPackageDeclarationBuilder.get()
+							.packageName("some.package")
+							.build())
 					.className(className)
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
-			assertEquals("Not allowed to have packageName for an inner class!", e.getMessage());
+			assertEquals("Not allowed to have package declaration for an inner class!", e.getMessage());
 		}
 	}
 	
@@ -510,11 +518,16 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testBuilderAllInnerClassBuilderErrors(){
 		try{
 			JavaClass inner = builder.get()
-					.packageName(packageName).className(className)
+					.packageDeclaration(javaPackageDeclarationBuilder.get()
+							.packageName("some.package")
+							.build())
+					.className(className)
 					.build();
 			clazz = builder.get()
 					.innerClass()
-					.packageName(packageName)
+					.packageDeclaration(javaPackageDeclarationBuilder.get()
+							.packageName("some.package")
+							.build())
 					.innerClass(inner)
 					.singleImport("an.import")
 					.staticImport("an.other.import")
@@ -526,7 +539,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					Visibility is required!
 					Must specify className!
 					Inner class 'AClassName' is not an inner class!
-					Not allowed to have packageName for an inner class!
+					Not allowed to have package declaration for an inner class!
 					Not allowed to have imports for an inner class!
 					Not allowed to have static imports for an inner class!""", e.getMessage());
 		}
@@ -534,6 +547,22 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
 	@Test
 	public void testToString(){
+		String javaString = """
+				class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithPackageDeclaration(){
+		clazz = builder.get()
+				.packageDeclaration(javaPackageDeclarationBuilder.get()
+						.packageName("some.package")
+						.build())
+				.className(className)
+				.build();
 		String javaString = """
 				package some.package;
 				
@@ -547,11 +576,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithSuperClassName(){
 		clazz = builder.get()
-				.packageName(packageName).className(className).superClassName("AnotherClassName")
+				.className(className).superClassName("AnotherClassName")
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName extends AnotherClassName{
 				\t
 				}
@@ -562,12 +589,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithJavadoc(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.javadoc(javadocBuilder.get().build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				/**
 				 */
 				class AClassName{
@@ -583,12 +608,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		JavaAnnotation derp = javaAnnotationBuilder.get().name("Derp").build();
 		List<JavaAnnotation> annotations = ListUtil.createList(test, derp);
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.annotations(annotations)
 				.build();
 		String javaString = """
-				package some.package;
-				
 				@Test
 				@Derp
 				class AClassName{
@@ -601,12 +624,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithImports(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.imports(ListUtil.createList("com.example.*", null, "com.github.tadukoo.*"))
 				.build();
 		String javaString = """
-				package some.package;
-				
 				import com.example.*;
 				
 				import com.github.tadukoo.*;
@@ -621,12 +642,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithStaticImports(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.staticImports(ListUtil.createList("com.example.Test", null, "com.github.tadukoo.test.*"))
 				.build();
 		String javaString = """
-				package some.package;
-				
 				import static com.example.Test;
 				
 				import static com.github.tadukoo.test.*;
@@ -641,12 +660,10 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithVisibility(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.visibility(Visibility.PROTECTED)
 				.build();
 		String javaString = """
-				package some.package;
-				
 				protected class AClassName{
 				\t
 				}
@@ -657,13 +674,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithInnerClasses(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.innerClass(builder.get().innerClass().className("BClassName").build())
 				.innerClass(builder.get().innerClass().className("CClassName").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					class BClassName{
@@ -682,13 +697,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithFields(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.field(javaFieldBuilder.get().type("int").name("test").build())
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					int test;
@@ -701,7 +714,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithFieldsWithJavadocsOnFields(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.field(javaFieldBuilder.get()
 						.javadoc(javadocBuilder.get()
 								.condensed()
@@ -712,8 +725,6 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					/** something */
@@ -727,14 +738,12 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithMethods(){
 		clazz = builder.get()
-				.packageName(packageName).className(className)
+				.className(className)
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
 						.parameter("int", "test").line("return doSomething();").build())
 				.build();
 		String javaString = """
-				package some.package;
-				
 				class AClassName{
 				\t
 					AClassName(){
@@ -751,7 +760,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testToStringWithEverything(){
 		clazz = builder.get()
-				.packageName(packageName)
+				.packageDeclaration(javaPackageDeclarationBuilder.get()
+						.packageName("some.package")
+						.build())
 				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
 				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
 				.javadoc(javadocBuilder.get().build())
@@ -883,7 +894,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testEquals(){
 		clazz = builder.get()
-				.packageName(packageName)
+				.packageDeclaration(javaPackageDeclarationBuilder.get()
+						.packageName("some.package")
+						.build())
 				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
 				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
 				.javadoc(javadocBuilder.get().build())
@@ -899,7 +912,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 						.parameter("int", "test").line("return doSomething();").build())
 				.build();
 		JavaClass otherClass = builder.get()
-				.packageName(packageName)
+				.packageDeclaration(javaPackageDeclarationBuilder.get()
+						.packageName("some.package")
+						.build())
 				.imports(ListUtil.createList("com.example.*", "", "com.github.tadukoo.*"))
 				.staticImports(ListUtil.createList("com.example.Test", "", "com.github.tadukoo.test.*"))
 				.javadoc(javadocBuilder.get().build())
@@ -920,7 +935,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	@Test
 	public void testEqualsNotEqual(){
 		JavaClass otherClass = builder.get()
-				.packageName("some.package.different").className(className)
+				.packageDeclaration(javaPackageDeclarationBuilder.get()
+						.packageName("some.package.different")
+						.build()).className(className)
 				.build();
 		assertNotEquals(clazz, otherClass);
 	}
