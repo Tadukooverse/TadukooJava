@@ -73,6 +73,11 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testDefaultIsFinal(){
+		assertFalse(method.isFinal());
+	}
+	
+	@Test
 	public void testDefaultName(){
 		assertNull(method.getName());
 	}
@@ -146,6 +151,28 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.isStatic(true).returnType("String")
 				.build();
 		assertTrue(method.isStatic());
+	}
+	
+	@Test
+	public void testBuilderIsFinal(){
+		method = builder.get()
+				.isFinal()
+				.returnType("String")
+				.build();
+		assertTrue(method.isFinal());
+	}
+	
+	@Test
+	public void testBuilderSetIsFinal(){
+		method = builder.get()
+				.isFinal(false).returnType("String")
+				.build();
+		assertFalse(method.isFinal());
+		
+		method = builder.get()
+				.isFinal(true).returnType("String")
+				.build();
+		assertTrue(method.isFinal());
 	}
 	
 	@Test
@@ -327,6 +354,17 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testToStringWithIsFinal(){
+		method = builder.get()
+				.returnType(returnType).isFinal()
+				.build();
+		String javaString = """
+				final int(){
+				}""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
 	public void testToStringWithName(){
 		method = builder.get().returnType(returnType).name("someMethod").build();
 		String javaString = """
@@ -391,7 +429,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.visibility(Visibility.PUBLIC)
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
@@ -400,7 +438,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				 */
 				@Test
 				@Derp
-				public static int someMethod(String text, int something) throws Throwable, Exception{
+				public static final int someMethod(String text, int something) throws Throwable, Exception{
 					doSomething();
 					return 42;
 				}""";
@@ -418,14 +456,14 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		method = builder.get().returnType(returnType)
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = builder.get().returnType(returnType)
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
@@ -439,14 +477,14 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		method = builder.get().returnType(returnType)
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = builder.get().returnType(returnType)
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 41;").build();

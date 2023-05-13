@@ -31,6 +31,8 @@ public abstract class JavaMethod implements JavaType{
 	protected Visibility visibility;
 	/** Whether the method is static or not */
 	protected boolean isStatic;
+	/** Whether the method is final or not */
+	protected boolean isFinal;
 	/** The return type of the method */
 	protected String returnType;
 	/** The name of the method */
@@ -50,6 +52,7 @@ public abstract class JavaMethod implements JavaType{
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
 	 * @param isStatic Whether the method is static or not
+	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
 	 * @param name The name of the method
 	 * @param parameters The parameters used in the method - pairs of type, then name
@@ -58,13 +61,14 @@ public abstract class JavaMethod implements JavaType{
 	 */
 	protected JavaMethod(
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, String returnType, String name,
+			Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
 		this.visibility = visibility;
 		this.isStatic = isStatic;
+		this.isFinal = isFinal;
 		this.returnType = returnType;
 		this.name = name;
 		this.parameters = parameters;
@@ -111,6 +115,13 @@ public abstract class JavaMethod implements JavaType{
 	 */
 	public boolean isStatic(){
 		return isStatic;
+	}
+	
+	/**
+	 * @return Whether the method is final or not
+	 */
+	public boolean isFinal(){
+		return isFinal;
 	}
 	
 	/**
@@ -180,6 +191,11 @@ public abstract class JavaMethod implements JavaType{
 		// optionally add static to the declaration
 		if(isStatic){
 			declaration.append(STATIC_MODIFIER).append(' ');
+		}
+		
+		// Optionally add final to the declaration
+		if(isFinal){
+			declaration.append(FINAL_MODIFIER).append(' ');
 		}
 		
 		// add return type to the declaration

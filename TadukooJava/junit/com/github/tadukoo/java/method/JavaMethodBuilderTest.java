@@ -25,10 +25,10 @@ public class JavaMethodBuilderTest{
 		
 		private TestJavaMethod(
 				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isStatic, String returnType, String name,
+				Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
 				List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 			super(editable, javadoc, annotations,
-					visibility, isStatic, returnType, name,
+					visibility, isStatic, isFinal, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -44,7 +44,7 @@ public class JavaMethodBuilderTest{
 		@Override
 		protected TestJavaMethod constructMethod(){
 			return new TestJavaMethod(false, javadoc, annotations,
-					visibility, isStatic, returnType, name,
+					visibility, isStatic, isFinal, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -78,6 +78,11 @@ public class JavaMethodBuilderTest{
 	@Test
 	public void testDefaultIsStatic(){
 		assertFalse(method.isStatic());
+	}
+	
+	@Test
+	public void testDefaultIsFinal(){
+		assertFalse(method.isFinal());
 	}
 	
 	@Test
@@ -154,6 +159,28 @@ public class JavaMethodBuilderTest{
 				.isStatic(true).returnType("String")
 				.build();
 		assertTrue(method.isStatic());
+	}
+	
+	@Test
+	public void testBuilderIsFinal(){
+		method = new TestJavaMethodBuilder()
+				.isFinal()
+				.returnType("String")
+				.build();
+		assertTrue(method.isFinal());
+	}
+	
+	@Test
+	public void testBuilderSetIsFinal(){
+		method = new TestJavaMethodBuilder()
+				.isFinal(false).returnType("String")
+				.build();
+		assertFalse(method.isFinal());
+		
+		method = new TestJavaMethodBuilder()
+				.isFinal(true).returnType("String")
+				.build();
+		assertTrue(method.isFinal());
 	}
 	
 	@Test

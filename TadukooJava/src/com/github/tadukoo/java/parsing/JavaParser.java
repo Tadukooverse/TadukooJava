@@ -809,7 +809,7 @@ public class JavaParser implements JavaTokens{
 							case PROTECTED_MODIFIER -> method.setVisibility(Visibility.PROTECTED);
 							case PUBLIC_MODIFIER -> method.setVisibility(Visibility.PUBLIC);
 							case STATIC_MODIFIER -> method.setStatic(true);
-							// TODO: Handle final on method
+							case FINAL_MODIFIER -> method.setFinal(true);
 						}
 					}
 					resultType = method;
@@ -1070,7 +1070,7 @@ public class JavaParser implements JavaTokens{
 		if(matcher.matches()){
 			Visibility visibility = Visibility.fromToken(StringUtil.trim(matcher.group(1)));
 			boolean isStatic = StringUtil.isNotBlank(matcher.group(2));
-			//boolean isFinal = StringUtil.isNotBlank(matcher.group(3)); TODO: Handle final on method
+			boolean isFinal = StringUtil.isNotBlank(matcher.group(3));
 			String returnType = StringUtil.trim(matcher.group(4));
 			String name = StringUtil.trim(matcher.group(5));
 			String parameterString = StringUtil.trim(matcher.group(6));
@@ -1123,6 +1123,7 @@ public class JavaParser implements JavaTokens{
 			return EditableJavaMethod.builder()
 					.visibility(visibility)
 					.isStatic(isStatic)
+					.isFinal(isFinal)
 					.returnType(returnType).name(name)
 					.parameters(parameters)
 					.throwTypes(throwTypes)

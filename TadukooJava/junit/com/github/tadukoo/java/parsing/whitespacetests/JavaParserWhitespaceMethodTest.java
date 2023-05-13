@@ -529,6 +529,70 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testWhitespaceBeforeFinal(){
+		JavaMethod method = parser.parseMethod("""
+				\t    \t     \t   \t
+				  \t  \tfinal Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
+	public void testWhitespaceBeforeFinalParseType() throws JavaParsingException{
+		JavaMethod method = runParserForMethod("""
+				\t    \t     \t   \t
+				  \t  \tfinal Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
+	public void testWhitespaceAfterFinal(){
+		JavaMethod method = parser.parseMethod("""
+				final      \t     \t
+				    \t    \t  Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
+	public void testWhitespaceAfterFinalParseType() throws JavaParsingException{
+		JavaMethod method = runParserForMethod("""
+				final      \t     \t
+				    \t    \t  Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
 	public void testWhitespaceBeforeName(){
 		JavaMethod method = parser.parseMethod("""
 				String    \t    \t
@@ -898,6 +962,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 				 \t   \t
 				\t    private     \t   \t
 				    \t    static     \t   \t
+				    \t    final      \t    \t
 				    \t    String     \t   \t
 				    \t    test     \t   \t
 				    \t    (     \t   \t
@@ -921,7 +986,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.returnType("String").name("test")
 						.parameter("String", "type")
 						.parameter("int", "derp")
@@ -932,7 +997,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				private static String test(String type, int derp) throws Exception, Throwable{
+				private static final String test(String type, int derp) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());
@@ -944,6 +1009,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 				 \t   \t
 				\t    private     \t   \t
 				    \t    static     \t   \t
+				    \t    final      \t    \t
 				    \t    String     \t   \t
 				    \t    test     \t   \t
 				    \t    (     \t   \t
@@ -967,7 +1033,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.returnType("String").name("test")
 						.parameter("String", "type")
 						.parameter("int", "derp")
@@ -978,7 +1044,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				private static String test(String type, int derp) throws Exception, Throwable{
+				private static final String test(String type, int derp) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());
@@ -993,6 +1059,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 						\t   \t
 						\t    private     \t   \t
 					\t    static     \t   \t
+					\t    final     \t   \t
 					\t    String     \t   \t
 					\t    test     \t   \t
 					\t    (     \t   \t
@@ -1024,7 +1091,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 								.name("Derp")
 								.build())
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.returnType("String").name("test")
 						.parameter("String", "type")
 						.parameter("int", "derp")
@@ -1037,7 +1104,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 		assertEquals("""
 				@Test(type = String.class, defaultValue = "")
 				@Derp
-				private static String test(String type, int derp) throws Exception, Throwable{
+				private static final String test(String type, int derp) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());

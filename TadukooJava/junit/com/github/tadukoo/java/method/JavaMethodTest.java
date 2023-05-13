@@ -24,10 +24,10 @@ public class JavaMethodTest{
 		
 		private TestJavaMethod(
 				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isStatic, String returnType, String name,
+				Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
 				List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 			super(editable, javadoc, annotations,
-					visibility, isStatic, returnType, name,
+					visibility, isStatic, isFinal, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -48,7 +48,7 @@ public class JavaMethodTest{
 		@Override
 		protected TestJavaMethod constructMethod(){
 			return new TestJavaMethod(editable, javadoc, annotations,
-					visibility, isStatic, returnType, name,
+					visibility, isStatic, isFinal, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -152,6 +152,17 @@ public class JavaMethodTest{
 	}
 	
 	@Test
+	public void testToStringWithIsFinal(){
+		method = new TestJavaMethodBuilder(false)
+				.returnType(returnType).isFinal()
+				.build();
+		String javaString = """
+				final int(){
+				}""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
 	public void testToStringWithName(){
 		method = new TestJavaMethodBuilder(false).returnType(returnType).name("someMethod").build();
 		String javaString = """
@@ -216,7 +227,7 @@ public class JavaMethodTest{
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.visibility(Visibility.PUBLIC)
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
@@ -225,7 +236,7 @@ public class JavaMethodTest{
 				 */
 				@Test
 				@Derp
-				public static int someMethod(String text, int something) throws Throwable, Exception{
+				public static final int someMethod(String text, int something) throws Throwable, Exception{
 					doSomething();
 					return 42;
 				}""";
@@ -243,14 +254,14 @@ public class JavaMethodTest{
 		method = new TestJavaMethodBuilder(false).returnType(returnType)
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = new TestJavaMethodBuilder(false).returnType(returnType)
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
@@ -264,14 +275,14 @@ public class JavaMethodTest{
 		method = new TestJavaMethodBuilder(false).returnType(returnType)
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = new TestJavaMethodBuilder(false).returnType(returnType)
 				.javadoc(UneditableJavadoc.builder().build())
 				.annotation(test).annotation(derp).name("someMethod")
-				.isStatic()
+				.isStatic().isFinal()
 				.parameter("String", "text").parameter("int", "something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 41;").build();

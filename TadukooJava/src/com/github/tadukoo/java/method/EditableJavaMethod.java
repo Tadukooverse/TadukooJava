@@ -56,7 +56,7 @@ public class EditableJavaMethod extends JavaMethod{
 		@Override
 		protected EditableJavaMethod constructMethod(){
 			return new EditableJavaMethod(javadoc, annotations,
-					visibility, isStatic, returnType, name,
+					visibility, isStatic, isFinal, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -68,6 +68,7 @@ public class EditableJavaMethod extends JavaMethod{
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
 	 * @param isStatic Whether the method is static or not
+	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
 	 * @param name The name of the method
 	 * @param parameters The parameters used in the method - pairs of type, then name
@@ -76,10 +77,10 @@ public class EditableJavaMethod extends JavaMethod{
 	 */
 	private EditableJavaMethod(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, String returnType, String name,
+			Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 		super(true, javadoc, annotations,
-				visibility, isStatic, returnType, name,
+				visibility, isStatic, isFinal, returnType, name,
 				parameters, throwTypes, lines);
 	}
 	
@@ -146,6 +147,13 @@ public class EditableJavaMethod extends JavaMethod{
 	 */
 	public void setStatic(boolean isStatic){
 		this.isStatic = isStatic;
+	}
+	
+	/**
+	 * @param isFinal Whether the method is final or not
+	 */
+	public void setFinal(boolean isFinal){
+		this.isFinal = isFinal;
 	}
 	
 	/**

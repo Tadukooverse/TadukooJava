@@ -176,6 +176,15 @@ public class EditableJavaMethodTest extends DefaultJavaMethodTest<EditableJavaMe
 	}
 	
 	@Test
+	public void testSetFinal(){
+		assertFalse(method.isFinal());
+		method.setFinal(true);
+		assertTrue(method.isFinal());
+		method.setFinal(true);
+		assertTrue(method.isFinal());
+	}
+	
+	@Test
 	public void testSetReturnType(){
 		assertEquals(returnType, method.getReturnType());
 		method.setReturnType("String");

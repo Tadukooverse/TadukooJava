@@ -40,6 +40,11 @@ import java.util.List;
  *         <td>Defaults to false</td>
  *     </tr>
  *     <tr>
+ *         <td>isFinal</td>
+ *         <td>Whether the method is final or not</td>
+ *         <td>Defaults to false</td>
+ *     </tr>
+ *     <tr>
  *         <td>returnType</td>
  *         <td>The return type of the method</td>
  *         <td>Required</td>
@@ -80,6 +85,8 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	protected Visibility visibility = Visibility.NONE;
 	/** Whether the method is static or not */
 	protected boolean isStatic = false;
+	/** Whether the method is final or not */
+	protected boolean isFinal = false;
 	/** The return type of the method */
 	protected String returnType = null;
 	/** The name of the method */
@@ -148,6 +155,25 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	 */
 	public JavaMethodBuilder<MethodType> isStatic(boolean isStatic){
 		this.isStatic = isStatic;
+		return this;
+	}
+	
+	/**
+	 * Sets the method as final
+	 *
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> isFinal(){
+		isFinal = true;
+		return this;
+	}
+	
+	/**
+	 * @param isFinal Whether the method is final or not
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> isFinal(boolean isFinal){
+		this.isFinal = isFinal;
 		return this;
 	}
 	

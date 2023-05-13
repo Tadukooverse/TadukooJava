@@ -187,6 +187,36 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testMethodWithFinal(){
+		JavaMethod method = parser.parseMethod("""
+				final Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithFinalParseType() throws JavaParsingException{
+		JavaMethod method = runParserForMethod("""
+				final Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
 	public void testMethodWithParameter(){
 		JavaMethod method = parser.parseMethod("""
 				Test(String type){}""");
@@ -381,11 +411,11 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 	@Test
 	public void testMethodWithEverything(){
 		JavaMethod method = parser.parseMethod("""
-				private static String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}""");
+				private static final String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}""");
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.returnType("String").name("test")
 						.parameter("String", "type")
 						.parameter("int", "derp")
@@ -396,7 +426,7 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				private static String test(String type, int derp) throws Exception, Throwable{
+				private static final String test(String type, int derp) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());
@@ -405,11 +435,11 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 	@Test
 	public void testMethodWithEverythingParseType() throws JavaParsingException{
 		JavaMethod method = runParserForMethod("""
-				private static String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}""");
+				private static final String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}""");
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.returnType("String").name("test")
 						.parameter("String", "type")
 						.parameter("int", "derp")
@@ -420,7 +450,7 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				private static String test(String type, int derp) throws Exception, Throwable{
+				private static final String test(String type, int derp) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());
@@ -475,7 +505,7 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 		JavaMethod method = runParserForMethod("""
 				@Test
 				@Derp(type=String.class)
-				private static String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}""");
+				private static final String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}""");
 		assertEquals(
 				EditableJavaMethod.builder()
 						.annotation(EditableJavaAnnotation.builder()
@@ -486,7 +516,7 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 								.parameter("type", "String.class")
 								.build())
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.returnType("String").name("test")
 						.parameter("String", "type")
 						.parameter("int", "derp")
@@ -499,7 +529,7 @@ public class JavaParserMethodTest extends BaseJavaParserTest{
 		assertEquals("""
 				@Test
 				@Derp(type = String.class)
-				private static String test(String type, int derp) throws Exception, Throwable{
+				private static final String test(String type, int derp) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());
