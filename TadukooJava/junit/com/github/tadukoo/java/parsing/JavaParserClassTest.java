@@ -274,6 +274,20 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testFinalClass() throws JavaParsingException{
+		JavaClass clazz = runParserForClass("""
+				final class Test{
+				}
+				""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.isFinal()
+						.className("Test")
+						.build(),
+				clazz);
+	}
+	
+	@Test
 	public void testClassWithSuperClass() throws JavaParsingException{
 		JavaClass clazz = runParserForClass("""
 				class Test extends Derp{
@@ -422,7 +436,7 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 				@Example
 				@Test(true)
 				@Yep(type=String.class)
-				public static class Test extends Derp{
+				public static final class Test extends Derp{
 				
 					class Derp{
 					}
@@ -468,6 +482,7 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 						.parameter("type", "String.class")
 						.build())
 				.visibility(Visibility.PUBLIC)
+				.isFinal()
 				.className("Test")
 				.superClassName("Derp")
 				.innerClass(EditableJavaClass.builder()
@@ -512,11 +527,11 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 				@Example
 				@Test(true)
 				@Yep(type=String.class)
-				public class Test extends Derp{
+				public final class Test extends Derp{
 				
 					@Test
 					@Yep(true)
-					private static class Derp extends Blah{
+					private static final class Derp extends Blah{
 						@Test
 						@Derp(type = String.class)
 						protected static final String derp = "Blah";
@@ -533,7 +548,7 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 					
 					@Derp
 					@Yep(something="no")
-					protected static class Yep extends Something{
+					protected static final class Yep extends Something{
 						public static final String someName = "Test";
 						private int somethingElse;
 						
@@ -590,6 +605,7 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 						.parameter("type", "String.class")
 						.build())
 				.visibility(Visibility.PUBLIC)
+				.isFinal()
 				.className("Test")
 				.superClassName("Derp")
 				.innerClass(EditableJavaClass.builder()
@@ -602,7 +618,7 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 								.parameter("value", "true")
 								.build())
 						.visibility(Visibility.PRIVATE)
-						.isStatic()
+						.isStatic().isFinal()
 						.className("Derp").superClassName("Blah")
 						.field(EditableJavaField.builder()
 								.annotation(EditableJavaAnnotation.builder()
@@ -661,7 +677,7 @@ public class JavaParserClassTest extends BaseJavaParserTest{
 								.parameter("something", "\"no\"")
 								.build())
 						.visibility(Visibility.PROTECTED)
-						.isStatic()
+						.isStatic().isFinal()
 						.className("Yep").superClassName("Something")
 						.field(EditableJavaField.builder()
 								.visibility(Visibility.PUBLIC)

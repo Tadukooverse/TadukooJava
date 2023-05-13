@@ -59,6 +59,11 @@ import java.util.List;
  *         <td>false</td>
  *     </tr>
  *     <tr>
+ *         <td>isFinal</td>
+ *         <td>Whether the class is final or not</td>
+ *         <td>false</td>
+ *     </tr>
+ *     <tr>
  *         <td>className</td>
  *         <td>The name of the class</td>
  *         <td>Required</td>
@@ -105,9 +110,11 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected Visibility visibility = Visibility.NONE;
 	/** Whether the class is static or not */
 	protected boolean isStatic = false;
+	/** Whether the class is final or not */
+	protected boolean isFinal = false;
 	/** The name of the class */
 	protected String className = null;
-	/** The name of the class this one extends (may be null) */
+	/** The name of the class this one extends (can be null) */
 	protected String superClassName = null;
 	/** Inner {@link JavaClass classes} inside the class */
 	protected List<JavaClass> innerClasses = new ArrayList<>();
@@ -204,6 +211,16 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
+	 * Sets isStatic to true, defining the class as a static class
+	 *
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> isStatic(){
+		this.isStatic = true;
+		return this;
+	}
+	
+	/**
 	 * @param isStatic Whether the class is static or not
 	 * @return this, to continue building
 	 */
@@ -213,12 +230,21 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
-	 * Sets isStatic to true, defining the class as a static class
+	 * Sets isFinal to true, definining the class as a final class
 	 *
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> isStatic(){
-		this.isStatic = true;
+	public JavaClassBuilder<ClassType> isFinal(){
+		this.isFinal = true;
+		return this;
+	}
+	
+	/**
+	 * @param isFinal Whether the class is final or not
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> isFinal(boolean isFinal){
+		this.isFinal = isFinal;
 		return this;
 	}
 	

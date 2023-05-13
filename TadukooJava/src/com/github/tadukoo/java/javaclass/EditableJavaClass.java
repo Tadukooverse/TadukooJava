@@ -97,7 +97,7 @@ public class EditableJavaClass extends JavaClass{
 		protected EditableJavaClass constructClass(){
 			return new EditableJavaClass(isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, className, superClassName,
+					visibility, isStatic, isFinal, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
@@ -112,6 +112,7 @@ public class EditableJavaClass extends JavaClass{
 	 * @param annotations The {@link JavaAnnotation annotations} on the class
 	 * @param visibility The {@link Visibility} of the class
 	 * @param isStatic Whether this is a static class or not
+	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -121,11 +122,11 @@ public class EditableJavaClass extends JavaClass{
 	private EditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, String className, String superClassName,
+			Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		super(true, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
-				visibility, isStatic, className, superClassName,
+				visibility, isStatic, isFinal, className, superClassName,
 				innerClasses, fields, methods);
 	}
 	
@@ -243,6 +244,13 @@ public class EditableJavaClass extends JavaClass{
 	 */
 	public void setStatic(boolean isStatic){
 		this.isStatic = isStatic;
+	}
+	
+	/**
+	 * @param isFinal Whether this is a final class or not
+	 */
+	public void setFinal(boolean isFinal){
+		this.isFinal = isFinal;
 	}
 	
 	/**

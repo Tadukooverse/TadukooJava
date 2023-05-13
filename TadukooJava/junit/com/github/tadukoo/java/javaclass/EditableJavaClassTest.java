@@ -419,6 +419,15 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testSetFinal(){
+		assertFalse(clazz.isFinal());
+		clazz.setFinal(false);
+		assertFalse(clazz.isFinal());
+		clazz.setFinal(true);
+		assertTrue(clazz.isFinal());
+	}
+	
+	@Test
 	public void testSetClassName(){
 		assertEquals(className, clazz.getClassName());
 		clazz.setClassName("SomethingElse");

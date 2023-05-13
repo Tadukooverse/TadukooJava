@@ -34,11 +34,11 @@ public class JavaClassTest{
 				boolean editable, boolean isInnerClass,
 				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isStatic, String className, String superClassName,
+				Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, className, superClassName,
+					visibility, isStatic, isFinal, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
@@ -60,7 +60,7 @@ public class JavaClassTest{
 		protected TestJavaClass constructClass(){
 			return new TestJavaClass(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, className, superClassName,
+					visibility, isStatic, isFinal, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
@@ -440,6 +440,20 @@ public class JavaClassTest{
 	}
 	
 	@Test
+	public void testToStringWithFinal(){
+		clazz = new TestJavaClassBuilder(false)
+				.isFinal()
+				.className(className)
+				.build();
+		String javaString = """
+				final class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
 	public void testToStringWithInnerClasses(){
 		clazz = new TestJavaClassBuilder(false)
 				.className(className)
@@ -564,6 +578,7 @@ public class JavaClassTest{
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
 				.visibility(Visibility.PUBLIC)
+				.isFinal()
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
@@ -592,7 +607,7 @@ public class JavaClassTest{
 				 */
 				@Test
 				@Derp
-				public class AClassName extends AnotherClassName{
+				public final class AClassName extends AnotherClassName{
 				\t
 					class BClassName{
 					\t
@@ -644,6 +659,20 @@ public class JavaClassTest{
 	}
 	
 	@Test
+	public void testToStringFinalInnerClass(){
+		clazz = new TestJavaClassBuilder(false)
+				.innerClass()
+				.isFinal()
+				.className(className)
+				.build();
+		assertEquals("""
+				final class AClassName{
+				\t
+				}
+				""", clazz.toString());
+	}
+	
+	@Test
 	public void testToStringInnerClassWithEverything(){
 		clazz = new TestJavaClassBuilder(false)
 				.innerClass()
@@ -651,7 +680,7 @@ public class JavaClassTest{
 				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
 				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
 				.visibility(Visibility.PUBLIC)
-				.isStatic()
+				.isStatic().isFinal()
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
@@ -666,7 +695,7 @@ public class JavaClassTest{
 				 */
 				@Test
 				@Derp
-				public static class AClassName extends AnotherClassName{
+				public static final class AClassName extends AnotherClassName{
 				\t
 					class BClassName{
 					\t

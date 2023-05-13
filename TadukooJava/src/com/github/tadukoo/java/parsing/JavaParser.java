@@ -792,7 +792,7 @@ public class JavaParser implements JavaTokens{
 						case PROTECTED_MODIFIER -> clazz.setVisibility(Visibility.PROTECTED);
 						case PUBLIC_MODIFIER -> clazz.setVisibility(Visibility.PUBLIC);
 						case STATIC_MODIFIER -> clazz.setStatic(true);
-						// TODO: Final on class
+						case FINAL_MODIFIER -> clazz.setFinal(true);
 					}
 				}
 				

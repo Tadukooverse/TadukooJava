@@ -42,6 +42,8 @@ public abstract class JavaClass implements JavaClassType{
 	protected Visibility visibility;
 	/** Whether this is a static class or not */
 	protected boolean isStatic;
+	/** Whether this is a final class or not */
+	protected boolean isFinal;
 	/** The name of the class */
 	protected String className;
 	/** The name of the class this one extends (may be null) */
@@ -64,8 +66,9 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param annotations The {@link JavaAnnotation annotations} on the class
 	 * @param visibility The {@link Visibility} of the class
 	 * @param isStatic Whether this is a static class or not
+	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (may be null)
+	 * @param superClassName The name of the class this one extends (can be null)
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
@@ -74,7 +77,7 @@ public abstract class JavaClass implements JavaClassType{
 			boolean editable, boolean isInnerClass,
 			JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, String className, String superClassName,
+			Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		this.editable = editable;
 		this.isInnerClass = isInnerClass;
@@ -84,6 +87,7 @@ public abstract class JavaClass implements JavaClassType{
 		this.annotations = annotations;
 		this.visibility = visibility;
 		this.isStatic = isStatic;
+		this.isFinal = isFinal;
 		this.className = className;
 		this.superClassName = superClassName;
 		this.innerClasses = innerClasses;
@@ -151,6 +155,13 @@ public abstract class JavaClass implements JavaClassType{
 	 */
 	public boolean isStatic(){
 		return isStatic;
+	}
+	
+	/**
+	 * @return Whether this class is final or not
+	 */
+	public boolean isFinal(){
+		return isFinal;
 	}
 	
 	/**
@@ -270,6 +281,11 @@ public abstract class JavaClass implements JavaClassType{
 		// Optionally add static to the class declaration
 		if(isStatic){
 			declaration.append(STATIC_MODIFIER).append(' ');
+		}
+		
+		// Optionally add final to the class declaration
+		if(isFinal){
+			declaration.append(FINAL_MODIFIER).append(' ');
 		}
 		
 		// Append class token and name to the declaration

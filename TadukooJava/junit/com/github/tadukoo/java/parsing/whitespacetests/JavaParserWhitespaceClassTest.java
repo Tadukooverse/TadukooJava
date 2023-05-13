@@ -544,7 +544,8 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 				
 				
 				public\t  \t
-				\t class \t \t
+				\t final\t  \t
+				\t    class \t \t
 				  \t \tTest{\t   \t
 						
 				\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
@@ -615,6 +616,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 								.parameter("defaultValue", "\"\"")
 								.build())
 						.visibility(Visibility.PUBLIC)
+						.isFinal()
 						.className("Test")
 						.field(EditableJavaField.builder()
 								.annotation(EditableJavaAnnotation.builder()

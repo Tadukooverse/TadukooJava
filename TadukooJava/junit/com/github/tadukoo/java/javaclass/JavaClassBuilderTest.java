@@ -37,11 +37,11 @@ public class JavaClassBuilderTest{
 				boolean editable, boolean isInnerClass,
 				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isStatic, String className, String superClassName,
+				Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, className, superClassName,
+					visibility, isStatic, isFinal, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
@@ -58,7 +58,7 @@ public class JavaClassBuilderTest{
 		protected TestJavaClass constructClass(){
 			return new TestJavaClass(false, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, className, superClassName,
+					visibility, isStatic, isFinal, className, superClassName,
 					innerClasses, fields, methods);
 		}
 	}
@@ -111,6 +111,11 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testDefaultIsFinal(){
+		assertFalse(clazz.isFinal());
+	}
+	
+	@Test
 	public void testDefaultSuperClassName(){
 		assertNull(clazz.getSuperClassName());
 	}
@@ -140,7 +145,7 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
-	public void testSetPackageDeclartion(){
+	public void testSetPackageDeclaration(){
 		JavaPackageDeclaration packageDeclaration = UneditableJavaPackageDeclaration.builder()
 				.packageName("some.package")
 				.build();
@@ -229,6 +234,16 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testSetIsStaticNoParam(){
+		clazz = new TestJavaClassBuilder()
+				.innerClass()
+				.className(className)
+				.isStatic()
+				.build();
+		assertTrue(clazz.isStatic());
+	}
+	
+	@Test
 	public void testSetIsStatic(){
 		clazz = new TestJavaClassBuilder()
 				.innerClass()
@@ -239,13 +254,21 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
-	public void testSetIsStaticNoParam(){
+	public void testSetIsFinalNoParam(){
 		clazz = new TestJavaClassBuilder()
-				.innerClass()
+				.isFinal()
 				.className(className)
-				.isStatic()
 				.build();
-		assertTrue(clazz.isStatic());
+		assertTrue(clazz.isFinal());
+	}
+	
+	@Test
+	public void testSetIsFinal(){
+		clazz = new TestJavaClassBuilder()
+				.isFinal(true)
+				.className(className)
+				.build();
+		assertTrue(clazz.isFinal());
 	}
 	
 	@Test

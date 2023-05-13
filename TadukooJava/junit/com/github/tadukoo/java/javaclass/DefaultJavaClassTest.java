@@ -112,6 +112,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testDefaultIsFinal(){
+		assertFalse(clazz.isFinal());
+	}
+	
+	@Test
 	public void testDefaultSuperClassName(){
 		assertNull(clazz.getSuperClassName());
 	}
@@ -230,6 +235,16 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testBuilderSetIsStaticNoParam(){
+		clazz = builder.get()
+				.innerClass()
+				.className(className)
+				.isStatic()
+				.build();
+		assertTrue(clazz.isStatic());
+	}
+	
+	@Test
 	public void testBuilderSetIsStatic(){
 		clazz = builder.get()
 				.innerClass()
@@ -240,13 +255,21 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
-	public void testBuilderSetIsStaticNoParam(){
+	public void testBuilderSetFinalNoParam(){
 		clazz = builder.get()
-				.innerClass()
 				.className(className)
-				.isStatic()
+				.isFinal()
 				.build();
-		assertTrue(clazz.isStatic());
+		assertTrue(clazz.isFinal());
+	}
+	
+	@Test
+	public void testBuilderSetIsFinal(){
+		clazz = builder.get()
+				.className(className)
+				.isFinal(true)
+				.build();
+		assertTrue(clazz.isFinal());
 	}
 	
 	@Test
@@ -947,6 +970,20 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testToStringWithFinal(){
+		clazz = builder.get()
+				.isFinal()
+				.className(className)
+				.build();
+		String javaString = """
+				final class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
 	public void testToStringWithEverything(){
 		clazz = builder.get()
 				.packageDeclaration(javaPackageDeclarationBuilder.get()
@@ -985,6 +1022,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
 				.visibility(Visibility.PUBLIC)
+				.isFinal()
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(builder.get().innerClass().className("BClassName").build())
 				.innerClass(builder.get().innerClass().className("CClassName").build())
@@ -1013,7 +1051,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				 */
 				@Test
 				@Derp
-				public class AClassName extends AnotherClassName{
+				public final class AClassName extends AnotherClassName{
 				\t
 					class BClassName{
 					\t
@@ -1065,6 +1103,20 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testToStringFinalInnerClass(){
+		clazz = builder.get()
+				.innerClass()
+				.isFinal()
+				.className(className)
+				.build();
+		assertEquals("""
+				final class AClassName{
+				\t
+				}
+				""", clazz.toString());
+	}
+	
+	@Test
 	public void testToStringInnerClassWithEverything(){
 		clazz = builder.get()
 				.innerClass()
@@ -1072,7 +1124,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.annotation(javaAnnotationBuilder.get().name("Test").build())
 				.annotation(javaAnnotationBuilder.get().name("Derp").build())
 				.visibility(Visibility.PUBLIC)
-				.isStatic()
+				.isStatic().isFinal()
 				.className(className).superClassName("AnotherClassName")
 				.innerClass(builder.get().innerClass().className("BClassName").build())
 				.innerClass(builder.get().innerClass().className("CClassName").build())
@@ -1087,7 +1139,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				 */
 				@Test
 				@Derp
-				public static class AClassName extends AnotherClassName{
+				public static final class AClassName extends AnotherClassName{
 				\t
 					class BClassName{
 					\t
