@@ -21,6 +21,7 @@ import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.functional.function.ThrowingFunction2;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -85,6 +86,24 @@ public class JavaParser implements JavaTokens{
 	private static final Pattern annotationParameterPattern = Pattern.compile("\\s*([^=,]*)\\s*=\\s*([^,]*),?\\s*");
 	
 	/**
+	 * A regular expression used for {@link Visibility}
+	 */
+	private static final String VISIBILITY_REGEX = "(?:(" + PUBLIC_MODIFIER + "|" + PROTECTED_MODIFIER + "|" +
+			PRIVATE_MODIFIER + ")\\s*)?";
+	/**
+	 * A regular expression used for the static modifier
+	 */
+	private static final String STATIC_REGEX = "(" + STATIC_MODIFIER + "\\s*)?";
+	/**
+	 * A regular expression used for the final modifier
+	 */
+	private static final String FINAL_REGEX = "(" + FINAL_MODIFIER + "\\s*)?";
+	/**
+	 * A regular expression used for all the modifiers
+	 */
+	private static final String MODIFIERS_REGEX = VISIBILITY_REGEX + STATIC_REGEX + FINAL_REGEX;
+	
+	/**
 	 * A {@link Pattern} used for parsing a {@link JavaField field}.
 	 * This is used for the field preceding the equals sign in a field
 	 * <table>
@@ -122,7 +141,65 @@ public class JavaParser implements JavaTokens{
 	 * </table>
 	 */
 	private static final Pattern fieldStartPattern = Pattern.compile(
-			"(public |protected |private )?(static )?(final )?(\\S*)\\s*(\\S*?)\\s*;?");
+			"\\s*" + MODIFIERS_REGEX + "(\\S*)\\s*(\\S*?)\\s*;?\\s*");
+	
+	/**
+	 * A {@link Pattern} used for parsing a {@link JavaMethod method}.
+	 * <table>
+	 *     <caption>Groups</caption>
+	 *     <tr>
+	 *         <th>#</th>
+	 *         <th>Group</th>
+	 *         <th>Example</th>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>1</td>
+	 *         <td>Method {@link Visibility}</td>
+	 *         <td>"{@code public}" from "{@code public String name(){}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>2</td>
+	 *         <td>Method Static Modifier (or empty)</td>
+	 *         <td>"{@code static}" from "{@code public static String name(){}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>3</td>
+	 *         <td>Method Final Modifier (or empty)</td>
+	 *         <td>"{@code final}" from "{@code public final String name(){}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>4</td>
+	 *         <td>Method Return Type</td>
+	 *         <td>"{@code String}" from "{@code public String name(){}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>5</td>
+	 *         <td>Method Name (or blank if a constructor)</td>
+	 *         <td>"{@code name}" from "{@code public String name(){}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>6</td>
+	 *         <td>Method Parameters (or empty)</td>
+	 *         <td>"{@code String blah, int derp}" from "{@code public String name(String blah, int derp){}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>7</td>
+	 *         <td>Method Throw Types (or empty)</td>
+	 *         <td>"{@code Exception, Throwable}" from "{@code public String name() throws Exception, Throwable{}}"</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>8</td>
+	 *         <td>Method Content (or empty)</td>
+	 *         <td>"{@code doSomething();}" from "{@code public String name(){ doSomething(); }}"</td>
+	 *     </tr>
+	 * </table>
+	 */
+	private static final Pattern methodPattern = Pattern.compile(
+			"\\s*" + MODIFIERS_REGEX +
+					"([^\\s(]*)(\\s*[^\\s(]*)?\\s*" +
+					"\\(\\s*(.*)\\s*\\)(?:\\s*throws (.*))?" +
+					"\\s*\\{\\s*(.*)\\s*}",
+			Pattern.DOTALL);
 	
 	/**
 	 * Used as a pojo for a return type of the various parsing sub-methods
@@ -149,10 +226,10 @@ public class JavaParser implements JavaTokens{
 		List<JavaType> types = new ArrayList<>();
 		
 		// Iterate over the tokens
-		int i = 0;
-		while(i < tokens.size()){
+		int currentToken = 0;
+		while(currentToken < tokens.size()){
 			// Grab the current token
-			String token = tokens.get(i);
+			String token = tokens.get(currentToken);
 			
 			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
 			
@@ -178,13 +255,21 @@ public class JavaParser implements JavaTokens{
 				// Parse a type with modifiers (could be field, method, class, etc.)
 				parseMethod = this::parseTypeWithModifiers;
 			}else{
-				throw new JavaParsingException(JavaTypes.UNKNOWN, "Unable to determine token: '" + token + "'");
+				JavaTypes typeToParse = determineFieldOrMethod(tokens, currentToken);
+				if(typeToParse == JavaTypes.FIELD){
+					parseMethod = this::parseField;
+				}else if(typeToParse == JavaTypes.METHOD){
+					parseMethod = this::parseMethod;
+				}else{
+					throw new JavaParsingException(JavaTypes.UNKNOWN, "Failed to determine type from token '" +
+							token + "'");
+				}
 			}
 			
 			// Use the parse method and handle its results
-			ParsingPojo pojo = parseMethod.apply(tokens, i);
+			ParsingPojo pojo = parseMethod.apply(tokens, currentToken);
 			types.add(pojo.parsedType());
-			i = pojo.nextTokenIndex();
+			currentToken = pojo.nextTokenIndex();
 		}
 		
 		// Build the final type to be returned based on our collected types
@@ -193,36 +278,143 @@ public class JavaParser implements JavaTokens{
 		}else{
 			JavaPackageDeclaration packageDeclaration = null;
 			List<JavaImportStatement> importStatements = new ArrayList<>();
+			List<JavaAnnotation> annotations = new ArrayList<>();
+			JavaField javaField = null;
+			JavaMethod javaMethod = null;
 			JavaClass javaClass = null;
 			for(JavaType type: types){
 				if(type instanceof JavaPackageDeclaration declaration){
+					// Can't have multiple package declarations
 					if(packageDeclaration != null){
 						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two package declarations!");
 					}
+					
+					// Can't have package declaration after the class
 					if(javaClass != null){
 						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered package declaration after class!");
 					}
+					
+					// Set the package declaration to be potentially added to something else
 					packageDeclaration = declaration;
 				}else if(type instanceof JavaImportStatement importStmt){
+					// Can't have import statements after the class
 					if(javaClass != null){
 						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered import statement after class!");
 					}
+					
+					// Add the import statement to the list to be potentially added to something else
 					importStatements.add(importStmt);
+				}else if(type instanceof JavaAnnotation annotation){
+					// Can't have annotations after the class
+					if(javaClass != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered annotation after class!");
+					}
+					
+					// Add the annotation to the list to be potentially added to something else
+					annotations.add(annotation);
+				}else if(type instanceof EditableJavaField field){
+					// Can't have multiple fields - having a field at top level is for field to be the main type
+					if(javaField != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two fields!");
+					}
+					
+					// Can't have class randomly before field
+					if(javaClass != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered field outside a class!");
+					}
+					
+					// Can't have package declarations
+					if(packageDeclaration != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered package declaration before field!");
+					}
+					
+					// Can't have import statements
+					if(!importStatements.isEmpty()){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered import statements before field!");
+					}
+					
+					// Add annotations to the field
+					if(!annotations.isEmpty()){
+						field.setAnnotations(annotations);
+					}
+					
+					// Set the field to be returned
+					javaField = field;
+				}else if(type instanceof EditableJavaMethod method){
+					// Can't have multiple methods - having a method at top level is for method to be the main type
+					if(javaMethod != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two methods!");
+					}
+					
+					// Can't have class randomly before method
+					if(javaClass != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered method outside a class!");
+					}
+					
+					// Can't have package declarations
+					if(packageDeclaration != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered package declaration before method!");
+					}
+					
+					// Can't have import statements
+					if(!importStatements.isEmpty()){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered import statements before method!");
+					}
+					
+					// Add annotations to the method
+					if(!annotations.isEmpty()){
+						method.setAnnotations(annotations);
+					}
+					
+					// Set the method to be returned
+					javaMethod = method;
 				}else if(type instanceof EditableJavaClass clazz){
+					// Can't have multiple outer level classes
 					if(javaClass != null){
 						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two outer level classes!");
 					}
+					
+					// Can't have fields before the class outside of it
+					if(javaField != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered fields outside a class!");
+					}
+					
+					// Can't have methods before the class outside of it
+					if(javaMethod != null){
+						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered methods outside a class!");
+					}
+					
+					// Add package declaration if we have it
 					if(packageDeclaration != null){
 						clazz.setPackageDeclaration(packageDeclaration);
 					}
+					
+					// Add any import statements if we have them
 					if(!importStatements.isEmpty()){
 						clazz.setImportStatements(importStatements);
 					}
+					
+					// Add any annotations if we have them
+					if(!annotations.isEmpty()){
+						clazz.setAnnotations(annotations);
+					}
+					
+					// Set the class to be returned
 					javaClass = clazz;
 				}else{
 					throw new JavaParsingException(JavaTypes.UNKNOWN, "Unknown how to handle putting '" +
 							type.getJavaType() + "' together with other types!");
 				}
+			}
+			
+			// Return field if we got it
+			if(javaField != null){
+				return javaField;
+			}
+			
+			// Return method if we got it
+			if(javaMethod != null){
+				return javaMethod;
 			}
 			
 			// Return class if we got it
@@ -231,6 +423,49 @@ public class JavaParser implements JavaTokens{
 			}
 			
 			throw new JavaParsingException(JavaTypes.UNKNOWN, "Unable to collect unknown types together");
+		}
+	}
+	
+	/**
+	 * Used to determine if we have a field or method based on the token we're looking at in parsing.
+	 * This is used in several places to determine which we're looking at, hence the need for a method to
+	 * reduce repeated code :P
+	 *
+	 * @param tokens The tokens we're parsing
+	 * @param currentToken The current token being looked at
+	 * @return Either {@link JavaTypes#FIELD}, {@link JavaTypes#METHOD}, or {@link JavaTypes#UNKNOWN}
+	 */
+	private JavaTypes determineFieldOrMethod(List<String> tokens, int currentToken){
+		String token = tokens.get(currentToken);
+		// First token is a type (possibly with start of parameters if a method)
+		if(token.contains(PARAMETER_OPEN_TOKEN)){
+			// We got a method
+			return JavaTypes.METHOD;
+		}else if(token.contains(ASSIGNMENT_OPERATOR_TOKEN)){
+			// We got a field
+			return JavaTypes.FIELD;
+		}else if(currentToken+1 < tokens.size()){
+			String nextToken = tokens.get(currentToken+1);
+			if(nextToken.contains(PARAMETER_OPEN_TOKEN)){
+				// We got a method
+				return JavaTypes.METHOD;
+			}else if(nextToken.contains(SEMICOLON)){
+				// We got a field
+				return JavaTypes.FIELD;
+			}else if(currentToken+2 < tokens.size()){
+				String nextNextToken = tokens.get(currentToken+2);
+				if(nextNextToken.startsWith(PARAMETER_OPEN_TOKEN)){
+					// We got a method
+					return JavaTypes.METHOD;
+				}else{
+					// We got a field
+					return JavaTypes.FIELD;
+				}
+			}else{
+				return JavaTypes.UNKNOWN;
+			}
+		}else{
+			return JavaTypes.UNKNOWN;
 		}
 	}
 	
@@ -359,7 +594,7 @@ public class JavaParser implements JavaTokens{
 	}
 	
 	/**
-	 * Parses an {@link Javadoc} from the given tokens and starting index
+	 * Parses a {@link Javadoc} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
 	 * @param startToken The index of the token to start parsing at
@@ -410,15 +645,106 @@ public class JavaParser implements JavaTokens{
 			errors.add("First token of annotation must start with '" + ANNOTATION_START_TOKEN + "'");
 		}
 		
-		// TODO: Handle actual parsing
+		// Start building the full annotation String - we're using regexes here
+		String firstToken = tokens.get(startToken);
+		StringBuilder fullAnnotation = new StringBuilder(firstToken);
+		
+		// Add the next token if we were missing the annotation name
+		int currentToken = startToken+1;
+		if(StringUtil.equals(firstToken, ANNOTATION_START_TOKEN)){
+			String nextToken = tokens.get(currentToken);
+			fullAnnotation.append(nextToken);
+			currentToken++;
+		}
+		
+		// Now check if we started/ended parameters
+		boolean parametersOpen = false, parametersDone = false;
+		if(fullAnnotation.toString().contains(PARAMETER_OPEN_TOKEN)){
+			parametersOpen = true;
+			if(fullAnnotation.toString().contains(PARAMETER_CLOSE_TOKEN)){
+				parametersDone = true;
+			}
+		}
+		
+		// If we did not start parameters, the only way to continue is if the next token starts parameters
+		if(!parametersOpen && currentToken < tokens.size()){
+			String nextToken = tokens.get(currentToken);
+			if(nextToken.startsWith(PARAMETER_OPEN_TOKEN)){
+				currentToken++;
+				parametersOpen = true;
+				fullAnnotation.append(nextToken);
+				if(nextToken.endsWith(PARAMETER_CLOSE_TOKEN)){
+					parametersDone = true;
+				}
+			}
+		}
+		
+		// Keep going until we complete the parameters
+		while(parametersOpen && !parametersDone && currentToken < tokens.size()){
+			String token = tokens.get(currentToken);
+			fullAnnotation.append(token);
+			if(token.endsWith(PARAMETER_CLOSE_TOKEN)){
+				parametersDone = true;
+			}
+			currentToken++;
+		}
+		
+		// If we opened and never finished parameters, that's an issue
+		if(parametersOpen && !parametersDone){
+			errors.add("Didn't find end of parameters");
+		}
+		
+		// Parse the annotation using the regex method
+		JavaAnnotation annotation = parseAnnotation(fullAnnotation.toString());
+		
+		// If annotation is null, we got problems
+		if(annotation == null){
+			errors.add("Failed to parse annotation");
+		}
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
 			throw new JavaParsingException(JavaTypes.ANNOTATION, StringUtil.buildStringWithNewLines(errors));
 		}
 		
-		// TODO: Return a proper pojo
-		return new ParsingPojo(startToken, null);
+		return new ParsingPojo(currentToken, annotation);
+	}
+	
+	/**
+	 * Parses the given text into an {@link JavaAnnotation annotation} if possible, or returns null
+	 *
+	 * @param content The text to be parsed into a {@link JavaAnnotation annotation}
+	 * @return The {@link JavaAnnotation annotation} parsed from the text, or {@code null} if it can't be parsed
+	 */
+	public JavaAnnotation parseAnnotation(String content){
+		Matcher annotationMatcher = annotationPattern.matcher(content);
+		if(annotationMatcher.matches()){
+			JavaAnnotationBuilder<EditableJavaAnnotation> builder = EditableJavaAnnotation.builder();
+			
+			// Grab the name and add it to the builder
+			String annotationName = StringUtil.trim(annotationMatcher.group(1));
+			builder.name(annotationName);
+			
+			// Grab and parse the parameters
+			String annotationParameters = StringUtil.trim(annotationMatcher.group(2));
+			if(StringUtil.isNotBlank(annotationParameters)){
+				Matcher parameterMatcher = annotationParameterPattern.matcher(annotationParameters);
+				boolean firstFind = parameterMatcher.find();
+				if(!firstFind){
+					builder.parameter("value", annotationParameters);
+				}else{
+					do{
+						String parameterName = StringUtil.trim(parameterMatcher.group(1));
+						String parameterValue = StringUtil.trim(parameterMatcher.group(2));
+						builder.parameter(parameterName, parameterValue);
+					}while(parameterMatcher.find());
+				}
+			}
+			
+			return builder.build();
+		}else{
+			return null;
+		}
 	}
 	
 	/**
@@ -472,7 +798,42 @@ public class JavaParser implements JavaTokens{
 				
 				break;
 			}else{
-				// TODO: Handle fields and methods here
+				type = determineFieldOrMethod(tokens, currentToken);
+				if(type == JavaTypes.METHOD){
+					// Parse the method and handle modifiers on it
+					ParsingPojo result = parseMethod(tokens, currentToken);
+					EditableJavaMethod method = (EditableJavaMethod) result.parsedType();
+					for(String modifier: modifiers){
+						switch(modifier){
+							case PRIVATE_MODIFIER -> method.setVisibility(Visibility.PRIVATE);
+							case PROTECTED_MODIFIER -> method.setVisibility(Visibility.PROTECTED);
+							case PUBLIC_MODIFIER -> method.setVisibility(Visibility.PUBLIC);
+							case STATIC_MODIFIER -> method.setStatic(true);
+							// TODO: Handle final on method
+						}
+					}
+					resultType = method;
+					currentToken = result.nextTokenIndex();
+					break;
+				}else if(type == JavaTypes.FIELD){
+					// Parse the field and handle modifiers on it
+					ParsingPojo result = parseField(tokens, currentToken);
+					EditableJavaField field = (EditableJavaField) result.parsedType();
+					for(String modifier: modifiers){
+						switch(modifier){
+							case PRIVATE_MODIFIER -> field.setVisibility(Visibility.PRIVATE);
+							case PROTECTED_MODIFIER -> field.setVisibility(Visibility.PROTECTED);
+							case PUBLIC_MODIFIER -> field.setVisibility(Visibility.PUBLIC);
+							case STATIC_MODIFIER -> field.setStatic(true);
+							case FINAL_MODIFIER -> field.setFinal(true);
+						}
+					}
+					resultType = field;
+					currentToken = result.nextTokenIndex();
+					break;
+				}else{
+					errors.add("Failed to determine type");
+				}
 			}
 		}
 		
@@ -515,10 +876,94 @@ public class JavaParser implements JavaTokens{
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	private ParsingPojo parseField(List<String> tokens, int startToken) throws JavaParsingException{
-		// TODO: Handle actual parsing
+		// Keep track of any errors
+		List<String> errors = new ArrayList<>();
 		
-		// TODO: Return a proper pojo
-		return new ParsingPojo(startToken, null);
+		StringBuilder field = new StringBuilder();
+		// Iterate over tokens until we find the semicolon
+		int currentToken = startToken;
+		boolean foundSemicolon = false;
+		for(; currentToken < tokens.size() && !foundSemicolon; currentToken++){
+			String token = tokens.get(currentToken);
+			if(!field.isEmpty()){
+				field.append(' ');
+			}
+			field.append(token);
+			
+			// Check if we got the semicolon
+			if(token.endsWith(SEMICOLON)){
+				foundSemicolon = true;
+			}
+		}
+		
+		// If we don't have a semicolon, it's a problem
+		if(!foundSemicolon){
+			errors.add("Failed to find semicolon at end of field");
+		}
+		
+		// If we don't get a field, it's a problem
+		JavaField javaField = parseField(field.toString());
+		if(javaField == null){
+			errors.add("Failed to parse a field");
+		}
+		
+		// If we had any errors, throw 'em
+		if(!errors.isEmpty()){
+			throw new JavaParsingException(JavaTypes.FIELD, StringUtil.buildStringWithNewLines(errors));
+		}
+		
+		return new ParsingPojo(currentToken, javaField);
+	}
+	
+	/**
+	 * Parses a Java Field (not counting any Javadoc before it, just the field itself)
+	 *
+	 * @param content The text to be parsed into a {@link JavaField field)}
+	 * @return The parsed {@link JavaField field}, or null if we don't have a field
+	 */
+	public JavaField parseField(String content) throws JavaParsingException{
+		// Check if field ends with semicolon for failure
+		if(!StringUtil.trim(content).endsWith(SEMICOLON)){
+			throw new JavaParsingException(JavaTypes.FIELD, "Failed to find semicolon at end of field");
+		}
+		
+		// Find the equals signs in the field
+		int equalsIndex = content.indexOf(ASSIGNMENT_OPERATOR_TOKEN);
+		
+		String value = null;
+		String firstPart = content;
+		
+		// Anything after equals is the value (if we even have equals)
+		if(equalsIndex != -1){
+			value = StringUtil.trim(content.substring(equalsIndex + 1));
+			
+			// remove semicolon from value if it exists
+			if(value.endsWith(SEMICOLON)){
+				value = StringUtil.trim(value.substring(0, value.length()-1));
+			}
+			
+			// Before equals is the modifiers, type, and name
+			firstPart = content.substring(0, equalsIndex);
+		}
+		
+		// Handle matching for the first part of the string (modifiers, type, name)
+		Matcher matcher = fieldStartPattern.matcher(firstPart);
+		if(matcher.matches()){
+			Visibility visibility = Visibility.fromToken(StringUtil.trim(matcher.group(1)));
+			boolean isStatic = StringUtil.isNotBlank(matcher.group(2));
+			boolean isFinal = StringUtil.isNotBlank(matcher.group(3));
+			String type = StringUtil.trim(matcher.group(4));
+			String name = StringUtil.trim(matcher.group(5));
+			
+			return EditableJavaField.builder()
+					.visibility(visibility)
+					.isStatic(isStatic).isFinal(isFinal)
+					.type(type).name(name)
+					.value(value)
+					.build();
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -530,10 +975,162 @@ public class JavaParser implements JavaTokens{
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	private ParsingPojo parseMethod(List<String> tokens, int startToken) throws JavaParsingException{
-		// TODO: Handle actual parsing
+		// Keep track of errors
+		List<String> errors = new ArrayList<>();
 		
-		// TODO: Return a proper pojo
-		return new ParsingPojo(startToken, null);
+		// Build the method string
+		StringBuilder methodString = new StringBuilder();
+		boolean inParameters = false;
+		boolean parametersDone = false;
+		boolean insideMethod = false;
+		int openBlocks = 0;
+		boolean methodDone = false;
+		int currentToken;
+		for(currentToken = startToken; currentToken < tokens.size() && !methodDone; currentToken++){
+			String token = tokens.get(currentToken);
+			if(!methodString.isEmpty()){
+				methodString.append(' ');
+			}
+			methodString.append(token);
+			
+			// Check for parameter start token if we're not yet in parameters
+			if(!parametersDone && !inParameters && token.contains(PARAMETER_OPEN_TOKEN)){
+				inParameters = true;
+			}
+			
+			// If we're in parameters and not yet done, check for parameter end token
+			if(!parametersDone && inParameters && token.contains(PARAMETER_CLOSE_TOKEN)){
+				inParameters = false;
+				parametersDone = true;
+			}
+			
+			// If parameters are done, check for block open
+			if(parametersDone && token.contains(BLOCK_OPEN_TOKEN)){
+				insideMethod = true;
+			}
+			
+			// If inside the method, update the number of open blocks
+			if(insideMethod){
+				// Count open and close block tokens
+				int openTokens = 0, closeTokens = 0;
+				if(token.contains(BLOCK_OPEN_TOKEN)){
+					openTokens = 1;
+					String[] openSplit = token.split("\\" + BLOCK_OPEN_TOKEN);
+					if(openSplit.length > 2){
+						openTokens = openSplit.length - 1;
+					}
+				}
+				if(token.contains(BLOCK_CLOSE_TOKEN)){
+					closeTokens = 1;
+					String[] closeSplit = token.split(BLOCK_CLOSE_TOKEN);
+					if(closeSplit.length > 2){
+						closeTokens = closeSplit.length - 1;
+					}
+				}
+				// Figure out current number of open blocks (update previous count)
+				openBlocks += openTokens - closeTokens;
+				
+				// If open blocks = 0, we're done
+				if(openBlocks == 0){
+					methodDone = true;
+				}
+			}
+		}
+		
+		// If we didn't do parameters, it's a problem
+		if(!parametersDone){
+			errors.add("Didn't complete parameters in method");
+		}
+		
+		// If we didn't finish the method, it's a problem
+		if(!methodDone){
+			errors.add("Didn't complete the method");
+		}
+		
+		// If we had any errors, throw 'em
+		if(!errors.isEmpty()){
+			throw new JavaParsingException(JavaTypes.METHOD, StringUtil.buildStringWithNewLines(errors));
+		}
+		
+		// Build the method
+		return new ParsingPojo(currentToken, parseMethod(methodString.toString()));
+	}
+	
+	/**
+	 * Parses a Java Method (not counting any Javadoc before it, just the method itself)
+	 *
+	 * @param content The text to be parsed into a {@link JavaMethod method)}
+	 * @return The parsed {@link JavaMethod method}, or null if we don't have a method
+	 */
+	public JavaMethod parseMethod(String content){
+		String methodString = StringUtil.trim(content);
+		
+		// Use regex to parse the method
+		Matcher matcher = methodPattern.matcher(methodString);
+		if(matcher.matches()){
+			Visibility visibility = Visibility.fromToken(StringUtil.trim(matcher.group(1)));
+			boolean isStatic = StringUtil.isNotBlank(matcher.group(2));
+			//boolean isFinal = StringUtil.isNotBlank(matcher.group(3)); TODO: Handle final on method
+			String returnType = StringUtil.trim(matcher.group(4));
+			String name = StringUtil.trim(matcher.group(5));
+			String parameterString = StringUtil.trim(matcher.group(6));
+			String throwsString = StringUtil.trim(matcher.group(7));
+			String contentString = StringUtil.trim(matcher.group(8));
+			
+			// Parse parameters
+			List<Pair<String, String>> parameters = new ArrayList<>();
+			if(StringUtil.isNotBlank(parameterString)){
+				if(parameterString.contains(LIST_SEPARATOR_TOKEN)){
+					String[] parameterList = parameterString.split(LIST_SEPARATOR_TOKEN);
+					for(String aParameter: parameterList){
+						String[] parameterSplit = StringUtil.trim(aParameter).split("\\s+");
+						String parameterType = StringUtil.trim(parameterSplit[0]);
+						String parameterName = StringUtil.trim(parameterSplit[1]);
+						parameters.add(Pair.of(parameterType, parameterName));
+					}
+				}else{
+					String[] parameterSplit = parameterString.split("\\s+");
+					String parameterType = StringUtil.trim(parameterSplit[0]);
+					String parameterName = StringUtil.trim(parameterSplit[1]);
+					parameters.add(Pair.of(parameterType, parameterName));
+				}
+			}
+			
+			// Parse throws
+			List<String> throwTypes = new ArrayList<>();
+			if(StringUtil.isNotBlank(throwsString)){
+				if(throwsString.contains(LIST_SEPARATOR_TOKEN)){
+					for(String throwType: throwsString.split(LIST_SEPARATOR_TOKEN)){
+						throwTypes.add(StringUtil.trim(throwType));
+					}
+				}else{
+					throwTypes.add(throwsString);
+				}
+			}
+			
+			// Parse content
+			List<String> lines = new ArrayList<>();
+			if(StringUtil.isNotBlank(contentString)){
+				if(contentString.contains(SEMICOLON)){
+					for(String line: contentString.split(SEMICOLON)){
+						lines.add(StringUtil.trim(line) + SEMICOLON);
+					}
+				}else{
+					lines.add(contentString);
+				}
+			}
+			
+			return EditableJavaMethod.builder()
+					.visibility(visibility)
+					.isStatic(isStatic)
+					.returnType(returnType).name(name)
+					.parameters(parameters)
+					.throwTypes(throwTypes)
+					.lines(lines)
+					.build();
+		}else{
+			return null;
+		}
 	}
 	
 	/**
@@ -579,7 +1176,7 @@ public class JavaParser implements JavaTokens{
 		// Parse the rest for items within the class
 		String superClassName = null;
 		List<JavaType> itemsInClass = new ArrayList<>();
-		for(; currentToken < tokens.size() && !endReached; currentToken++){
+		while(currentToken < tokens.size() && !endReached){
 			String token = tokens.get(currentToken);
 			
 			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
@@ -604,15 +1201,18 @@ public class JavaParser implements JavaTokens{
 				}else if(endReached){
 					errors.add("We reached the end of the class without finding the block open token");
 				}
+				currentToken++;
 				continue;
 			}else if(StringUtil.equals(token, BLOCK_OPEN_TOKEN)){
 				if(hitBlockOpenToken){
 					errors.add("We hit the block open token twice for the same class!");
 				}
 				hitBlockOpenToken = true;
+				currentToken++;
 				continue;
 			}else if(StringUtil.equals(token, BLOCK_CLOSE_TOKEN)){
 				endReached = true;
+				currentToken++;
 				continue;
 			}else if(StringUtil.equals(token, CLASS_TOKEN)){
 				// Parse a class
@@ -630,7 +1230,14 @@ public class JavaParser implements JavaTokens{
 				// Parse a type with modifiers (could be field, method, class, etc.)
 				parseMethod = this::parseTypeWithModifiers;
 			}else{
-				throw new JavaParsingException(JavaTypes.CLASS, "Unable to determine token: '" + token + "'");
+				JavaTypes type = determineFieldOrMethod(tokens, currentToken);
+				if(type == JavaTypes.FIELD){
+					parseMethod = this::parseField;
+				}else if(type == JavaTypes.METHOD){
+					parseMethod = this::parseMethod;
+				}else{
+					throw new JavaParsingException(JavaTypes.CLASS, "Unable to determine token: '" + token + "'");
+				}
 			}
 			
 			// Run the parse method
@@ -708,85 +1315,5 @@ public class JavaParser implements JavaTokens{
 		}
 		
 		return new ParsingPojo(currentToken, builder.build());
-	}
-	
-	/**
-	 * Parses the given text into an {@link JavaAnnotation annotation} if possible, or returns null
-	 *
-	 * @param content The text to be parsed into a {@link JavaAnnotation annotation}
-	 * @return The {@link JavaAnnotation annotation} parsed from the text, or {@code null} if it can't be parsed
-	 */
-	// TODO: Remove old method
-	public JavaAnnotation parseAnnotation(String content){
-		Matcher annotationMatcher = annotationPattern.matcher(content);
-		if(annotationMatcher.matches()){
-			JavaAnnotationBuilder<EditableJavaAnnotation> builder = EditableJavaAnnotation.builder();
-			
-			// Grab the name and add it to the builder
-			String annotationName = StringUtil.trim(annotationMatcher.group(1));
-			builder.name(annotationName);
-			
-			// Grab and parse the parameters
-			String annotationParameters = StringUtil.trim(annotationMatcher.group(2));
-			if(StringUtil.isNotBlank(annotationParameters)){
-				Matcher parameterMatcher = annotationParameterPattern.matcher(annotationParameters);
-				while(parameterMatcher.find()){
-					String parameterName = StringUtil.trim(parameterMatcher.group(1));
-					String parameterValue = StringUtil.trim(parameterMatcher.group(2));
-					builder.parameter(parameterName, parameterValue);
-				}
-			}
-			
-			return builder.build();
-		}else{
-			return null;
-		}
-	}
-	
-	/**
-	 * Parses a Java Field (not counting any Javadoc before it, just the field itself)
-	 *
-	 * @param content The text to be parsed into a {@link JavaField field)}
-	 * @return The parsed {@link JavaField field}, or null if we don't have a field
-	 */
-	// TODO: Remove old method
-	public JavaField parseField(String content){
-		// Find the equals signs in the field
-		int equalsIndex = content.indexOf('=');
-		
-		String value = null;
-		String firstPart = content;
-		
-		// Anything after equals is the value (if we even have equals)
-		if(equalsIndex != -1){
-			value = StringUtil.trim(content.substring(equalsIndex + 1));
-			
-			// remove semicolon from value if it exists
-			if(value.endsWith(";")){
-				value = StringUtil.trim(value.substring(0, value.length()-1));
-			}
-			
-			// Before equals is the modifiers, type, and name
-			firstPart = content.substring(0, equalsIndex);
-		}
-		
-		// Handle matching for the first part of the string (modifiers, type, name)
-		Matcher matcher = fieldStartPattern.matcher(firstPart);
-		if(matcher.matches()){
-			Visibility visibility = Visibility.fromToken(StringUtil.trim(matcher.group(1)));
-			boolean isStatic = StringUtil.isNotBlank(matcher.group(2));
-			boolean isFinal = StringUtil.isNotBlank(matcher.group(3));
-			String type = StringUtil.trim(matcher.group(4));
-			String name = StringUtil.trim(matcher.group(5));
-			
-			return EditableJavaField.builder()
-					.visibility(visibility)
-					.isStatic(isStatic).isFinal(isFinal)
-					.type(type).name(name)
-					.value(value)
-					.build();
-		}
-		
-		return null;
 	}
 }

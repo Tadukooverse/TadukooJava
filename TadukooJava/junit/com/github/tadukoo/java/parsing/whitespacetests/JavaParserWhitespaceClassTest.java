@@ -1,9 +1,12 @@
 package com.github.tadukoo.java.parsing.whitespacetests;
 
+import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
+import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.javaclass.EditableJavaClass;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
 import com.github.tadukoo.java.parsing.JavaParsingException;
@@ -381,6 +384,124 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 				clazz);
 	}
 	
+	@Test
+	public void testWhitespaceAnnotationInsane() throws JavaParsingException{
+		JavaClass clazz = runParserForClass("""
+				\t  \t @ \t  \tTest\t  (\t \ttype \t =\s
+				  \t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t
+				
+				class Test{
+				}
+				""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.annotation(EditableJavaAnnotation.builder()
+								.name("Test")
+								.parameter("type", "String.class")
+								.parameter("defaultValue", "\"\"")
+								.build())
+						.className("Test")
+						.build(),
+				clazz);
+	}
+	
+	@Test
+	public void testWhitespaceFieldInsane() throws JavaParsingException{
+		JavaClass clazz = runParserForClass("""
+				class Test{
+					\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
+				\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
+				  \t
+				 \t    \t@       Derp   \t
+				   \t public\t     \t
+				   \t static\t     \t
+				   \t final\t     \t  \t
+				 \tString \t  \t
+				 \t  type    \t   \t
+				  \t =    \t   \t
+				  \t "" \t  \t
+				\t;     \t
+				 \t  \s
+				}
+				""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.className("Test")
+						.field(EditableJavaField.builder()
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Test")
+										.parameter("type", "String.class")
+										.parameter("defaultValue", "\"\"")
+										.build())
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Derp")
+										.build())
+								.visibility(Visibility.PUBLIC)
+								.isStatic().isFinal()
+								.type("String").name("type")
+								.value("\"\"")
+								.build())
+						.build(),
+				clazz);
+	}
+	
+	@Test
+	public void testWhitespaceMethodInsane() throws JavaParsingException{
+		JavaClass clazz = runParserForClass("""
+				class Test{
+					\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
+					\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
+					\t    \t@       Derp   \t
+						\t   \t
+						\t    private     \t   \t
+					\t    static     \t   \t
+					\t    String     \t   \t
+					\t    test     \t   \t
+					\t    (     \t   \t
+					\t    String     \t   \t
+					\t    type     \t   \t
+					\t    ,     \t   \t
+					\t    int     \t   \t
+					\t    derp     \t   \t
+					\t    )     \t   \t
+					\t    throws     \t   \t
+					\t    Exception     \t   \t
+					\t    ,     \t   \t
+					\t    Throwable     \t   \t
+					\t    {     \t   \t
+					\t    doSomething()     \t   \t
+					\t    ;     \t   \t
+					\t    doSomethingElse()     \t   \t
+					\t    ;     \t   \t
+					\t    }     \t   \t
+					\t    \s
+				}""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.className("Test")
+						.method(EditableJavaMethod.builder()
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Test")
+										.parameter("type", "String.class")
+										.parameter("defaultValue", "\"\"")
+										.build())
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Derp")
+										.build())
+								.visibility(Visibility.PRIVATE)
+								.isStatic()
+								.returnType("String").name("test")
+								.parameter("String", "type")
+								.parameter("int", "derp")
+								.throwType("Exception")
+								.throwType("Throwable")
+								.line("doSomething();")
+								.line("doSomethingElse();")
+								.build())
+						.build(),
+				clazz);
+	}
+	
 	/*
 	 * Test them all combined
 	 */
@@ -418,10 +539,53 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 				\t      ;
 				\t  \t import \t      \t static\t  com.example.SomethingElseStatic\t \t  ;\t     \t
 				
+				\t  \t @ \t  \tTest\t  (\t \ttype \t =\s
+				  \t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t
+				
+				
 				public\t  \t
 				\t class \t \t
 				  \t \tTest{\t   \t
 						
+				\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
+				\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
+				  \t
+				 \t    \t@       Derp   \t
+				   \t public\t     \t
+				   \t static\t     \t
+				   \t final\t     \t  \t
+				 \tString \t  \t
+				 \t  type    \t   \t
+				  \t =    \t   \t
+				  \t "" \t  \t
+				\t;     \t
+				 \t  \s
+				 \t  \t @ \t  \tTest\t  (\t \ttype \t = \t
+					\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
+					\t    \t@       Derp   \t
+						\t   \t
+						\t    private     \t   \t
+					\t    static     \t   \t
+					\t    String     \t   \t
+					\t    test     \t   \t
+					\t    (     \t   \t
+					\t    String     \t   \t
+					\t    type     \t   \t
+					\t    ,     \t   \t
+					\t    int     \t   \t
+					\t    derp     \t   \t
+					\t    )     \t   \t
+					\t    throws     \t   \t
+					\t    Exception     \t   \t
+					\t    ,     \t   \t
+					\t    Throwable     \t   \t
+					\t    {     \t   \t
+					\t    doSomething()     \t   \t
+					\t    ;     \t   \t
+					\t    doSomethingElse()     \t   \t
+					\t    ;     \t   \t
+					\t    }     \t   \t
+					\t    \s
 				\t
 				}\t    \t
 				\t
@@ -445,8 +609,46 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 								.isStatic()
 								.importName("com.example.SomethingElseStatic")
 								.build())
+						.annotation(EditableJavaAnnotation.builder()
+								.name("Test")
+								.parameter("type", "String.class")
+								.parameter("defaultValue", "\"\"")
+								.build())
 						.visibility(Visibility.PUBLIC)
 						.className("Test")
+						.field(EditableJavaField.builder()
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Test")
+										.parameter("type", "String.class")
+										.parameter("defaultValue", "\"\"")
+										.build())
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Derp")
+										.build())
+								.visibility(Visibility.PUBLIC)
+								.isStatic().isFinal()
+								.type("String").name("type")
+								.value("\"\"")
+								.build())
+						.method(EditableJavaMethod.builder()
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Test")
+										.parameter("type", "String.class")
+										.parameter("defaultValue", "\"\"")
+										.build())
+								.annotation(EditableJavaAnnotation.builder()
+										.name("Derp")
+										.build())
+								.visibility(Visibility.PRIVATE)
+								.isStatic()
+								.returnType("String").name("test")
+								.parameter("String", "type")
+								.parameter("int", "derp")
+								.throwType("Exception")
+								.throwType("Throwable")
+								.line("doSomething();")
+								.line("doSomethingElse();")
+								.build())
 						.build(),
 				clazz);
 	}

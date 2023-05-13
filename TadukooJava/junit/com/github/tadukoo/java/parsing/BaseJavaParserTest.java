@@ -1,7 +1,10 @@
 package com.github.tadukoo.java.parsing;
 
+import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
+import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.JavaTypes;
@@ -59,6 +62,51 @@ public abstract class BaseJavaParserTest{
 		assertEquals(JavaTypes.IMPORT_STATEMENT, type.getJavaType());
 		assertTrue(type instanceof JavaImportStatement);
 		return (JavaImportStatement) type;
+	}
+	
+	/**
+	 * Used to run the {@link JavaParser} and get back a {@link JavaAnnotation}. Will fail some
+	 * assertions if some other thing is returned instead
+	 *
+	 * @param content The String to be parsed into a {@link JavaAnnotation}
+	 * @return The parsed {@link JavaAnnotation}
+	 * @throws JavaParsingException If anything goes wrong with parsing
+	 */
+	protected JavaAnnotation runParserForAnnotation(String content) throws JavaParsingException{
+		JavaType type = parser.parseType(content);
+		assertEquals(JavaTypes.ANNOTATION, type.getJavaType());
+		assertTrue(type instanceof JavaAnnotation);
+		return (JavaAnnotation) type;
+	}
+	
+	/**
+	 * Used to run the {@link JavaParser} and get back a {@link JavaField}. Will fail some
+	 * assertions if some other thing is returned instead
+	 *
+	 * @param content The String to be parsed into a {@link JavaField}
+	 * @return The parsed {@link JavaField}
+	 * @throws JavaParsingException If anything goes wrong with parsing
+	 */
+	protected JavaField runParserForField(String content) throws JavaParsingException{
+		JavaType type = parser.parseType(content);
+		assertEquals(JavaTypes.FIELD, type.getJavaType());
+		assertTrue(type instanceof JavaField);
+		return (JavaField) type;
+	}
+	
+	/**
+	 * Used to run the {@link JavaParser} and get back a {@link JavaMethod}. Will fail some
+	 * assertions if some other thing is returned instead
+	 *
+	 * @param content The String to be parsed into a {@link JavaMethod}
+	 * @return The parsed {@link JavaMethod}
+	 * @throws JavaParsingException If anything goes wrong with parsing
+	 */
+	protected JavaMethod runParserForMethod(String content) throws JavaParsingException{
+		JavaType type = parser.parseType(content);
+		assertEquals(JavaTypes.METHOD, type.getJavaType());
+		assertTrue(type instanceof JavaMethod);
+		return (JavaMethod) type;
 	}
 	
 	/**

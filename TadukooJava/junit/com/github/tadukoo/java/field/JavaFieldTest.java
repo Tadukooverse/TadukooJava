@@ -85,7 +85,7 @@ public class JavaFieldTest{
 	
 	@Test
 	public void testToString(){
-		assertEquals("int test", field.toString());
+		assertEquals("int test;", field.toString());
 	}
 	
 	@Test
@@ -97,7 +97,7 @@ public class JavaFieldTest{
 		String javaString = """
 				/**
 				 */
-				int test""";
+				int test;""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -110,7 +110,7 @@ public class JavaFieldTest{
 				.build();
 		String javaString = """
 				@Test
-				int test""";
+				int test;""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -125,7 +125,7 @@ public class JavaFieldTest{
 		String javaString = """
 				@Test
 				@Derp
-				int test""";
+				int test;""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -136,7 +136,7 @@ public class JavaFieldTest{
 				.type(type).name(name)
 				.build();
 		String javaString = """
-				private int test""";
+				private int test;""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -147,7 +147,7 @@ public class JavaFieldTest{
 				.isStatic()
 				.build();
 		String javaString = """
-				static int test""";
+				static int test;""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -158,7 +158,7 @@ public class JavaFieldTest{
 				.isFinal()
 				.build();
 		String javaString = """
-				final int test""";
+				final int test;""";
 		assertEquals(javaString, field.toString());
 	}
 	
@@ -168,7 +168,7 @@ public class JavaFieldTest{
 				.type(type).name(name)
 				.value("42")
 				.build();
-		assertEquals("int test = 42", field.toString());
+		assertEquals("int test = 42;", field.toString());
 	}
 	
 	@Test
@@ -187,7 +187,7 @@ public class JavaFieldTest{
 				 */
 				@Test
 				@Derp
-				private static final int test = 42""";
+				private static final int test = 42;""";
 		assertEquals(javaString, field.toString());
 	}
 	

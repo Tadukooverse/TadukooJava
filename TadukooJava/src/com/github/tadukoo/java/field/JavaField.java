@@ -180,6 +180,8 @@ public abstract class JavaField implements JavaType{
 		if(StringUtil.isNotBlank(value)){
 			declaration.append(' ').append(ASSIGNMENT_OPERATOR_TOKEN).append(' ').append(value);
 		}
+		// Add semicolon to declaration
+		declaration.append(SEMICOLON);
 		content.add(declaration.toString());
 		
 		return StringUtil.buildStringWithNewLines(content);
