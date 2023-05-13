@@ -38,6 +38,18 @@ public class JavaImportStatementBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaImportStatement otherImportStatement = new TestJavaImportStatementBuilder()
+				.isStatic()
+				.importName(importName)
+				.build();
+		importStatement = new TestJavaImportStatementBuilder()
+				.copy(otherImportStatement)
+				.build();
+		assertEquals(otherImportStatement, importStatement);
+	}
+	
+	@Test
 	public void testBuilderSetImportName(){
 		assertEquals(importName, importStatement.getImportName());
 	}

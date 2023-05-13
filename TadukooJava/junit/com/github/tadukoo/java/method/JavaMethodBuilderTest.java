@@ -106,6 +106,30 @@ public class JavaMethodBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaMethod otherMethod = new TestJavaMethodBuilder()
+				.javadoc(UneditableJavadoc.builder()
+						.build())
+				.annotation(UneditableJavaAnnotation.builder()
+						.name("Test")
+						.build())
+				.visibility(Visibility.PRIVATE)
+				.isStatic().isFinal()
+				.returnType(returnType).name("test")
+				.parameter("String", "type")
+				.parameter("int", "derp")
+				.throwType("Throwable")
+				.throwType("Exception")
+				.line("doSomething();")
+				.line("doSomethingElse();")
+				.build();
+		method = new TestJavaMethodBuilder()
+				.copy(otherMethod)
+				.build();
+		assertEquals(otherMethod, method);
+	}
+	
+	@Test
 	public void testBuilderSetJavadoc(){
 		Javadoc javadoc = UneditableJavadoc.builder().build();
 		method = new TestJavaMethodBuilder()

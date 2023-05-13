@@ -76,6 +76,24 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		Javadoc otherDoc = builder.get()
+				.condensed()
+				.content("Some information")
+				.content("Some more information")
+				.author("Logan Ferree (Tadukoo)")
+				.version("Beta v.0.5")
+				.since("Alpha v.0.1")
+				.param("something", "Does something")
+				.returnVal("yep")
+				.build();
+		doc = builder.get()
+				.copy(otherDoc)
+				.build();
+		assertEquals(otherDoc, doc);
+	}
+	
+	@Test
 	public void testBuilderSetCondensedValue(){
 		doc = builder.get()
 				.condensed(true)

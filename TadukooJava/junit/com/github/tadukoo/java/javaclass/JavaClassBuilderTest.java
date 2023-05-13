@@ -127,6 +127,41 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaClass otherClass = new TestJavaClassBuilder()
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
+				.importStatement(UneditableJavaImportStatement.builder()
+						.importName("some.classname")
+						.build())
+				.javadoc(UneditableJavadoc.builder()
+						.build())
+				.annotation(UneditableJavaAnnotation.builder()
+						.name("Test")
+						.build())
+				.visibility(Visibility.PUBLIC)
+				.isFinal()
+				.className(className)
+				.superClassName("BClassName")
+				.innerClass(new TestJavaClassBuilder()
+						.innerClass()
+						.className("CClassName")
+						.build())
+				.field(UneditableJavaField.builder()
+						.type("String").name("test")
+						.build())
+				.method(UneditableJavaMethod.builder()
+						.returnType("String").name("type")
+						.build())
+				.build();
+		clazz = new TestJavaClassBuilder()
+				.copy(otherClass)
+				.build();
+		assertEquals(otherClass, clazz);
+	}
+	
+	@Test
 	public void testSetIsInnerClass(){
 		clazz = new TestJavaClassBuilder()
 				.className(className)

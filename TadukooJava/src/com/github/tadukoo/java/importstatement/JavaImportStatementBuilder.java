@@ -42,6 +42,18 @@ public abstract class JavaImportStatementBuilder<ImportStatementType extends Jav
 	protected JavaImportStatementBuilder(){ }
 	
 	/**
+	 * Copies the settings from the given {@link JavaImportStatement import statement} into this builder
+	 *
+	 * @param importStatement The {@link JavaImportStatement import statement} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavaImportStatementBuilder<ImportStatementType> copy(JavaImportStatement importStatement){
+		this.isStatic = importStatement.isStatic();
+		this.importName = importStatement.getImportName();
+		return this;
+	}
+	
+	/**
 	 * Sets the import statement to be static
 	 *
 	 * @return this, to continue building

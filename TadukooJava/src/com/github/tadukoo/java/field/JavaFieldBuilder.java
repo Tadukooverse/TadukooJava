@@ -88,6 +88,24 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	protected JavaFieldBuilder(){ }
 	
 	/**
+	 * Copies the settings from the given {@link JavaField field} to this builder
+	 *
+	 * @param field The {@link JavaField field} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavaFieldBuilder<FieldType> copy(JavaField field){
+		this.javadoc = field.getJavadoc();
+		this.annotations = field.getAnnotations();
+		this.visibility = field.getVisibility();
+		this.isStatic = field.isStatic();
+		this.isFinal = field.isFinal();
+		this.type = field.getType();
+		this.name = field.getName();
+		this.value = field.getValue();
+		return this;
+	}
+	
+	/**
 	 * @param javadoc The {@link Javadoc} on the field
 	 * @return this, to continue building
 	 */

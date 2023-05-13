@@ -79,6 +79,24 @@ public class JavadocBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		Javadoc otherDoc = new TestJavadocBuilder()
+				.condensed()
+				.content("Some information")
+				.content("Some more information")
+				.author("Logan Ferree (Tadukoo)")
+				.version("Beta v.0.5")
+				.since("Alpha v.0.1")
+				.param("something", "Does something")
+				.returnVal("yep")
+				.build();
+		doc = new TestJavadocBuilder()
+				.copy(otherDoc)
+				.build();
+		assertEquals(otherDoc, doc);
+	}
+	
+	@Test
 	public void testBuilderSetCondensedValue(){
 		doc = new TestJavadocBuilder()
 				.condensed(true)

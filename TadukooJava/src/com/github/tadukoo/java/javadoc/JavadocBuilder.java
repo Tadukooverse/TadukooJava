@@ -78,6 +78,23 @@ public abstract class JavadocBuilder<JavadocType extends Javadoc>{
 	protected JavadocBuilder(){ }
 	
 	/**
+	 * Copies the settings from the given {@link Javadoc} to this builder
+	 *
+	 * @param javadoc The {@link Javadoc} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavadocBuilder<JavadocType> copy(Javadoc javadoc){
+		this.condensed = javadoc.isCondensed();
+		this.content = javadoc.getContent();
+		this.author = javadoc.getAuthor();
+		this.version = javadoc.getVersion();
+		this.since = javadoc.getSince();
+		this.params = javadoc.getParams();
+		this.returnVal = javadoc.getReturnVal();
+		return this;
+	}
+	
+	/**
 	 * @param condensed Whether the {@link Javadoc} is condensed or not
 	 * @return this, to continue building
 	 */

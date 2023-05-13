@@ -35,6 +35,17 @@ public abstract class JavaPackageDeclarationBuilder<PackageDeclaration extends J
 	protected JavaPackageDeclarationBuilder(){ }
 	
 	/**
+	 * Copies the settings from the given {@link JavaPackageDeclaration package declaration} to this builder
+	 *
+	 * @param packageDeclaration The {@link JavaPackageDeclaration package declaration} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavaPackageDeclarationBuilder<PackageDeclaration> copy(JavaPackageDeclaration packageDeclaration){
+		this.packageName = packageDeclaration.getPackageName();
+		return this;
+	}
+	
+	/**
 	 * @param packageName The name of the package in the declaration
 	 * @return this, to continue building
 	 */

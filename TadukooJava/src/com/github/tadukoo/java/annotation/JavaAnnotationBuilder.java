@@ -40,6 +40,18 @@ public abstract class JavaAnnotationBuilder<AnnotationType extends JavaAnnotatio
 	protected JavaAnnotationBuilder(){ }
 	
 	/**
+	 * Copies the settings on the given {@link JavaAnnotation annotation} into the builder
+	 *
+	 * @param annotation The {@link JavaAnnotation annotation} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavaAnnotationBuilder<AnnotationType> copy(JavaAnnotation annotation){
+		this.name = annotation.getName();
+		this.parameters = annotation.getParameters();
+		return this;
+	}
+	
+	/**
 	 * @param name The name of the annotation
 	 * @return this, to continue building
 	 */

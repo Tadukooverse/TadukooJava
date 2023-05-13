@@ -90,6 +90,25 @@ public class JavaFieldBuilderTest{
 	}
 	
 	@Test
+	public void testCopy(){
+		JavaField otherField = new TestJavaFieldBuilder()
+				.javadoc(UneditableJavadoc.builder()
+						.build())
+				.annotation(UneditableJavaAnnotation.builder()
+						.name("Test")
+						.build())
+				.visibility(Visibility.PRIVATE)
+				.isStatic().isFinal()
+				.type(type).name(name)
+				.value("42")
+				.build();
+		field = new TestJavaFieldBuilder()
+				.copy(otherField)
+				.build();
+		assertEquals(otherField, field);
+	}
+	
+	@Test
 	public void testSetType(){
 		assertEquals("int", field.getType());
 	}

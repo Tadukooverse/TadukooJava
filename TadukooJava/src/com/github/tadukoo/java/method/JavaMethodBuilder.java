@@ -104,6 +104,26 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	protected JavaMethodBuilder(){ }
 	
 	/**
+	 * Copies the settings from the given {@link JavaMethod method} to this builder
+	 *
+	 * @param method The {@link JavaMethod method} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> copy(JavaMethod method){
+		this.javadoc = method.getJavadoc();
+		this.annotations = method.getAnnotations();
+		this.visibility = method.getVisibility();
+		this.isStatic = method.isStatic();
+		this.isFinal = method.isFinal();
+		this.returnType = method.getReturnType();
+		this.name = method.getName();
+		this.parameters = method.getParameters();
+		this.throwTypes = method.getThrowTypes();
+		this.lines = method.getLines();
+		return this;
+	}
+	
+	/**
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @return this, to continue building
 	 */

@@ -129,6 +129,29 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected JavaClassBuilder(){ }
 	
 	/**
+	 * Copies the settings from the given {@link JavaClass class} to this builder
+	 *
+	 * @param clazz The {@link JavaClass class} to copy settings from
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> copy(JavaClass clazz){
+		this.isInnerClass = clazz.isInnerClass();
+		this.packageDeclaration = clazz.getPackageDeclaration();
+		this.importStatements = clazz.getImportStatements();
+		this.javadoc = clazz.getJavadoc();
+		this.annotations = clazz.getAnnotations();
+		this.visibility = clazz.getVisibility();
+		this.isStatic = clazz.isStatic();
+		this.isFinal = clazz.isFinal();
+		this.className = clazz.getClassName();
+		this.superClassName = clazz.getSuperClassName();
+		this.innerClasses = clazz.getInnerClasses();
+		this.fields = clazz.getFields();
+		this.methods = clazz.getMethods();
+		return this;
+	}
+	
+	/**
 	 * @param isInnerClass Whether the class is an inner class or not
 	 * @return this, to continue building
 	 */

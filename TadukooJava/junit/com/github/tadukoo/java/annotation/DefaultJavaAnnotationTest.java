@@ -40,6 +40,19 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaAnnotation otherAnnotation = builder.get()
+				.name(name)
+				.parameter("test", "true")
+				.parameter("derp", "false")
+				.build();
+		annotation = builder.get()
+				.copy(otherAnnotation)
+				.build();
+		assertEquals(annotation, otherAnnotation);
+	}
+	
+	@Test
 	public void testBuilderName(){
 		assertEquals(name, annotation.getName());
 	}

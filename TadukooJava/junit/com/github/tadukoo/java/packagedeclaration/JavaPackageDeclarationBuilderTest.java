@@ -35,6 +35,17 @@ public class JavaPackageDeclarationBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaPackageDeclaration otherPackageDeclaration = new TestJavaPackageDeclarationBuilder()
+				.packageName(packageName)
+				.build();
+		packageDeclaration = new TestJavaPackageDeclarationBuilder()
+				.copy(otherPackageDeclaration)
+				.build();
+		assertEquals(otherPackageDeclaration, packageDeclaration);
+	}
+	
+	@Test
 	public void testBuilderSetPackageName(){
 		assertEquals(packageName, packageDeclaration.getPackageName());
 	}

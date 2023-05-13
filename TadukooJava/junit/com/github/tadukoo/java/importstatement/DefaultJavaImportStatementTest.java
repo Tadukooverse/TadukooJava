@@ -38,6 +38,18 @@ public abstract class DefaultJavaImportStatementTest<ImportStatementType extends
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaImportStatement otherImportStatement = builder.get()
+				.isStatic()
+				.importName(importName)
+				.build();
+		importStatement = builder.get()
+				.copy(otherImportStatement)
+				.build();
+		assertEquals(otherImportStatement, importStatement);
+	}
+	
+	@Test
 	public void testBuilderSetImportName(){
 		assertEquals(importName, importStatement.getImportName());
 	}

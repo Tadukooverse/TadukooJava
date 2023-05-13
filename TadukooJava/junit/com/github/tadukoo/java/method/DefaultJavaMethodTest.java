@@ -98,6 +98,30 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaMethod otherMethod = builder.get()
+				.javadoc(javadocBuilder.get()
+						.build())
+				.annotation(javaAnnotationBuilder.get()
+						.name("Test")
+						.build())
+				.visibility(Visibility.PRIVATE)
+				.isStatic().isFinal()
+				.returnType(returnType).name("test")
+				.parameter("String", "type")
+				.parameter("int", "derp")
+				.throwType("Throwable")
+				.throwType("Exception")
+				.line("doSomething();")
+				.line("doSomethingElse();")
+				.build();
+		method = builder.get()
+				.copy(otherMethod)
+				.build();
+		assertEquals(otherMethod, method);
+	}
+	
+	@Test
 	public void testBuilderSetJavadoc(){
 		Javadoc javadoc = javadocBuilder.get().build();
 		method = builder.get()

@@ -36,6 +36,17 @@ public abstract class DefaultJavaPackageDeclarationTest<PackageDeclarationType e
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaPackageDeclaration otherPackageDeclaration = builder.get()
+				.packageName(packageName)
+				.build();
+		packageDeclaration = builder.get()
+				.copy(otherPackageDeclaration)
+				.build();
+		assertEquals(otherPackageDeclaration, packageDeclaration);
+	}
+	
+	@Test
 	public void testBuilderPackageName(){
 		assertEquals(packageName, packageDeclaration.getPackageName());
 	}

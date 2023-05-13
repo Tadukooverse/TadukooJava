@@ -44,6 +44,19 @@ public class JavaAnnotationBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaAnnotation otherAnnotation = new TestJavaAnnotationBuilder()
+				.name(name)
+				.parameter("test", "true")
+				.parameter("derp", "false")
+				.build();
+		annotation = new TestJavaAnnotationBuilder()
+				.copy(otherAnnotation)
+				.build();
+		assertEquals(annotation, otherAnnotation);
+	}
+	
+	@Test
 	public void testBuilderName(){
 		TestJavaAnnotation annotation = new TestJavaAnnotationBuilder().name("Test").build();
 		assertEquals("Test", annotation.getName());

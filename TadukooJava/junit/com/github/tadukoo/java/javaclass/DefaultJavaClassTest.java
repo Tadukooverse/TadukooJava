@@ -128,6 +128,41 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testBuilderCopy(){
+		JavaClass otherClass = builder.get()
+				.packageDeclaration(javaPackageDeclarationBuilder.get()
+						.packageName("some.package")
+						.build())
+				.importStatement(javaImportStatementBuilder.get()
+						.importName("some.classname")
+						.build())
+				.javadoc(javadocBuilder.get()
+						.build())
+				.annotation(javaAnnotationBuilder.get()
+						.name("Test")
+						.build())
+				.visibility(Visibility.PUBLIC)
+				.isFinal()
+				.className(className)
+				.superClassName("BClassName")
+				.innerClass(builder.get()
+						.innerClass()
+						.className("CClassName")
+						.build())
+				.field(javaFieldBuilder.get()
+						.type("String").name("test")
+						.build())
+				.method(javaMethodBuilder.get()
+						.returnType("String").name("type")
+						.build())
+				.build();
+		clazz = builder.get()
+				.copy(otherClass)
+				.build();
+		assertEquals(otherClass, clazz);
+	}
+	
+	@Test
 	public void testBuilderSetIsInnerClass(){
 		clazz = builder.get()
 				.className(className)
