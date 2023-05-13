@@ -59,7 +59,8 @@ public class JavaParser implements JavaTokens{
 	 *     </tr>
 	 * </table>
 	 */
-	private static final Pattern annotationPattern = Pattern.compile("\\s*@\\s*([^\\s(]*)(?:\\s*\\((.*)\\)\\s*)?\\s*");
+	private static final Pattern annotationPattern = Pattern.compile(
+			"\\s*@\\s*([^\\s(]*)(?:\\s*\\((.*)\\)\\s*)?\\s*", Pattern.DOTALL);
 	/**
 	 * A {@link Pattern} used to detect the parameters of an {@link JavaAnnotation annotation}.
 	 * This is used for the parameters inside the annotation (in a loop using {@link Matcher#find()})
@@ -218,7 +219,7 @@ public class JavaParser implements JavaTokens{
 	 */
 	public JavaType parseType(String content) throws JavaParsingException{
 		// Split the content into "tokens"
-		List<String> tokens = StringUtil.parseListFromStringWithRegex(content, "\\s+", true).stream()
+		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, "\\S+|\n", false).stream()
 				.filter(StringUtil::isNotBlank)
 				.toList();
 		
@@ -233,7 +234,11 @@ public class JavaParser implements JavaTokens{
 			
 			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
 			
-			if(StringUtil.equals(token, PACKAGE_TOKEN)){
+			if(StringUtil.equals(token, "\n")){
+				// Skip newline tokens
+				currentToken++;
+				continue;
+			}else if(StringUtil.equals(token, PACKAGE_TOKEN)){
 				// Parse a package declaration
 				parseMethod = this::parsePackageDeclaration;
 			}else if(StringUtil.equals(token, IMPORT_TOKEN)){
@@ -245,9 +250,12 @@ public class JavaParser implements JavaTokens{
 			}else if(token.startsWith(JAVADOC_START_TOKEN)){
 				// Parse a javadoc
 				parseMethod = this::parseJavadoc;
-			}else if(token.startsWith(MULTI_LINE_COMMENT_START_TOKEN) || token.startsWith(SINGLE_LINE_COMMENT_TOKEN)){
-				// Parse a comment
-				parseMethod = this::parseComment;
+			}else if(token.startsWith(MULTI_LINE_COMMENT_START_TOKEN)){
+				// Parse a multi-line comment
+				parseMethod = this::parseMultiLineComment;
+			}else if(token.startsWith(SINGLE_LINE_COMMENT_TOKEN)){
+				// Parse a single-line comment
+				parseMethod = this::parseSingleLineComment;
 			}else if(token.startsWith(ANNOTATION_START_TOKEN)){
 				// Parse an annotation
 				parseMethod = this::parseAnnotation;
@@ -436,7 +444,16 @@ public class JavaParser implements JavaTokens{
 	 * @return Either {@link JavaTypes#FIELD}, {@link JavaTypes#METHOD}, or {@link JavaTypes#UNKNOWN}
 	 */
 	private JavaTypes determineFieldOrMethod(List<String> tokens, int currentToken){
-		String token = tokens.get(currentToken);
+		int thisToken = currentToken;
+		// Skip any newlines
+		while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
+			thisToken++;
+		}
+		// Check we didn't reach the end of tokens
+		if(thisToken >= tokens.size()){
+			return JavaTypes.UNKNOWN;
+		}
+		String token = tokens.get(thisToken);
 		// First token is a type (possibly with start of parameters if a method)
 		if(token.contains(PARAMETER_OPEN_TOKEN)){
 			// We got a method
@@ -444,16 +461,36 @@ public class JavaParser implements JavaTokens{
 		}else if(token.contains(ASSIGNMENT_OPERATOR_TOKEN)){
 			// We got a field
 			return JavaTypes.FIELD;
-		}else if(currentToken+1 < tokens.size()){
-			String nextToken = tokens.get(currentToken+1);
+		}else{
+			// Move to next token to check
+			thisToken++;
+			// Skip any newlines
+			while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
+				thisToken++;
+			}
+			// Check we didn't reach the end of tokens
+			if(thisToken >= tokens.size()){
+				return JavaTypes.UNKNOWN;
+			}
+			String nextToken = tokens.get(thisToken);
 			if(nextToken.contains(PARAMETER_OPEN_TOKEN)){
 				// We got a method
 				return JavaTypes.METHOD;
 			}else if(nextToken.contains(SEMICOLON)){
 				// We got a field
 				return JavaTypes.FIELD;
-			}else if(currentToken+2 < tokens.size()){
-				String nextNextToken = tokens.get(currentToken+2);
+			}else{
+				// Move to next token to check
+				thisToken++;
+				// Skip any newlines
+				while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
+					thisToken++;
+				}
+				// Check we didn't reach the end of tokens
+				if(thisToken >= tokens.size()){
+					return JavaTypes.UNKNOWN;
+				}
+				String nextNextToken = tokens.get(thisToken);
 				if(nextNextToken.startsWith(PARAMETER_OPEN_TOKEN)){
 					// We got a method
 					return JavaTypes.METHOD;
@@ -461,11 +498,7 @@ public class JavaParser implements JavaTokens{
 					// We got a field
 					return JavaTypes.FIELD;
 				}
-			}else{
-				return JavaTypes.UNKNOWN;
 			}
-		}else{
-			return JavaTypes.UNKNOWN;
 		}
 	}
 	
@@ -502,7 +535,8 @@ public class JavaParser implements JavaTokens{
 			}else if(token.endsWith(SEMICOLON)){
 				packageName.append(token, 0, token.length()-1);
 				gotSemicolon = true;
-			}else{
+			}else if(StringUtil.notEquals(token, "\n")){
+				// If we got a newline, skip it
 				packageName.append(token);
 			}
 		}
@@ -545,14 +579,20 @@ public class JavaParser implements JavaTokens{
 			errors.add("First token of import statement must be '" + IMPORT_TOKEN + "'");
 		}
 		
-		// Check if the next token is "static" (for a static import statement)
-		boolean isStatic = false;
-		if(tokens.size() > startToken+1){
-			isStatic = StringUtil.equalsIgnoreCase(tokens.get(startToken+1), STATIC_MODIFIER);
+		// Skip any newline tokens here
+		int currentToken = startToken + 1;
+		while(currentToken < tokens.size() && StringUtil.equals(tokens.get(currentToken), "\n")){
+			currentToken++;
 		}
 		
-		// Set up current token
-		int currentToken = startToken + (isStatic?2:1);
+		// Check if the next token is "static" (for a static import statement)
+		boolean isStatic = false;
+		if(currentToken < tokens.size()){
+			isStatic = StringUtil.equalsIgnoreCase(tokens.get(currentToken), STATIC_MODIFIER);
+			if(isStatic){
+				currentToken++;
+			}
+		}
 		
 		// Build the import name from the remaining tokens
 		boolean gotSemicolon = false;
@@ -566,7 +606,8 @@ public class JavaParser implements JavaTokens{
 			}else if(token.endsWith(SEMICOLON)){
 				importName.append(token, 0, token.length()-1);
 				gotSemicolon = true;
-			}else{
+			}else if(StringUtil.notEquals(token, "\n")){
+				// Skip newlines
 				importName.append(token);
 			}
 		}
@@ -621,7 +662,14 @@ public class JavaParser implements JavaTokens{
 		return new ParsingPojo(startToken, null);
 	}
 	
-	private ParsingPojo parseComment(List<String> tokens, int startToken) throws JavaParsingException{
+	private ParsingPojo parseMultiLineComment(List<String> tokens, int startToken) throws JavaParsingException{
+		// TODO: Handle actual parsing
+		
+		// TODO: Return a proper pojo
+		return new ParsingPojo(startToken, null);
+	}
+	
+	private ParsingPojo parseSingleLineComment(List<String> tokens, int startToken) throws JavaParsingException{
 		// TODO: Handle actual parsing
 		
 		// TODO: Return a proper pojo
@@ -797,7 +845,8 @@ public class JavaParser implements JavaTokens{
 				}
 				
 				break;
-			}else{
+			}else if(StringUtil.notEquals(token, "\n")){
+				// Skip newlines
 				type = determineFieldOrMethod(tokens, currentToken);
 				if(type == JavaTypes.METHOD){
 					// Parse the method and handle modifiers on it
@@ -1154,6 +1203,11 @@ public class JavaParser implements JavaTokens{
 		// Start parsing tokens after "class"
 		int currentToken = startToken+1;
 		
+		// Skip any newlines
+		while(currentToken < tokens.size() && StringUtil.equals(tokens.get(currentToken), "\n")){
+			currentToken++;
+		}
+		
 		// Next token is class name
 		String className = tokens.get(currentToken);
 		currentToken++;
@@ -1221,15 +1275,22 @@ public class JavaParser implements JavaTokens{
 			}else if(token.startsWith(JAVADOC_START_TOKEN)){
 				// Parse a javadoc
 				parseMethod = this::parseJavadoc;
-			}else if(token.startsWith(MULTI_LINE_COMMENT_START_TOKEN) || token.startsWith(SINGLE_LINE_COMMENT_TOKEN)){
-				// Parse a comment
-				parseMethod = this::parseComment;
+			}else if(token.startsWith(MULTI_LINE_COMMENT_START_TOKEN)){
+				// Parse a multi-line comment
+				parseMethod = this::parseMultiLineComment;
+			}else if(token.startsWith(SINGLE_LINE_COMMENT_TOKEN)){
+				// Parse a single-line comment
+				parseMethod = this::parseSingleLineComment;
 			}else if(token.startsWith(ANNOTATION_START_TOKEN)){
 				// Parse an annotation
 				parseMethod = this::parseAnnotation;
 			}else if(MODIFIERS.contains(token)){
 				// Parse a type with modifiers (could be field, method, class, etc.)
 				parseMethod = this::parseTypeWithModifiers;
+			}else if(StringUtil.equals(token, "\n")){
+				// Skip newlines
+				currentToken++;
+				continue;
 			}else{
 				JavaTypes type = determineFieldOrMethod(tokens, currentToken);
 				if(type == JavaTypes.FIELD){
