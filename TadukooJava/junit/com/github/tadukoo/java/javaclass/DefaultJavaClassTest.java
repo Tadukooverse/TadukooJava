@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.javaclass;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
@@ -72,7 +72,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.CLASS, clazz.getJavaType());
+		Assertions.assertEquals(JavaCodeTypes.CLASS, clazz.getJavaCodeType());
 	}
 	
 	@Test

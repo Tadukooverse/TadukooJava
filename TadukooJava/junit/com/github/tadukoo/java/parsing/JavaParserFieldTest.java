@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.parsing;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
@@ -261,7 +261,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 			parser.parseField("String name");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.FIELD,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
 							"Failed to find semicolon at end of field"),
 					e.getMessage());
 		}
@@ -273,7 +273,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 			parser.parseField("private String name");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.FIELD,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
 							"Failed to find semicolon at end of field"),
 					e.getMessage());
 		}
@@ -285,7 +285,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 			parser.parseField("static String name");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.FIELD,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
 							"Failed to find semicolon at end of field"),
 					e.getMessage());
 		}
@@ -297,7 +297,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 			parser.parseField("final String name");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.FIELD,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
 							"Failed to find semicolon at end of field"),
 					e.getMessage());
 		}
@@ -309,7 +309,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 			parser.parseField("String name = \"\"");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.FIELD,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
 							"Failed to find semicolon at end of field"),
 					e.getMessage());
 		}
@@ -321,7 +321,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 			parser.parseField("private static final String name = \"\"");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.FIELD,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
 							"Failed to find semicolon at end of field"),
 					e.getMessage());
 		}

@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.packagedeclaration;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class JavaPackageDeclarationTest{
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.PACKAGE_DECLARATION, packageDeclaration.getJavaType());
+		Assertions.assertEquals(JavaCodeTypes.PACKAGE_DECLARATION, packageDeclaration.getJavaCodeType());
 	}
 	
 	@Test

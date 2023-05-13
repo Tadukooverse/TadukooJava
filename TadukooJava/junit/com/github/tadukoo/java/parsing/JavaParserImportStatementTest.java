@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.parsing;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 					import ;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.IMPORT_STATEMENT,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
 					"Failed to find import name in import statement!"),
 					e.getMessage());
 		}
@@ -47,7 +47,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 					import com.example""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.IMPORT_STATEMENT,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
 					"Failed to find semicolon ending import statement!"),
 					e.getMessage());
 		}
@@ -60,7 +60,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 					import\s""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.IMPORT_STATEMENT,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
 							"Failed to find import name in import statement!\n" +
 									"Failed to find semicolon ending import statement!"),
 					e.getMessage());

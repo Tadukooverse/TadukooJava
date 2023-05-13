@@ -1,6 +1,7 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
@@ -9,11 +10,11 @@ import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import org.junit.jupiter.api.Test;
 
-import static com.github.tadukoo.java.JavaTypes.*;
+import static com.github.tadukoo.java.JavaCodeTypes.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class JavaTypesTest{
+public class JavaCodeTypesTest{
 	
 	@Test
 	public void testUNKNOWN(){
@@ -37,6 +38,18 @@ public class JavaTypesTest{
 	public void testJAVADOC(){
 		assertEquals("JAVADOC", JAVADOC.toString());
 		assertEquals(Javadoc.class, JAVADOC.getJavaTypeClass());
+	}
+	
+	@Test
+	public void testMULTI_LINE_COMMENT(){
+		assertEquals("MULTI_LINE_COMMENT", MULTI_LINE_COMMENT.toString());
+		assertNull(MULTI_LINE_COMMENT.getJavaTypeClass());
+	}
+	
+	@Test
+	public void testSINGLE_LINE_COMMENT(){
+		assertEquals("SINGLE_LINE_COMMENT", SINGLE_LINE_COMMENT.toString());
+		assertEquals(JavaSingleLineComment.class, SINGLE_LINE_COMMENT.getJavaTypeClass());
 	}
 	
 	@Test

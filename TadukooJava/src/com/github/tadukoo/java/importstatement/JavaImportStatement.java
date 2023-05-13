@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.importstatement;
 
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.StringUtil;
 
 /**
@@ -10,7 +10,7 @@ import com.github.tadukoo.util.StringUtil;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.5
  */
-public abstract class JavaImportStatement implements JavaType{
+public abstract class JavaImportStatement implements JavaCodeType{
 	
 	/** Whether this import statement is editable or not */
 	private final boolean editable;
@@ -34,8 +34,8 @@ public abstract class JavaImportStatement implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getJavaType(){
-		return JavaTypes.IMPORT_STATEMENT;
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.IMPORT_STATEMENT;
 	}
 	
 	/**

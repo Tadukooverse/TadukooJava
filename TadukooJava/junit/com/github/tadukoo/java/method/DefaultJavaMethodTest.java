@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.method;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
@@ -49,7 +49,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	
 	@Test
 	public void testGetJavaType(){
-		assertEquals(JavaTypes.METHOD, method.getJavaType());
+		assertEquals(JavaCodeTypes.METHOD, method.getJavaCodeType());
 	}
 	
 	@Test

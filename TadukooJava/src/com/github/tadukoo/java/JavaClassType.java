@@ -6,6 +6,6 @@ package com.github.tadukoo.java;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.5
  */
-public interface JavaClassType extends JavaType{
+public interface JavaClassType extends JavaCodeType{
 
 }

@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.method;
 
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -19,7 +19,7 @@ import java.util.List;
  * @version Beta v.0.5
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaMethod), Alpha v.0.4 (as newer version)
  */
-public abstract class JavaMethod implements JavaType{
+public abstract class JavaMethod implements JavaCodeType{
 	
 	/** Whether the method is editable or not */
 	private final boolean editable;
@@ -78,8 +78,8 @@ public abstract class JavaMethod implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getJavaType(){
-		return JavaTypes.METHOD;
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.METHOD;
 	}
 	
 	/**

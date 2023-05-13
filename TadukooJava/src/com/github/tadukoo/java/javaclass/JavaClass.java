@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaClassType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
@@ -97,8 +97,8 @@ public abstract class JavaClass implements JavaClassType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getJavaType(){
-		return JavaTypes.CLASS;
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.CLASS;
 	}
 	
 	/**

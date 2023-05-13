@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.packagedeclaration;
 
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.StringUtil;
 
 /**
@@ -10,7 +10,7 @@ import com.github.tadukoo.util.StringUtil;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.5
  */
-public abstract class JavaPackageDeclaration implements JavaType{
+public abstract class JavaPackageDeclaration implements JavaCodeType{
 	
 	/** Whether this {@link JavaPackageDeclaration package declaration} is editable or not */
 	private final boolean editable;
@@ -19,8 +19,8 @@ public abstract class JavaPackageDeclaration implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getJavaType(){
-		return JavaTypes.PACKAGE_DECLARATION;
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.PACKAGE_DECLARATION;
 	}
 	
 	/**

@@ -6,10 +6,10 @@ package com.github.tadukoo.java;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.5
  */
-public interface JavaType extends JavaTokens{
+public interface JavaCodeType extends JavaTokens{
 	
 	/**
-	 * @return What {@link JavaTypes type} this is
+	 * @return What {@link JavaCodeTypes type} this is
 	 */
-	JavaTypes getJavaType();
+	JavaCodeTypes getJavaCodeType();
 }

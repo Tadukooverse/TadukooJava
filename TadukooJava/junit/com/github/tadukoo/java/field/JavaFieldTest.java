@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.field;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
@@ -67,7 +67,7 @@ public class JavaFieldTest{
 	
 	@Test
 	public void testGetJavaType(){
-		assertEquals(JavaTypes.FIELD, field.getJavaType());
+		assertEquals(JavaCodeTypes.FIELD, field.getJavaCodeType());
 	}
 	
 	@Test

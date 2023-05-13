@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.annotation;
 
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.tuple.Pair;
@@ -15,7 +15,7 @@ import java.util.List;
  * @version Beta v.0.5
  * @since Alpha v.0.3 (as old version that is now more like UneditableJavaAnnotation), Alpha v.0.4 (as newer version)
  */
-public abstract class JavaAnnotation implements JavaType{
+public abstract class JavaAnnotation implements JavaCodeType{
 	
 	/** Whether the annotation is editable or not */
 	private final boolean editable;
@@ -39,8 +39,8 @@ public abstract class JavaAnnotation implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getJavaType(){
-		return JavaTypes.ANNOTATION;
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.ANNOTATION;
 	}
 	
 	/**

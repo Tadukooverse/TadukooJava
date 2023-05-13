@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.packagedeclaration;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +32,7 @@ public abstract class DefaultJavaPackageDeclarationTest<PackageDeclarationType e
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.PACKAGE_DECLARATION, packageDeclaration.getJavaType());
+		Assertions.assertEquals(JavaCodeTypes.PACKAGE_DECLARATION, packageDeclaration.getJavaCodeType());
 	}
 	
 	@Test

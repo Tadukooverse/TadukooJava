@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.parsing.odderrortests;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					package com.example.other;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered two package declarations!"),
 					e.getMessage());
 		}
@@ -33,7 +33,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					package com.example;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered package declaration after class!"),
 					e.getMessage());
 		}
@@ -48,7 +48,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					import com.example;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered import statement after class!"),
 					e.getMessage());
 		}
@@ -63,7 +63,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					@Test""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered annotation after class!"),
 					e.getMessage());
 		}
@@ -77,7 +77,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					int derp;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered two fields!"),
 					e.getMessage());
 		}
@@ -92,7 +92,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					String type;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered field outside a class!"),
 					e.getMessage());
 		}
@@ -106,7 +106,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					String type;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered package declaration before field!"),
 					e.getMessage());
 		}
@@ -120,7 +120,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					String type;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered import statements before field!"),
 					e.getMessage());
 		}
@@ -134,7 +134,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					int somethingElse(){}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered two methods!"),
 					e.getMessage());
 		}
@@ -149,7 +149,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					String something(){}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered method outside a class!"),
 					e.getMessage());
 		}
@@ -163,7 +163,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					String something(){}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered package declaration before method!"),
 					e.getMessage());
 		}
@@ -177,7 +177,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					String something(){}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered import statements before method!"),
 					e.getMessage());
 		}
@@ -193,7 +193,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered two outer level classes!"),
 					e.getMessage());
 		}
@@ -208,7 +208,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered fields outside a class!"),
 					e.getMessage());
 		}
@@ -223,7 +223,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 					}""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.UNKNOWN,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered methods outside a class!"),
 					e.getMessage());
 		}

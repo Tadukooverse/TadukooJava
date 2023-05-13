@@ -2,6 +2,8 @@ package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
+import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.javaclass.JavaClassBuilder;
@@ -11,8 +13,8 @@ import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.JavaTokens;
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.javaclass.EditableJavaClass;
@@ -206,25 +208,25 @@ public class JavaParser implements JavaTokens{
 	 * Used as a pojo for a return type of the various parsing sub-methods
 	 *
 	 * @param nextTokenIndex The index of the next token to be parsed
-	 * @param parsedType A {@link JavaType} that was parsed by the method
+	 * @param parsedType A {@link JavaCodeType} that was parsed by the method
 	 */
-	private record ParsingPojo(int nextTokenIndex, JavaType parsedType){ }
+	private record ParsingPojo(int nextTokenIndex, JavaCodeType parsedType){ }
 	
 	/**
-	 * Parses the given text as Java code and returns it as the proper {@link JavaType}
+	 * Parses the given text as Java code and returns it as the proper {@link JavaCodeType}
 	 *
 	 * @param content The text to be parsed as Java code
-	 * @return The parsed {@link JavaType} from the given text
+	 * @return The parsed {@link JavaCodeType} from the given text
 	 * @throws JavaParsingException If anything goes wrong while parsing
 	 */
-	public JavaType parseType(String content) throws JavaParsingException{
+	public JavaCodeType parseType(String content) throws JavaParsingException{
 		// Split the content into "tokens"
 		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, "\\S+|\n", false).stream()
 				.filter(StringUtil::isNotBlank)
 				.toList();
 		
 		// The Java types we've collected in order while parsing
-		List<JavaType> types = new ArrayList<>();
+		List<JavaCodeType> types = new ArrayList<>();
 		
 		// Iterate over the tokens
 		int currentToken = 0;
@@ -263,13 +265,13 @@ public class JavaParser implements JavaTokens{
 				// Parse a type with modifiers (could be field, method, class, etc.)
 				parseMethod = this::parseTypeWithModifiers;
 			}else{
-				JavaTypes typeToParse = determineFieldOrMethod(tokens, currentToken);
-				if(typeToParse == JavaTypes.FIELD){
+				JavaCodeTypes typeToParse = determineFieldOrMethod(tokens, currentToken);
+				if(typeToParse == JavaCodeTypes.FIELD){
 					parseMethod = this::parseField;
-				}else if(typeToParse == JavaTypes.METHOD){
+				}else if(typeToParse == JavaCodeTypes.METHOD){
 					parseMethod = this::parseMethod;
 				}else{
-					throw new JavaParsingException(JavaTypes.UNKNOWN, "Failed to determine type from token '" +
+					throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Failed to determine type from token '" +
 							token + "'");
 				}
 			}
@@ -290,16 +292,16 @@ public class JavaParser implements JavaTokens{
 			JavaField javaField = null;
 			JavaMethod javaMethod = null;
 			JavaClass javaClass = null;
-			for(JavaType type: types){
+			for(JavaCodeType type: types){
 				if(type instanceof JavaPackageDeclaration declaration){
 					// Can't have multiple package declarations
 					if(packageDeclaration != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two package declarations!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered two package declarations!");
 					}
 					
 					// Can't have package declaration after the class
 					if(javaClass != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered package declaration after class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered package declaration after class!");
 					}
 					
 					// Set the package declaration to be potentially added to something else
@@ -307,7 +309,7 @@ public class JavaParser implements JavaTokens{
 				}else if(type instanceof JavaImportStatement importStmt){
 					// Can't have import statements after the class
 					if(javaClass != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered import statement after class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered import statement after class!");
 					}
 					
 					// Add the import statement to the list to be potentially added to something else
@@ -315,7 +317,7 @@ public class JavaParser implements JavaTokens{
 				}else if(type instanceof JavaAnnotation annotation){
 					// Can't have annotations after the class
 					if(javaClass != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered annotation after class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered annotation after class!");
 					}
 					
 					// Add the annotation to the list to be potentially added to something else
@@ -323,22 +325,22 @@ public class JavaParser implements JavaTokens{
 				}else if(type instanceof EditableJavaField field){
 					// Can't have multiple fields - having a field at top level is for field to be the main type
 					if(javaField != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two fields!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered two fields!");
 					}
 					
 					// Can't have class randomly before field
 					if(javaClass != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered field outside a class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered field outside a class!");
 					}
 					
 					// Can't have package declarations
 					if(packageDeclaration != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered package declaration before field!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered package declaration before field!");
 					}
 					
 					// Can't have import statements
 					if(!importStatements.isEmpty()){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered import statements before field!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered import statements before field!");
 					}
 					
 					// Add annotations to the field
@@ -351,22 +353,22 @@ public class JavaParser implements JavaTokens{
 				}else if(type instanceof EditableJavaMethod method){
 					// Can't have multiple methods - having a method at top level is for method to be the main type
 					if(javaMethod != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two methods!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered two methods!");
 					}
 					
 					// Can't have class randomly before method
 					if(javaClass != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered method outside a class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered method outside a class!");
 					}
 					
 					// Can't have package declarations
 					if(packageDeclaration != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered package declaration before method!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered package declaration before method!");
 					}
 					
 					// Can't have import statements
 					if(!importStatements.isEmpty()){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered import statements before method!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered import statements before method!");
 					}
 					
 					// Add annotations to the method
@@ -379,17 +381,17 @@ public class JavaParser implements JavaTokens{
 				}else if(type instanceof EditableJavaClass clazz){
 					// Can't have multiple outer level classes
 					if(javaClass != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered two outer level classes!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered two outer level classes!");
 					}
 					
 					// Can't have fields before the class outside of it
 					if(javaField != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered fields outside a class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered fields outside a class!");
 					}
 					
 					// Can't have methods before the class outside of it
 					if(javaMethod != null){
-						throw new JavaParsingException(JavaTypes.UNKNOWN, "Encountered methods outside a class!");
+						throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Encountered methods outside a class!");
 					}
 					
 					// Add package declaration if we have it
@@ -410,8 +412,8 @@ public class JavaParser implements JavaTokens{
 					// Set the class to be returned
 					javaClass = clazz;
 				}else{
-					throw new JavaParsingException(JavaTypes.UNKNOWN, "Unknown how to handle putting '" +
-							type.getJavaType() + "' together with other types!");
+					throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Unknown how to handle putting '" +
+							type.getJavaCodeType() + "' together with other types!");
 				}
 			}
 			
@@ -430,7 +432,7 @@ public class JavaParser implements JavaTokens{
 				return javaClass;
 			}
 			
-			throw new JavaParsingException(JavaTypes.UNKNOWN, "Unable to collect unknown types together");
+			throw new JavaParsingException(JavaCodeTypes.UNKNOWN, "Unable to collect unknown types together");
 		}
 	}
 	
@@ -441,9 +443,9 @@ public class JavaParser implements JavaTokens{
 	 *
 	 * @param tokens The tokens we're parsing
 	 * @param currentToken The current token being looked at
-	 * @return Either {@link JavaTypes#FIELD}, {@link JavaTypes#METHOD}, or {@link JavaTypes#UNKNOWN}
+	 * @return Either {@link JavaCodeTypes#FIELD}, {@link JavaCodeTypes#METHOD}, or {@link JavaCodeTypes#UNKNOWN}
 	 */
-	private JavaTypes determineFieldOrMethod(List<String> tokens, int currentToken){
+	private JavaCodeTypes determineFieldOrMethod(List<String> tokens, int currentToken){
 		int thisToken = currentToken;
 		// Skip any newlines
 		while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
@@ -451,16 +453,16 @@ public class JavaParser implements JavaTokens{
 		}
 		// Check we didn't reach the end of tokens
 		if(thisToken >= tokens.size()){
-			return JavaTypes.UNKNOWN;
+			return JavaCodeTypes.UNKNOWN;
 		}
 		String token = tokens.get(thisToken);
 		// First token is a type (possibly with start of parameters if a method)
 		if(token.contains(PARAMETER_OPEN_TOKEN)){
 			// We got a method
-			return JavaTypes.METHOD;
+			return JavaCodeTypes.METHOD;
 		}else if(token.contains(ASSIGNMENT_OPERATOR_TOKEN)){
 			// We got a field
-			return JavaTypes.FIELD;
+			return JavaCodeTypes.FIELD;
 		}else{
 			// Move to next token to check
 			thisToken++;
@@ -470,15 +472,15 @@ public class JavaParser implements JavaTokens{
 			}
 			// Check we didn't reach the end of tokens
 			if(thisToken >= tokens.size()){
-				return JavaTypes.UNKNOWN;
+				return JavaCodeTypes.UNKNOWN;
 			}
 			String nextToken = tokens.get(thisToken);
 			if(nextToken.contains(PARAMETER_OPEN_TOKEN)){
 				// We got a method
-				return JavaTypes.METHOD;
+				return JavaCodeTypes.METHOD;
 			}else if(nextToken.contains(SEMICOLON)){
 				// We got a field
-				return JavaTypes.FIELD;
+				return JavaCodeTypes.FIELD;
 			}else{
 				// Move to next token to check
 				thisToken++;
@@ -488,15 +490,15 @@ public class JavaParser implements JavaTokens{
 				}
 				// Check we didn't reach the end of tokens
 				if(thisToken >= tokens.size()){
-					return JavaTypes.UNKNOWN;
+					return JavaCodeTypes.UNKNOWN;
 				}
 				String nextNextToken = tokens.get(thisToken);
 				if(nextNextToken.startsWith(PARAMETER_OPEN_TOKEN)){
 					// We got a method
-					return JavaTypes.METHOD;
+					return JavaCodeTypes.METHOD;
 				}else{
 					// We got a field
-					return JavaTypes.FIELD;
+					return JavaCodeTypes.FIELD;
 				}
 			}
 		}
@@ -553,7 +555,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.PACKAGE_DECLARATION, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.PACKAGE_DECLARATION, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		// Build the package declaration and return
@@ -624,7 +626,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.IMPORT_STATEMENT, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.IMPORT_STATEMENT, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		// Build the import statement and return
@@ -655,7 +657,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.JAVADOC, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.JAVADOC, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		// TODO: Return a proper pojo
@@ -663,17 +665,73 @@ public class JavaParser implements JavaTokens{
 	}
 	
 	private ParsingPojo parseMultiLineComment(List<String> tokens, int startToken) throws JavaParsingException{
+		// Keep track of errors
+		List<String> errors = new ArrayList<>();
+		
+		// First token must start with /*
+		if(!tokens.get(startToken).startsWith(MULTI_LINE_COMMENT_START_TOKEN)){
+			errors.add("First token of multi-line comment must start with '" + MULTI_LINE_COMMENT_START_TOKEN + "'");
+		}
+		
 		// TODO: Handle actual parsing
+		
+		// If we had any errors, throw 'em
+		if(!errors.isEmpty()){
+			throw new JavaParsingException(JavaCodeTypes.MULTI_LINE_COMMENT, StringUtil.buildStringWithNewLines(errors));
+		}
 		
 		// TODO: Return a proper pojo
 		return new ParsingPojo(startToken, null);
 	}
 	
+	/**
+	 * Parses a {@link JavaSingleLineComment single-line comment} from the given tokens and starting index
+	 *
+	 * @param tokens The List of tokens to be parsed
+	 * @param startToken The index of the token to start parsing at
+	 * @return A {@link ParsingPojo} containing where we stopped parsing and the {@link JavaSingleLineComment comment}
+	 * @throws JavaParsingException If anything goes wrong during parsing
+	 */
 	private ParsingPojo parseSingleLineComment(List<String> tokens, int startToken) throws JavaParsingException{
-		// TODO: Handle actual parsing
+		// Keep track of errors
+		List<String> errors = new ArrayList<>();
 		
-		// TODO: Return a proper pojo
-		return new ParsingPojo(startToken, null);
+		// First token must start with //
+		String firstToken = tokens.get(startToken);
+		if(!firstToken.startsWith(SINGLE_LINE_COMMENT_TOKEN)){
+			errors.add("First token of single-line comment must start with '" + SINGLE_LINE_COMMENT_TOKEN + "'");
+		}
+		
+		// Add the first token to the content if it has anything other than the start token
+		StringBuilder content = new StringBuilder();
+		if(StringUtil.notEquals(firstToken, SINGLE_LINE_COMMENT_TOKEN)){
+			content.append(firstToken, SINGLE_LINE_COMMENT_TOKEN.length(), firstToken.length());
+		}
+		
+		// Continue adding to content
+		int currentToken = startToken + 1;
+		while(currentToken < tokens.size()){
+			String token = tokens.get(currentToken);
+			currentToken++;
+			// We're done when we hit a newline
+			if(StringUtil.equals(token, "\n")){
+				break;
+			}
+			if(!content.isEmpty()){
+				content.append(' ');
+			}
+			content.append(token);
+		}
+		
+		// If we had any errors, throw 'em
+		if(!errors.isEmpty()){
+			throw new JavaParsingException(JavaCodeTypes.SINGLE_LINE_COMMENT, StringUtil.buildStringWithNewLines(errors));
+		}
+		
+		// Build and return the single-line comment
+		return new ParsingPojo(currentToken, EditableJavaSingleLineComment.builder()
+				.content(content.toString())
+				.build());
 	}
 	
 	/**
@@ -752,7 +810,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.ANNOTATION, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.ANNOTATION, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		return new ParsingPojo(currentToken, annotation);
@@ -796,11 +854,11 @@ public class JavaParser implements JavaTokens{
 	}
 	
 	/**
-	 * Parses a {@link JavaTypes#TYPE_WITH_MODIFIERS type with modifiers} from the given tokens and starting index
+	 * Parses a {@link JavaCodeTypes#TYPE_WITH_MODIFIERS type with modifiers} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
 	 * @param startToken The index of the token to start parsing at
-	 * @return A {@link ParsingPojo} containing where we stopped parsing and the {@link JavaTypes#TYPE_WITH_MODIFIERS type with modifiers}
+	 * @return A {@link ParsingPojo} containing where we stopped parsing and the {@link JavaCodeTypes#TYPE_WITH_MODIFIERS type with modifiers}
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	private ParsingPojo parseTypeWithModifiers(List<String> tokens, int startToken) throws JavaParsingException{
@@ -813,8 +871,8 @@ public class JavaParser implements JavaTokens{
 		}
 		
 		// We may discover a more specific type later on
-		JavaTypes type = JavaTypes.TYPE_WITH_MODIFIERS;
-		JavaType resultType = null;
+		JavaCodeTypes type = JavaCodeTypes.TYPE_WITH_MODIFIERS;
+		JavaCodeType resultType = null;
 		
 		// Keep track of modifiers we find
 		List<String> modifiers = new ArrayList<>();
@@ -828,7 +886,7 @@ public class JavaParser implements JavaTokens{
 			}else if(StringUtil.equals(token, CLASS_TOKEN)){
 				// Parse it as a class
 				ParsingPojo result = parseClass(tokens, currentToken);
-				type = JavaTypes.CLASS;
+				type = JavaCodeTypes.CLASS;
 				resultType = result.parsedType();
 				EditableJavaClass clazz = (EditableJavaClass) resultType;
 				currentToken = result.nextTokenIndex();
@@ -848,7 +906,7 @@ public class JavaParser implements JavaTokens{
 			}else if(StringUtil.notEquals(token, "\n")){
 				// Skip newlines
 				type = determineFieldOrMethod(tokens, currentToken);
-				if(type == JavaTypes.METHOD){
+				if(type == JavaCodeTypes.METHOD){
 					// Parse the method and handle modifiers on it
 					ParsingPojo result = parseMethod(tokens, currentToken);
 					EditableJavaMethod method = (EditableJavaMethod) result.parsedType();
@@ -864,7 +922,7 @@ public class JavaParser implements JavaTokens{
 					resultType = method;
 					currentToken = result.nextTokenIndex();
 					break;
-				}else if(type == JavaTypes.FIELD){
+				}else if(type == JavaCodeTypes.FIELD){
 					// Parse the field and handle modifiers on it
 					ParsingPojo result = parseField(tokens, currentToken);
 					EditableJavaField field = (EditableJavaField) result.parsedType();
@@ -958,7 +1016,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.FIELD, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.FIELD, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		return new ParsingPojo(currentToken, javaField);
@@ -969,11 +1027,12 @@ public class JavaParser implements JavaTokens{
 	 *
 	 * @param content The text to be parsed into a {@link JavaField field)}
 	 * @return The parsed {@link JavaField field}, or null if we don't have a field
+	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	public JavaField parseField(String content) throws JavaParsingException{
 		// Check if field ends with semicolon for failure
 		if(!StringUtil.trim(content).endsWith(SEMICOLON)){
-			throw new JavaParsingException(JavaTypes.FIELD, "Failed to find semicolon at end of field");
+			throw new JavaParsingException(JavaCodeTypes.FIELD, "Failed to find semicolon at end of field");
 		}
 		
 		// Find the equals signs in the field
@@ -1098,7 +1157,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.METHOD, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.METHOD, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		// Build the method
@@ -1230,7 +1289,7 @@ public class JavaParser implements JavaTokens{
 		
 		// Parse the rest for items within the class
 		String superClassName = null;
-		List<JavaType> itemsInClass = new ArrayList<>();
+		List<JavaCodeType> itemsInClass = new ArrayList<>();
 		while(currentToken < tokens.size() && !endReached){
 			String token = tokens.get(currentToken);
 			
@@ -1292,13 +1351,13 @@ public class JavaParser implements JavaTokens{
 				currentToken++;
 				continue;
 			}else{
-				JavaTypes type = determineFieldOrMethod(tokens, currentToken);
-				if(type == JavaTypes.FIELD){
+				JavaCodeTypes type = determineFieldOrMethod(tokens, currentToken);
+				if(type == JavaCodeTypes.FIELD){
 					parseMethod = this::parseField;
-				}else if(type == JavaTypes.METHOD){
+				}else if(type == JavaCodeTypes.METHOD){
 					parseMethod = this::parseMethod;
 				}else{
-					throw new JavaParsingException(JavaTypes.CLASS, "Unable to determine token: '" + token + "'");
+					throw new JavaParsingException(JavaCodeTypes.CLASS, "Unable to determine token: '" + token + "'");
 				}
 			}
 			
@@ -1314,7 +1373,7 @@ public class JavaParser implements JavaTokens{
 				.superClassName(superClassName);
 		Javadoc doc = null;
 		List<JavaAnnotation> annotations = new ArrayList<>();
-		for(JavaType type: itemsInClass){
+		for(JavaCodeType type: itemsInClass){
 			if(type instanceof Javadoc javadoc){
 				// Javadoc needs to go on another type later
 				doc = javadoc;
@@ -1359,7 +1418,7 @@ public class JavaParser implements JavaTokens{
 				clazz.setInnerClass(true);
 				builder.innerClass(clazz);
 			}else{
-				errors.add("Don't know how to add '" + type.getJavaType() + "' to a class");
+				errors.add("Don't know how to add '" + type.getJavaCodeType() + "' to a class");
 			}
 		}
 		
@@ -1373,7 +1432,7 @@ public class JavaParser implements JavaTokens{
 		
 		// If we had any errors, throw 'em
 		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaTypes.CLASS, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.CLASS, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		return new ParsingPojo(currentToken, builder.build());

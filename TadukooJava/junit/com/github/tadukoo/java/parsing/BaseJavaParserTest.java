@@ -1,13 +1,14 @@
 package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,11 +27,11 @@ public abstract class BaseJavaParserTest{
 	 * Used to build a {@link JavaParsingException} error message to check that proper error messages
 	 * are returned for error cases
 	 *
-	 * @param type The {@link JavaTypes Java type} encountered during the error
+	 * @param type The {@link JavaCodeTypes Java type} encountered during the error
 	 * @param message The base part of the error message
 	 * @return A properly formatted {@link JavaParsingException} error message
 	 */
-	protected String buildJavaParsingExceptionMessage(JavaTypes type, String message){
+	protected String buildJavaParsingExceptionMessage(JavaCodeTypes type, String message){
 		return "Failed parsing JavaType: '" + type + "': " + message;
 	}
 	
@@ -43,8 +44,8 @@ public abstract class BaseJavaParserTest{
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
 	protected JavaPackageDeclaration runParserForPackageDeclaration(String content) throws JavaParsingException{
-		JavaType type = parser.parseType(content);
-		assertEquals(JavaTypes.PACKAGE_DECLARATION, type.getJavaType());
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.PACKAGE_DECLARATION, type.getJavaCodeType());
 		assertTrue(type instanceof JavaPackageDeclaration);
 		return (JavaPackageDeclaration) type;
 	}
@@ -58,10 +59,25 @@ public abstract class BaseJavaParserTest{
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
 	protected JavaImportStatement runParserForImportStatement(String content) throws JavaParsingException{
-		JavaType type = parser.parseType(content);
-		assertEquals(JavaTypes.IMPORT_STATEMENT, type.getJavaType());
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.IMPORT_STATEMENT, type.getJavaCodeType());
 		assertTrue(type instanceof JavaImportStatement);
 		return (JavaImportStatement) type;
+	}
+	
+	/**
+	 * Used to run the {@link JavaParser} and get back a {@link JavaSingleLineComment}. Will fail some
+	 * assertions if some other thing is returned instead
+	 *
+	 * @param content The String to be parsed into a {@link JavaSingleLineComment}
+	 * @return The parsed {@link JavaSingleLineComment}
+	 * @throws JavaParsingException If anything goes wrong with parsing
+	 */
+	protected JavaSingleLineComment runParserForSingleLineComment(String content) throws JavaParsingException{
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.SINGLE_LINE_COMMENT, type.getJavaCodeType());
+		assertTrue(type instanceof JavaSingleLineComment);
+		return (JavaSingleLineComment) type;
 	}
 	
 	/**
@@ -73,8 +89,8 @@ public abstract class BaseJavaParserTest{
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
 	protected JavaAnnotation runParserForAnnotation(String content) throws JavaParsingException{
-		JavaType type = parser.parseType(content);
-		assertEquals(JavaTypes.ANNOTATION, type.getJavaType());
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.ANNOTATION, type.getJavaCodeType());
 		assertTrue(type instanceof JavaAnnotation);
 		return (JavaAnnotation) type;
 	}
@@ -88,8 +104,8 @@ public abstract class BaseJavaParserTest{
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
 	protected JavaField runParserForField(String content) throws JavaParsingException{
-		JavaType type = parser.parseType(content);
-		assertEquals(JavaTypes.FIELD, type.getJavaType());
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.FIELD, type.getJavaCodeType());
 		assertTrue(type instanceof JavaField);
 		return (JavaField) type;
 	}
@@ -103,8 +119,8 @@ public abstract class BaseJavaParserTest{
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
 	protected JavaMethod runParserForMethod(String content) throws JavaParsingException{
-		JavaType type = parser.parseType(content);
-		assertEquals(JavaTypes.METHOD, type.getJavaType());
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.METHOD, type.getJavaCodeType());
 		assertTrue(type instanceof JavaMethod);
 		return (JavaMethod) type;
 	}
@@ -118,8 +134,8 @@ public abstract class BaseJavaParserTest{
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
 	protected JavaClass runParserForClass(String content) throws JavaParsingException{
-		JavaType type = parser.parseType(content);
-		assertEquals(JavaTypes.CLASS, type.getJavaType());
+		JavaCodeType type = parser.parseType(content);
+		assertEquals(JavaCodeTypes.CLASS, type.getJavaCodeType());
 		assertTrue(type instanceof JavaClass);
 		return (JavaClass) type;
 	}

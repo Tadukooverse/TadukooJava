@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.javadoc;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
@@ -33,7 +33,7 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	
 	@Test
 	public void testGetType(){
-		assertEquals(JavaTypes.JAVADOC, doc.getJavaType());
+		assertEquals(JavaCodeTypes.JAVADOC, doc.getJavaCodeType());
 	}
 	
 	@Test

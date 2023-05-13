@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.javadoc;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ public class JavadocTest{
 	
 	@Test
 	public void testGetType(){
-		assertEquals(JavaTypes.JAVADOC, doc.getJavaType());
+		assertEquals(JavaCodeTypes.JAVADOC, doc.getJavaCodeType());
 	}
 	
 	@Test

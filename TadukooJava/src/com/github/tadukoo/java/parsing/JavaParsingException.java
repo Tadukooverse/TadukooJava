@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.parsing;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 
 /**
  * An exception encountered while parsing Java code
@@ -13,10 +13,10 @@ public class JavaParsingException extends Exception{
 	/**
 	 * Makes a new {@link JavaParsingException} with no underlying other cause
 	 *
-	 * @param type The {@link JavaTypes Java type} encountered during parsing
+	 * @param type The {@link JavaCodeTypes Java type} encountered during parsing
 	 * @param message The error message
 	 */
-	public JavaParsingException(JavaTypes type, String message){
+	public JavaParsingException(JavaCodeTypes type, String message){
 		super("Failed parsing JavaType: '" + type + "': " + message);
 	}
 }

@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.importstatement;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +65,7 @@ public class JavaImportStatementTest{
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.IMPORT_STATEMENT, importStatement.getJavaType());
+		Assertions.assertEquals(JavaCodeTypes.IMPORT_STATEMENT, importStatement.getJavaCodeType());
 	}
 	
 	@Test

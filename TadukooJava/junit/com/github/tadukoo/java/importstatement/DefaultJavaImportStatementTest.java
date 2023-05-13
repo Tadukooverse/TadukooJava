@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.importstatement;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
 import org.junit.jupiter.api.Assertions;
@@ -34,7 +34,7 @@ public abstract class DefaultJavaImportStatementTest<ImportStatementType extends
 	
 	@Test
 	public void testGetType(){
-		Assertions.assertEquals(JavaTypes.IMPORT_STATEMENT, importStatement.getJavaType());
+		Assertions.assertEquals(JavaCodeTypes.IMPORT_STATEMENT, importStatement.getJavaCodeType());
 	}
 	
 	@Test

@@ -1,6 +1,6 @@
 package com.github.tadukoo.java.javaclass;
 
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
@@ -78,7 +78,7 @@ public class JavaClassTest{
 	
 	@Test
 	public void testGetType(){
-		assertEquals(JavaTypes.CLASS, clazz.getJavaType());
+		assertEquals(JavaCodeTypes.CLASS, clazz.getJavaCodeType());
 	}
 	
 	@Test

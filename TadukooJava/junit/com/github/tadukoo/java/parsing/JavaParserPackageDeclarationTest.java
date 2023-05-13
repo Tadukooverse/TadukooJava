@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeTypes;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +23,7 @@ public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
 					package ;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.PACKAGE_DECLARATION,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.PACKAGE_DECLARATION,
 					"Failed to find package name in package declaration!"), e.getMessage());
 		}
 	}
@@ -35,7 +35,7 @@ public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
 					package com.example""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.PACKAGE_DECLARATION,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.PACKAGE_DECLARATION,
 					"Failed to find semicolon ending package declaration!"), e.getMessage());
 		}
 	}
@@ -47,7 +47,7 @@ public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
 					package""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaTypes.PACKAGE_DECLARATION,
+			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.PACKAGE_DECLARATION,
 					"Failed to find package name in package declaration!\n" +
 							"Failed to find semicolon ending package declaration!"), e.getMessage());
 		}

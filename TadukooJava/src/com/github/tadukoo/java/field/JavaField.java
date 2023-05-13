@@ -1,7 +1,7 @@
 package com.github.tadukoo.java.field;
 
-import com.github.tadukoo.java.JavaType;
-import com.github.tadukoo.java.JavaTypes;
+import com.github.tadukoo.java.JavaCodeType;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -19,7 +19,7 @@ import java.util.List;
  * @version Beta v.0.5
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaField), Alpha v.0.4 (as newer version)
  */
-public abstract class JavaField implements JavaType{
+public abstract class JavaField implements JavaCodeType{
 	
 	/** Whether the field is editable or not */
 	private final boolean editable;
@@ -70,8 +70,8 @@ public abstract class JavaField implements JavaType{
 	
 	/** {@inheritDoc} */
 	@Override
-	public JavaTypes getJavaType(){
-		return JavaTypes.FIELD;
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.FIELD;
 	}
 	
 	/**
