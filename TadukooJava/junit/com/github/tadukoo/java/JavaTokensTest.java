@@ -52,8 +52,18 @@ public class JavaTokensTest{
 	}
 	
 	@Test
+	public void testJAVADOC_LINE_TOKEN(){
+		assertEquals("*", JAVADOC_LINE_TOKEN);
+	}
+	
+	@Test
 	public void testMULTI_LINE_COMMENT_START_TOKEN(){
 		assertEquals("/*", MULTI_LINE_COMMENT_START_TOKEN);
+	}
+	
+	@Test
+	public void testMULTI_LINE_COMMENT_CLOSE_TOKEN(){
+		assertEquals("*/", MULTI_LINE_COMMENT_CLOSE_TOKEN);
 	}
 	
 	@Test
@@ -94,6 +104,35 @@ public class JavaTokensTest{
 	@Test
 	public void testASSIGNMENT_OPERATOR_TOKEN(){
 		assertEquals("=", ASSIGNMENT_OPERATOR_TOKEN);
+	}
+	
+	/*
+	 * Javadoc "Tokens"
+	 */
+	
+	@Test
+	public void testJAVADOC_AUTHOR_TOKEN(){
+		assertEquals("author", JAVADOC_AUTHOR_TOKEN);
+	}
+	
+	@Test
+	public void testJAVADOC_VERSION_TOKEN(){
+		assertEquals("version", JAVADOC_VERSION_TOKEN);
+	}
+	
+	@Test
+	public void testJAVADOC_SINCE_TOKEN(){
+		assertEquals("since", JAVADOC_SINCE_TOKEN);
+	}
+	
+	@Test
+	public void testJAVADOC_PARAM_TOKEN(){
+		assertEquals("param", JAVADOC_PARAM_TOKEN);
+	}
+	
+	@Test
+	public void testJAVADOC_RETURN_TOKEN(){
+		assertEquals("return", JAVADOC_RETURN_TOKEN);
 	}
 	
 	/*

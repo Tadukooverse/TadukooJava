@@ -36,8 +36,12 @@ public interface JavaTokens{
 	
 	/** Used to start a javadoc - {@value} */
 	String JAVADOC_START_TOKEN = "/**";
+	/** Used at the start of lines in a javadoc - {@value} */
+	String JAVADOC_LINE_TOKEN = "*";
 	/** Used to start a multi-line comment - {@value} */
 	String MULTI_LINE_COMMENT_START_TOKEN = "/*";
+	/** Used at the end of javadocs and multi-line comments - {@value} */
+	String MULTI_LINE_COMMENT_CLOSE_TOKEN = "*/";
 	/** Used to start a single-line comment - {@value} */
 	String SINGLE_LINE_COMMENT_TOKEN = "//";
 	/** Used to start an annotation - {@value} */
@@ -54,6 +58,21 @@ public interface JavaTokens{
 	String BLOCK_CLOSE_TOKEN = "}";
 	/** Used to make an assignment - {@value} */
 	String ASSIGNMENT_OPERATOR_TOKEN = "=";
+	
+	/*
+	 * Javadoc "Tokens"
+	 */
+	
+	/** Used in Javadocs for author string - {@value} */
+	String JAVADOC_AUTHOR_TOKEN = "author";
+	/** Used in Javadocs for version string - {@value} */
+	String JAVADOC_VERSION_TOKEN = "version";
+	/** Used in Javadocs for since string - {@value} */
+	String JAVADOC_SINCE_TOKEN = "since";
+	/** Used in Javadocs for param strings - {@value} */
+	String JAVADOC_PARAM_TOKEN = "param";
+	/** Used in Javadocs for return string - {@value} */
+	String JAVADOC_RETURN_TOKEN = "return";
 	
 	/*
 	 * Visibility "Modifiers"
