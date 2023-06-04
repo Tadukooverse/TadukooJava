@@ -127,7 +127,7 @@ public abstract class Javadoc implements JavaCodeType{
 	@Override
 	public String toString(){
 		// Start with the opening
-		StringBuilder doc = new StringBuilder("/**");
+		StringBuilder doc = new StringBuilder(JAVADOC_START_TOKEN);
 		
 		// Check what we have
 		boolean haveContent = ListUtil.isNotBlank(content);
@@ -137,13 +137,13 @@ public abstract class Javadoc implements JavaCodeType{
 		
 		// If not condensed, go to the next line if we have content or annotations coming up
 		if(!condensed && (haveContent || haveInfoAnnotations || haveCodeAnnotations)){
-			doc.append("\n *");
+			doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 		}
 		
 		// Add the content (if we have it)
 		if(haveContent){
 			for(String line: content){
-				doc.append(" ").append(line).append("\n *");
+				doc.append(" ").append(line).append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
 			if(!haveInfoAnnotations  && !haveCodeAnnotations){
 				doc.delete(doc.length()-3, doc.length());
@@ -156,42 +156,44 @@ public abstract class Javadoc implements JavaCodeType{
 		// Add the author (if we have it)
 		if(StringUtil.isNotBlank(author)){
 			if(prevContent){
-				doc.append("\n *");
+				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
-			doc.append(" @author ").append(author);
+			doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_AUTHOR_TOKEN).append(' ').append(author);
 			prevContent = true;
 		}
 		
 		// Add the version (if we have it)
 		if(StringUtil.isNotBlank(version)){
 			if(prevContent){
-				doc.append("\n *");
+				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
-			doc.append(" @version ").append(version);
+			doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_VERSION_TOKEN).append(' ').append(version);
 			prevContent = true;
 		}
 		
 		// Add the since (if we have it)
 		if(StringUtil.isNotBlank(since)){
 			if(prevContent){
-				doc.append("\n *");
+				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
-			doc.append(" @since ").append(since);
+			doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_SINCE_TOKEN).append(' ').append(since);
 			prevContent = true;
 		}
 		
 		// Add extra line
 		if(haveInfoAnnotations && haveCodeAnnotations){
-			doc.append("\n * ");
+			doc.append("\n ").append(JAVADOC_LINE_TOKEN).append(' ');
 		}
 		
 		// Add the parameters
 		if(ListUtil.isNotBlank(params)){
 			if(prevContent){
-				doc.append("\n *");
+				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
 			for(Pair<String, String> param: params){
-				doc.append(" @param ").append(param.getLeft()).append(" ").append(param.getRight()).append("\n *");
+				doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_PARAM_TOKEN).append(' ')
+						.append(param.getLeft()).append(" ").append(param.getRight())
+						.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
 			doc.delete(doc.length()-3, doc.length());
 			prevContent = true;
@@ -200,9 +202,9 @@ public abstract class Javadoc implements JavaCodeType{
 		// Add the return value
 		if(StringUtil.isNotBlank(returnVal)){
 			if(prevContent){
-				doc.append("\n *");
+				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
-			doc.append(" @return ").append(returnVal);
+			doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_RETURN_TOKEN).append(' ').append(returnVal);
 		}
 		
 		// If not condensed, go to the next line for the closing
@@ -211,7 +213,7 @@ public abstract class Javadoc implements JavaCodeType{
 		}
 		
 		// End with the closing
-		doc.append(" */");
+		doc.append(' ').append(MULTI_LINE_COMMENT_CLOSE_TOKEN);
 		
 		return doc.toString();
 	}
