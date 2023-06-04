@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class JavaAnnotationBuilderTest{
 	
 	private static class TestJavaAnnotation extends JavaAnnotation{
-		private TestJavaAnnotation(String name, List<Pair<String, String>> parameters){
-			super(false, name, parameters);
+		private TestJavaAnnotation(String name, String canonicalName, List<Pair<String, String>> parameters){
+			super(false, name, canonicalName, parameters);
 		}
 	}
 	
@@ -23,7 +23,7 @@ public class JavaAnnotationBuilderTest{
 		
 		@Override
 		protected TestJavaAnnotation constructAnnotation(){
-			return new TestJavaAnnotation(name, parameters);
+			return new TestJavaAnnotation(name, canonicalName, parameters);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class JavaAnnotationBuilderTest{
 	@Test
 	public void testBuilderCopy(){
 		JavaAnnotation otherAnnotation = new TestJavaAnnotationBuilder()
-				.name(name)
+				.name(name).canonicalName("something.Test")
 				.parameter("test", "true")
 				.parameter("derp", "false")
 				.build();
@@ -60,6 +60,12 @@ public class JavaAnnotationBuilderTest{
 	public void testBuilderName(){
 		TestJavaAnnotation annotation = new TestJavaAnnotationBuilder().name("Test").build();
 		assertEquals("Test", annotation.getName());
+	}
+	
+	@Test
+	public void testBuilderCanonicalName(){
+		TestJavaAnnotation annotation = new TestJavaAnnotationBuilder().name("Test").canonicalName("something.Test").build();
+		assertEquals("something.Test", annotation.getCanonicalName());
 	}
 	
 	@Test

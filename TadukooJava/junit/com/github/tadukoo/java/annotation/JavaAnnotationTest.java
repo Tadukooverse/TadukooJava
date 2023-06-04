@@ -1,6 +1,7 @@
 package com.github.tadukoo.java.annotation;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JavaAnnotationTest{
 	
 	private static class TestJavaAnnotation extends JavaAnnotation{
-		private TestJavaAnnotation(boolean editable, String name, List<Pair<String, String>> parameters){
-			super(editable, name, parameters);
+		private TestJavaAnnotation(boolean editable, String name, String canonicalName, List<Pair<String, String>> parameters){
+			super(editable, name, canonicalName, parameters);
 		}
 	}
 	
@@ -31,7 +32,7 @@ public class JavaAnnotationTest{
 		
 		@Override
 		protected TestJavaAnnotation constructAnnotation(){
-			return new TestJavaAnnotation(editable, name, parameters);
+			return new TestJavaAnnotation(editable, name, canonicalName, parameters);
 		}
 	}
 	private JavaAnnotation annotation;
@@ -62,6 +63,11 @@ public class JavaAnnotationTest{
 	@Test
 	public void testGetName(){
 		assertEquals(name, annotation.getName());
+	}
+	
+	@Test
+	public void testGetCanonicalName(){
+		assertTrue(StringUtil.isBlank(annotation.getCanonicalName()));
 	}
 	
 	@Test

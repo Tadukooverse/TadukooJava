@@ -42,7 +42,7 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	@Test
 	public void testBuilderCopy(){
 		JavaAnnotation otherAnnotation = builder.get()
-				.name(name)
+				.name(name).canonicalName("something.Test")
 				.parameter("test", "true")
 				.parameter("derp", "false")
 				.build();
@@ -50,11 +50,21 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 				.copy(otherAnnotation)
 				.build();
 		assertEquals(annotation, otherAnnotation);
+		assertEquals(annotation.getCanonicalName(), otherAnnotation.getCanonicalName());
 	}
 	
 	@Test
 	public void testBuilderName(){
 		assertEquals(name, annotation.getName());
+	}
+	
+	@Test
+	public void testBuilderCanonicalName(){
+		annotation = builder.get()
+				.name(name)
+				.canonicalName("something.Test")
+				.build();
+		assertEquals("something.Test", annotation.getCanonicalName());
 	}
 	
 	@Test

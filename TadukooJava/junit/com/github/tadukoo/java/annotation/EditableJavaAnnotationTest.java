@@ -1,6 +1,7 @@
 package com.github.tadukoo.java.annotation;
 
 import com.github.tadukoo.util.ListUtil;
+import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,13 @@ public class EditableJavaAnnotationTest extends DefaultJavaAnnotationTest<Editab
 		assertEquals("Test", annotation.getName());
 		annotation.setName("Derp");
 		assertEquals("Derp", annotation.getName());
+	}
+	
+	@Test
+	public void testSetCanonicalName(){
+		assertTrue(StringUtil.isBlank(annotation.getCanonicalName()));
+		annotation.setCanonicalName("something.Test");
+		assertEquals("something.Test", annotation.getCanonicalName());
 	}
 	
 	@Test

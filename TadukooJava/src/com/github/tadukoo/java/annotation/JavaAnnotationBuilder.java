@@ -31,6 +31,8 @@ public abstract class JavaAnnotationBuilder<AnnotationType extends JavaAnnotatio
 	
 	/** The name of the annotation */
 	protected String name;
+	/** The canonical name of the annotation */
+	protected String canonicalName = "";
 	/** The parameters of the annotation (as Pairs of name and value) */
 	protected List<Pair<String, String>> parameters = new ArrayList<>();
 	
@@ -47,6 +49,7 @@ public abstract class JavaAnnotationBuilder<AnnotationType extends JavaAnnotatio
 	 */
 	public JavaAnnotationBuilder<AnnotationType> copy(JavaAnnotation annotation){
 		this.name = annotation.getName();
+		this.canonicalName = annotation.getCanonicalName();
 		this.parameters = annotation.getParameters();
 		return this;
 	}
@@ -57,6 +60,15 @@ public abstract class JavaAnnotationBuilder<AnnotationType extends JavaAnnotatio
 	 */
 	public JavaAnnotationBuilder<AnnotationType> name(String name){
 		this.name = name;
+		return this;
+	}
+	
+	/**
+	 * @param canonicalName The canonical name of the annotation
+	 * @return this, to continue building
+	 */
+	public JavaAnnotationBuilder<AnnotationType> canonicalName(String canonicalName){
+		this.canonicalName = canonicalName;
 		return this;
 	}
 	

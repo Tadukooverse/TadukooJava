@@ -21,6 +21,8 @@ public abstract class JavaAnnotation implements JavaCodeType{
 	private final boolean editable;
 	/** The name of the annotation */
 	protected String name;
+	/** The canonical name of the annotation */
+	protected String canonicalName;
 	/** The parameters of the annotation (as Pairs of name and value) */
 	protected List<Pair<String, String>> parameters;
 	
@@ -29,11 +31,13 @@ public abstract class JavaAnnotation implements JavaCodeType{
 	 *
 	 * @param editable Whether the annotation is editable or not
 	 * @param name The name of the annotation
+	 * @param canonicalName The canonical name of the annotation
 	 * @param parameters The parameters of the annotation (as Pairs of name and value)
 	 */
-	protected JavaAnnotation(boolean editable, String name, List<Pair<String, String>> parameters){
+	protected JavaAnnotation(boolean editable, String name, String canonicalName, List<Pair<String, String>> parameters){
 		this.editable = editable;
 		this.name = name;
+		this.canonicalName = canonicalName;
 		this.parameters = parameters;
 	}
 	
@@ -55,6 +59,13 @@ public abstract class JavaAnnotation implements JavaCodeType{
 	 */
 	public String getName(){
 		return name;
+	}
+	
+	/**
+	 * @return The canonical name of the annotation
+	 */
+	public String getCanonicalName(){
+		return canonicalName;
 	}
 	
 	/**

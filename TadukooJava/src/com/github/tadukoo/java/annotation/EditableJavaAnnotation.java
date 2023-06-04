@@ -31,7 +31,7 @@ public class EditableJavaAnnotation extends JavaAnnotation{
 		/** {@inheritDoc} */
 		@Override
 		public EditableJavaAnnotation constructAnnotation(){
-			return new EditableJavaAnnotation(name, parameters);
+			return new EditableJavaAnnotation(name, canonicalName, parameters);
 		}
 	}
 	
@@ -39,10 +39,11 @@ public class EditableJavaAnnotation extends JavaAnnotation{
 	 * Constructs a new {@link EditableJavaAnnotation} with the given parameters
 	 *
 	 * @param name The name of the annotation
+	 * @param canonicalName The canonical name of the annotation
 	 * @param parameters The parameters of the annotation (as Pairs of name and value)
 	 */
-	private EditableJavaAnnotation(String name, List<Pair<String, String>> parameters){
-		super(true, name, parameters);
+	private EditableJavaAnnotation(String name, String canonicalName, List<Pair<String, String>> parameters){
+		super(true, name, canonicalName, parameters);
 	}
 	
 	/**
@@ -57,6 +58,13 @@ public class EditableJavaAnnotation extends JavaAnnotation{
 	 */
 	public void setName(String name){
 		this.name = name;
+	}
+	
+	/**
+	 * @param canonicalName The canonical name of the annotation
+	 */
+	public void setCanonicalName(String canonicalName){
+		this.canonicalName = canonicalName;
 	}
 	
 	/**

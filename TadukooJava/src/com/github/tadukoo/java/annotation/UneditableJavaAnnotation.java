@@ -31,7 +31,7 @@ public class UneditableJavaAnnotation extends JavaAnnotation{
 		/** {@inheritDoc} */
 		@Override
 		public UneditableJavaAnnotation constructAnnotation(){
-			return new UneditableJavaAnnotation(name, parameters);
+			return new UneditableJavaAnnotation(name, canonicalName, parameters);
 		}
 	}
 	
@@ -39,10 +39,11 @@ public class UneditableJavaAnnotation extends JavaAnnotation{
 	 * Constructs an {@link UneditableJavaAnnotation} with the given parameters
 	 *
 	 * @param name The name of the annotation
+	 * @param canonicalName The canonical name of the annotation
 	 * @param parameters The parameters of the annotation (as Pairs of name and value)
 	 */
-	private UneditableJavaAnnotation(String name, List<Pair<String, String>> parameters){
-		super(false, name, parameters);
+	private UneditableJavaAnnotation(String name, String canonicalName, List<Pair<String, String>> parameters){
+		super(false, name, canonicalName, parameters);
 	}
 	
 	/**
