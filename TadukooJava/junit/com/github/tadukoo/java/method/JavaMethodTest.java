@@ -83,6 +83,57 @@ public class JavaMethodTest{
 	}
 	
 	@Test
+	public void testGetUniqueNameConstructor(){
+		assertEquals("init()", method.getUniqueName());
+	}
+	
+	@Test
+	public void testGetUniqueNameConstructorWithParameter(){
+		method = new TestJavaMethodBuilder(false)
+				.returnType(returnType)
+				.parameter("String", "name")
+				.build();
+		assertEquals("init(String name)", method.getUniqueName());
+	}
+	
+	@Test
+	public void testGetUniqueNameConstructorWithMultipleParameters(){
+		method = new TestJavaMethodBuilder(false)
+				.returnType(returnType)
+				.parameter("String", "name")
+				.parameter("int", "version")
+				.build();
+		assertEquals("init(String name, int version)", method.getUniqueName());
+	}
+	
+	@Test
+	public void testGetUniqueName(){
+		method = new TestJavaMethodBuilder(false)
+				.returnType(returnType).name("test")
+				.build();
+		assertEquals("test()", method.getUniqueName());
+	}
+	
+	@Test
+	public void testGetUniqueNameWithParameter(){
+		method = new TestJavaMethodBuilder(false)
+				.returnType(returnType).name("test")
+				.parameter("String", "name")
+				.build();
+		assertEquals("test(String name)", method.getUniqueName());
+	}
+	
+	@Test
+	public void testGetUniqueNameWithMultipleParameters(){
+		method = new TestJavaMethodBuilder(false)
+				.returnType(returnType).name("test")
+				.parameter("String", "name")
+				.parameter("int", "version")
+				.build();
+		assertEquals("test(String name, int version)", method.getUniqueName());
+	}
+	
+	@Test
 	public void testToString(){
 		String javaString = """
 				int(){

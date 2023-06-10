@@ -139,6 +139,39 @@ public abstract class JavaMethod implements JavaCodeType{
 	}
 	
 	/**
+	 * Builds and returns a unique name for the method. This is for use when a class has multiple methods with the
+	 * same base name, but different parameters.
+	 * <br><br>
+	 * If a method has no parameters, this will return a name of the form {@code methodName()}
+	 * <br><br>
+	 * If a method does have parameters, they will appear in the parentheses with a comma and space after each but
+	 * the last parameter, in the form {@code methodName(parameter1Type parameter1Name, parameter2Type parameter2Name}
+	 * <br><br>
+	 * If the method is a constructor, it will appear with the name {@code init}, e.g. {@code init()} or
+	 * {@code init(parameter1Type parameter1Name)}
+	 *
+	 * @return A unique name for the method
+	 */
+	public String getUniqueName(){
+		// Start with base method name and opening parenthesis
+		StringBuilder fullName = new StringBuilder(StringUtil.isNotBlank(name)?name:"init").append('(');
+		
+		// Add any parameters
+		if(ListUtil.isNotBlank(parameters)){
+			for(Pair<String, String> parameter: parameters){
+				fullName.append(parameter.getLeft()).append(' ').append(parameter.getRight()).append(", ");
+			}
+			// Remove the extra comma and space
+			fullName.delete(fullName.length() - 2, fullName.length());
+		}
+		
+		// Finish the parameters
+		fullName.append(')');
+		
+		return fullName.toString();
+	}
+	
+	/**
 	 * @return The parameters used in the method - pairs of type, then name
 	 */
 	public List<Pair<String, String>> getParameters(){
