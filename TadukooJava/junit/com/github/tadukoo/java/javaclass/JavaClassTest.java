@@ -6,6 +6,7 @@ import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.field.UneditableJavaField;
@@ -13,6 +14,7 @@ import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +51,16 @@ public class JavaClassTest{
 		
 		private TestJavaClassBuilder(boolean editable){
 			this.editable = editable;
+		}
+		
+		@Override
+		protected JavaPackageDeclarationBuilder<?> getPackageDeclarationBuilder(){
+			return UneditableJavaPackageDeclaration.builder();
+		}
+		
+		@Override
+		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
+			return UneditableJavaImportStatement.builder();
 		}
 		
 		@Override

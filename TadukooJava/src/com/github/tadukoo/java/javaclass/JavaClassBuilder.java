@@ -4,9 +4,11 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 
@@ -180,6 +182,22 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
+	 * @return A {@link JavaPackageDeclarationBuilder} to use to build a {@link JavaPackageDeclaration}
+	 */
+	protected abstract JavaPackageDeclarationBuilder<?> getPackageDeclarationBuilder();
+	
+	/**
+	 * @param packageName The package name to use for the class, which gets put into a {@link JavaPackageDeclaration}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> packageName(String packageName){
+		packageDeclaration = getPackageDeclarationBuilder()
+				.packageName(packageName)
+				.build();
+		return this;
+	}
+	
+	/**
 	 * @param importStatement An {@link JavaImportStatement import statement} of the class
 	 * @return this, to continue building
 	 */
@@ -194,6 +212,37 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 */
 	public JavaClassBuilder<ClassType> importStatements(List<JavaImportStatement> importStatements){
 		this.importStatements = importStatements;
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaImportStatementBuilder} to use to build a {@link JavaImportStatement}
+	 */
+	protected abstract JavaImportStatementBuilder<?> getImportStatementBuilder();
+	
+	/**
+	 * @param importName The name of an import for the class (will be made into a {@link JavaImportStatement})
+	 * @param isStatic Whether the import is static or not
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> importName(String importName, boolean isStatic){
+		importStatements.add(getImportStatementBuilder()
+				.isStatic(isStatic).importName(importName)
+				.build());
+		return this;
+	}
+	
+	/**
+	 * @param importNames The names of imports for the class (will be made into {@link JavaImportStatement import statements})
+	 * @param isStatic Whether the imports are static or not
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> importNames(List<String> importNames, boolean isStatic){
+		for(String importName: importNames){
+			importStatements.add(getImportStatementBuilder()
+					.isStatic(isStatic).importName(importName)
+					.build());
+		}
 		return this;
 	}
 	

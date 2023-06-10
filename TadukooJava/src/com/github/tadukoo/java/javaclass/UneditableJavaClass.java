@@ -3,10 +3,14 @@ package com.github.tadukoo.java.javaclass;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
+import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
+import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,16 @@ public class UneditableJavaClass extends JavaClass{
 		/** Not allowed to instantiate outside {@link UneditableJavaClass} */
 		private UneditableJavaClassBuilder(){
 			super();
+		}
+		
+		/** {@inheritDoc} */
+		protected JavaPackageDeclarationBuilder<?> getPackageDeclarationBuilder(){
+			return UneditableJavaPackageDeclaration.builder();
+		}
+		
+		/** {@inheritDoc} */
+		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
+			return UneditableJavaImportStatement.builder();
 		}
 		
 		/** {@inheritDoc} */

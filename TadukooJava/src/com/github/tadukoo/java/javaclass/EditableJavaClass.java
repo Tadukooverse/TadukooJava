@@ -2,11 +2,15 @@ package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,18 @@ public class EditableJavaClass extends JavaClass{
 		/** Not allowed to instantiate outside {@link EditableJavaClass} */
 		private EditableJavaClassBuilder(){
 			super();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaPackageDeclarationBuilder<?> getPackageDeclarationBuilder(){
+			return EditableJavaPackageDeclaration.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
+			return EditableJavaImportStatement.builder();
 		}
 		
 		/** {@inheritDoc} */
@@ -155,6 +171,15 @@ public class EditableJavaClass extends JavaClass{
 	}
 	
 	/**
+	 * @param packageName The package name of the class, which gets put in a {@link JavaPackageDeclaration}
+	 */
+	public void setPackageName(String packageName){
+		packageDeclaration = EditableJavaPackageDeclaration.builder()
+				.packageName(packageName)
+				.build();
+	}
+	
+	/**
 	 * @param importStatement An {@link JavaImportStatement import statement} of this class to be added
 	 */
 	public void addImportStatement(JavaImportStatement importStatement){
@@ -186,6 +211,37 @@ public class EditableJavaClass extends JavaClass{
 			}
 		}
 		this.importStatements = importStatements;
+	}
+	
+	/**
+	 * @param importName The name of an import to add to the class (becomes a {@link JavaImportStatement})
+	 * @param isStatic Whether the import is static or not
+	 */
+	public void addImportName(String importName, boolean isStatic){
+		importStatements.add(EditableJavaImportStatement.builder()
+				.isStatic(isStatic).importName(importName)
+				.build());
+	}
+	
+	/**
+	 * @param importNames The names of imports to add to the class (become {@link JavaImportStatement import statements})
+	 * @param isStatic Whether the imports are static or not
+	 */
+	public void addImportNames(List<String> importNames, boolean isStatic){
+		for(String importName: importNames){
+			importStatements.add(EditableJavaImportStatement.builder()
+					.isStatic(isStatic).importName(importName)
+					.build());
+		}
+	}
+	
+	/**
+	 * @param importNames The import names to set as the only imports on the class (they become {@link JavaImportStatement import statements})
+	 * @param isStatic Whether the imports are static or not
+	 */
+	public void setImportNames(List<String> importNames, boolean isStatic){
+		importStatements = new ArrayList<>();
+		addImportNames(importNames, isStatic);
 	}
 	
 	/**

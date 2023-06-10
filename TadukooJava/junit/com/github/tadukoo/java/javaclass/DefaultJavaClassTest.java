@@ -193,6 +193,17 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testBuilderSetPackageName(){
+		clazz = builder.get()
+				.packageName("some.package")
+				.className(className)
+				.build();
+		assertEquals(javaPackageDeclarationBuilder.get()
+				.packageName("some.package")
+				.build(), clazz.getPackageDeclaration());
+	}
+	
+	@Test
 	public void testBuilderSetClassName(){
 		assertEquals(className, clazz.getClassName());
 	}
@@ -224,6 +235,58 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.className(className)
 				.build();
 		assertEquals(importStatements, clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderImportName(){
+		clazz = builder.get()
+				.importName("com.example", false)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(javaImportStatementBuilder.get()
+				.importName("com.example")
+				.build()), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderImportNameStatic(){
+		clazz = builder.get()
+				.importName("com.example", true)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(javaImportStatementBuilder.get()
+				.isStatic().importName("com.example")
+				.build()), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderSetImportNames(){
+		clazz = builder.get()
+				.importNames(ListUtil.createList("com.example", "com.other"), false)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(
+				javaImportStatementBuilder.get()
+						.importName("com.example")
+						.build(),
+				javaImportStatementBuilder.get()
+						.importName("com.other")
+						.build()), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderSetImportNamesStatic(){
+		clazz = builder.get()
+				.importNames(ListUtil.createList("com.example", "com.other"), true)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(
+				javaImportStatementBuilder.get()
+						.isStatic().importName("com.example")
+						.build(),
+				javaImportStatementBuilder.get()
+						.isStatic().importName("com.other")
+						.build()), clazz.getImportStatements());
 	}
 	
 	@Test

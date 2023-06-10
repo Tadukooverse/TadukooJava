@@ -6,6 +6,7 @@ import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.field.UneditableJavaField;
@@ -14,6 +15,7 @@ import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +50,15 @@ public class JavaClassBuilderTest{
 	
 	private static class TestJavaClassBuilder extends JavaClassBuilder<TestJavaClass>{
 		
+		@Override
+		protected JavaPackageDeclarationBuilder<?> getPackageDeclarationBuilder(){
+			return UneditableJavaPackageDeclaration.builder();
+		}
+		
+		@Override
+		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
+			return UneditableJavaImportStatement.builder();
+		}
 		
 		@Override
 		protected List<String> checkForSpecificErrors(){
@@ -192,6 +203,17 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testBuilderSetPackageName(){
+		clazz = new TestJavaClassBuilder()
+				.packageName("some.package")
+				.className(className)
+				.build();
+		assertEquals(UneditableJavaPackageDeclaration.builder()
+				.packageName("some.package")
+				.build(), clazz.getPackageDeclaration());
+	}
+	
+	@Test
 	public void testSetClassName(){
 		assertEquals(className, clazz.getClassName());
 	}
@@ -223,6 +245,58 @@ public class JavaClassBuilderTest{
 				.className(className)
 				.build();
 		assertEquals(importStatements, clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderImportName(){
+		clazz = new TestJavaClassBuilder()
+				.importName("com.example", false)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(UneditableJavaImportStatement.builder()
+				.importName("com.example")
+				.build()), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderImportNameStatic(){
+		clazz = new TestJavaClassBuilder()
+				.importName("com.example", true)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(UneditableJavaImportStatement.builder()
+				.isStatic().importName("com.example")
+				.build()), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderSetImportNames(){
+		clazz = new TestJavaClassBuilder()
+				.importNames(ListUtil.createList("com.example", "com.other"), false)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(
+				UneditableJavaImportStatement.builder()
+						.importName("com.example")
+						.build(),
+				UneditableJavaImportStatement.builder()
+						.importName("com.other")
+						.build()), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testBuilderSetImportNamesStatic(){
+		clazz = new TestJavaClassBuilder()
+				.importNames(ListUtil.createList("com.example", "com.other"), true)
+				.className(className)
+				.build();
+		assertEquals(ListUtil.createList(
+				UneditableJavaImportStatement.builder()
+						.isStatic().importName("com.example")
+						.build(),
+				UneditableJavaImportStatement.builder()
+						.isStatic().importName("com.other")
+						.build()), clazz.getImportStatements());
 	}
 	
 	@Test

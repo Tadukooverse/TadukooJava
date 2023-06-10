@@ -213,6 +213,15 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testSetPackageName(){
+		assertNull(clazz.getPackageDeclaration());
+		clazz.setPackageName("some.random.package.name");
+		assertEquals(EditableJavaPackageDeclaration.builder()
+				.packageName("some.random.package.name")
+				.build(), clazz.getPackageDeclaration());
+	}
+	
+	@Test
 	public void testAddImportStatement(){
 		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
 				.importName("com.example")
@@ -312,6 +321,74 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 		}catch(IllegalArgumentException e){
 			assertEquals("editable Java Class requires editable import statements", e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testAddImportName(){
+		String importName1 = "com.example";
+		String importName2 = "org.test";
+		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
+				.importName(importName1)
+				.build();
+		JavaImportStatement importStatement2 = EditableJavaImportStatement.builder()
+				.isStatic().importName(importName2)
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
+		clazz.addImportName(importName1, false);
+		assertEquals(ListUtil.createList(importStatement), clazz.getImportStatements());
+		clazz.addImportName(importName2, true);
+		assertEquals(ListUtil.createList(importStatement, importStatement2), clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testAddImportNames(){
+		String importName1 = "com.example";
+		String importName2 = "org.test";
+		String importName3 = "java.whatever";
+		String importName4 = "org.yep";
+		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
+				.importName(importName1)
+				.build();
+		JavaImportStatement importStatement2 = EditableJavaImportStatement.builder()
+				.importName(importName2)
+				.build();
+		JavaImportStatement importStatement3 = EditableJavaImportStatement.builder()
+				.isStatic().importName(importName3)
+				.build();
+		JavaImportStatement importStatement4 = EditableJavaImportStatement.builder()
+				.isStatic().importName(importName4)
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
+		clazz.addImportNames(ListUtil.createList(importName1, importName2), false);
+		assertEquals(ListUtil.createList(importStatement, importStatement2), clazz.getImportStatements());
+		clazz.addImportNames(ListUtil.createList(importName3, importName4), true);
+		assertEquals(ListUtil.createList(importStatement, importStatement2, importStatement3, importStatement4),
+				clazz.getImportStatements());
+	}
+	
+	@Test
+	public void testSetImportNames(){
+		String importName1 = "com.example";
+		String importName2 = "org.test";
+		String importName3 = "java.whatever";
+		String importName4 = "org.yep";
+		JavaImportStatement importStatement = EditableJavaImportStatement.builder()
+				.importName(importName1)
+				.build();
+		JavaImportStatement importStatement2 = EditableJavaImportStatement.builder()
+				.importName(importName2)
+				.build();
+		JavaImportStatement importStatement3 = EditableJavaImportStatement.builder()
+				.isStatic().importName(importName3)
+				.build();
+		JavaImportStatement importStatement4 = EditableJavaImportStatement.builder()
+				.isStatic().importName(importName4)
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getImportStatements());
+		clazz.setImportNames(ListUtil.createList(importName1, importName2), false);
+		assertEquals(ListUtil.createList(importStatement, importStatement2), clazz.getImportStatements());
+		clazz.setImportNames(ListUtil.createList(importName3, importName4), true);
+		assertEquals(ListUtil.createList(importStatement3, importStatement4), clazz.getImportStatements());
 	}
 	
 	@Test
