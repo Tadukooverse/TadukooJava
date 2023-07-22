@@ -1,6 +1,7 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -43,7 +44,7 @@ public class JavaCodeTypesTest{
 	@Test
 	public void testMULTI_LINE_COMMENT(){
 		assertEquals("MULTI_LINE_COMMENT", MULTI_LINE_COMMENT.toString());
-		assertNull(MULTI_LINE_COMMENT.getJavaTypeClass());
+		assertEquals(JavaMultiLineComment.class, MULTI_LINE_COMMENT.getJavaTypeClass());
 	}
 	
 	@Test

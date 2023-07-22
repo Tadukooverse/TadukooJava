@@ -1,6 +1,7 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -43,8 +44,9 @@ public enum JavaCodeTypes{
 	
 	/**
 	 * Represents a Multi-line Comment in Java
+	 * Main {@link JavaCodeType} class: {@link JavaMultiLineComment}
 	 */
-	MULTI_LINE_COMMENT(),
+	MULTI_LINE_COMMENT(JavaMultiLineComment.class),
 	
 	/**
 	 * Represents a Single-line Comment in Java
