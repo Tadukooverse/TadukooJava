@@ -9,9 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnotation>{
@@ -111,6 +113,36 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 		}catch(IllegalArgumentException e){
 			assertEquals("Must specify name!", e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testGetParametersMap(){
+		Map<String, String> parameters = annotation.getParametersMap();
+		assertTrue(parameters.isEmpty());
+	}
+	
+	@Test
+	public void testGetParametersMapSingleParam(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "something")
+				.build();
+		Map<String, String> parameters = annotation.getParametersMap();
+		assertEquals(1, parameters.size());
+		assertEquals("something", parameters.get("test"));
+	}
+	
+	@Test
+	public void testGetParametersMapMultipleParams(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "something")
+				.parameter("derp", "something else")
+				.build();
+		Map<String, String> parameters = annotation.getParametersMap();
+		assertEquals(2, parameters.size());
+		assertEquals("something", parameters.get("test"));
+		assertEquals("something else", parameters.get("derp"));
 	}
 	
 	@Test

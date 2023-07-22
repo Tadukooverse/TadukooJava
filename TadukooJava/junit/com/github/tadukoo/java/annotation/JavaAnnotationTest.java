@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -73,6 +74,36 @@ public class JavaAnnotationTest{
 	@Test
 	public void testGetParameters(){
 		assertEquals(new ArrayList<>(), annotation.getParameters());
+	}
+	
+	@Test
+	public void testGetParametersMap(){
+		Map<String, String> parameters = annotation.getParametersMap();
+		assertTrue(parameters.isEmpty());
+	}
+	
+	@Test
+	public void testGetParametersMapSingleParam(){
+		annotation = new TestJavaAnnotationBuilder(false)
+				.name(name)
+				.parameter("test", "something")
+				.build();
+		Map<String, String> parameters = annotation.getParametersMap();
+		assertEquals(1, parameters.size());
+		assertEquals("something", parameters.get("test"));
+	}
+	
+	@Test
+	public void testGetParametersMapMultipleParams(){
+		annotation = new TestJavaAnnotationBuilder(false)
+				.name(name)
+				.parameter("test", "something")
+				.parameter("derp", "something else")
+				.build();
+		Map<String, String> parameters = annotation.getParametersMap();
+		assertEquals(2, parameters.size());
+		assertEquals("something", parameters.get("test"));
+		assertEquals("something else", parameters.get("derp"));
 	}
 	
 	@Test

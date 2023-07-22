@@ -6,7 +6,9 @@ import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.tuple.Pair;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an annotation in Java.
@@ -73,6 +75,17 @@ public abstract class JavaAnnotation implements JavaCodeType{
 	 */
 	public List<Pair<String, String>> getParameters(){
 		return parameters;
+	}
+	
+	/**
+	 * @return The parameters of the annotation as a Map of parameter name to value
+	 */
+	public Map<String, String> getParametersMap(){
+		Map<String, String> parametersMap = new HashMap<>();
+		for(Pair<String, String> parameter: parameters){
+			parametersMap.put(parameter.getLeft(), parameter.getRight());
+		}
+		return parametersMap;
 	}
 	
 	/**
