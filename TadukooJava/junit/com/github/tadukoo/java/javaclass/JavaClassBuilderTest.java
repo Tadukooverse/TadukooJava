@@ -39,11 +39,13 @@ public class JavaClassBuilderTest{
 				boolean editable, boolean isInnerClass,
 				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
+				Visibility visibility, boolean isStatic, boolean isFinal, String className,
+				String superClassName, List<String> implementsInterfaceNames,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className, superClassName,
+					visibility, isStatic, isFinal, className,
+					superClassName, implementsInterfaceNames,
 					innerClasses, fields, methods);
 		}
 	}
@@ -69,7 +71,8 @@ public class JavaClassBuilderTest{
 		protected TestJavaClass constructClass(){
 			return new TestJavaClass(false, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className, superClassName,
+					visibility, isStatic, isFinal, className,
+					superClassName, implementsInterfaceNames,
 					innerClasses, fields, methods);
 		}
 	}
@@ -132,6 +135,11 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testDefaultImplementsInterfaces(){
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
 	public void testDefaultFields(){
 		assertNotNull(clazz.getFields());
 		assertTrue(clazz.getFields().isEmpty());
@@ -155,6 +163,7 @@ public class JavaClassBuilderTest{
 				.isFinal()
 				.className(className)
 				.superClassName("BClassName")
+				.implementsInterfaceName("SomeInterface")
 				.innerClass(new TestJavaClassBuilder()
 						.innerClass()
 						.className("CClassName")
@@ -387,6 +396,24 @@ public class JavaClassBuilderTest{
 				.superClassName("AnotherClassName")
 				.build();
 		assertEquals("AnotherClassName", clazz.getSuperClassName());
+	}
+	
+	@Test
+	public void testSetImplementsInterfaceName(){
+		clazz = new TestJavaClassBuilder()
+				.className(className)
+				.implementsInterfaceName("SomeInterface")
+				.build();
+		assertEquals(ListUtil.createList("SomeInterface"), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testSetMultipleImplementsInterfaceNames(){
+		clazz = new TestJavaClassBuilder()
+				.className(className)
+				.implementsInterfaceNames(ListUtil.createList("SomeInterface", "SomeOtherInterface"))
+				.build();
+		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
 	}
 	
 	@Test

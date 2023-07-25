@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,11 +37,13 @@ public class JavaClassTest{
 				boolean editable, boolean isInnerClass,
 				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
+				Visibility visibility, boolean isStatic, boolean isFinal, String className,
+				String superClassName, List<String> implementsInterfaceNames,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className, superClassName,
+					visibility, isStatic, isFinal, className,
+					superClassName, implementsInterfaceNames,
 					innerClasses, fields, methods);
 		}
 	}
@@ -72,7 +75,8 @@ public class JavaClassTest{
 		protected TestJavaClass constructClass(){
 			return new TestJavaClass(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className, superClassName,
+					visibility, isStatic, isFinal, className,
+					superClassName, implementsInterfaceNames,
 					innerClasses, fields, methods);
 		}
 	}
@@ -104,6 +108,124 @@ public class JavaClassTest{
 				.className(className)
 				.build();
 		assertTrue(clazz.isEditable());
+	}
+	
+	@Test
+	public void testGetInnerClassesMapNoInnerClasses(){
+		assertTrue(clazz.getInnerClassesMap().isEmpty());
+	}
+	
+	@Test
+	public void testGetInnerClassesMapSingleInnerClass(){
+		JavaClass innerClass = new TestJavaClassBuilder(false)
+				.innerClass()
+				.className("BClassName")
+				.build();
+		clazz = new TestJavaClassBuilder(false)
+				.innerClass(innerClass)
+				.className(className)
+				.build();
+		Map<String, JavaClass> innerClassMap = clazz.getInnerClassesMap();
+		assertEquals(1, innerClassMap.size());
+		assertEquals(innerClass, innerClassMap.get("BClassName"));
+	}
+	
+	@Test
+	public void testGetInnerClassesMapTwoInnerClasses(){
+		JavaClass innerClass = new TestJavaClassBuilder(false)
+				.innerClass()
+				.className("BClassName")
+				.build();
+		JavaClass innerClass2 = new TestJavaClassBuilder(false)
+				.innerClass()
+				.className("CClassName")
+				.build();
+		clazz = new TestJavaClassBuilder(false)
+				.innerClass(innerClass)
+				.innerClass(innerClass2)
+				.className(className)
+				.build();
+		Map<String, JavaClass> innerClassMap = clazz.getInnerClassesMap();
+		assertEquals(2, innerClassMap.size());
+		assertEquals(innerClass, innerClassMap.get("BClassName"));
+		assertEquals(innerClass2, innerClassMap.get("CClassName"));
+	}
+	
+	@Test
+	public void testGetFieldsMapNoFields(){
+		assertTrue(clazz.getFieldsMap().isEmpty());
+	}
+	
+	@Test
+	public void testGetFieldsMapSingleField(){
+		JavaField field = UneditableJavaField.builder()
+				.type("String").name("test")
+				.build();
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.field(field)
+				.build();
+		Map<String, JavaField> fieldMap = clazz.getFieldsMap();
+		assertEquals(1, fieldMap.size());
+		assertEquals(field, fieldMap.get("test"));
+	}
+	
+	@Test
+	public void testGetFieldsMapTwoFields(){
+		JavaField field = UneditableJavaField.builder()
+				.type("String").name("test")
+				.build();
+		JavaField field2 = UneditableJavaField.builder()
+				.type("int").name("version")
+				.build();
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.field(field)
+				.field(field2)
+				.build();
+		Map<String, JavaField> fieldMap = clazz.getFieldsMap();
+		assertEquals(2, fieldMap.size());
+		assertEquals(field, fieldMap.get("test"));
+		assertEquals(field2, fieldMap.get("version"));
+	}
+	
+	@Test
+	public void testGetMethodsMapNoMethods(){
+		assertTrue(clazz.getMethodsMap().isEmpty());
+	}
+	
+	@Test
+	public void testGetMethodsMapSingleMethod(){
+		JavaMethod method = UneditableJavaMethod.builder()
+				.returnType("String").name("getType")
+				.build();
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.method(method)
+				.build();
+		Map<String, JavaMethod> methodMap = clazz.getMethodsMap();
+		assertEquals(1, methodMap.size());
+		assertEquals(method, methodMap.get("getType()"));
+	}
+	
+	@Test
+	public void testGetMethodsMapTwoMethods(){
+		JavaMethod method = UneditableJavaMethod.builder()
+				.returnType("String").name("getType")
+				.build();
+		JavaMethod method2 = UneditableJavaMethod.builder()
+				.returnType("int").name("getVersion")
+				.parameter("String", "type")
+				.build();
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.method(method)
+				.method(method2)
+				.build();
+		Map<String, JavaMethod> methodMap = clazz.getMethodsMap();
+		assertEquals(2, methodMap.size());
+		assertEquals(method, methodMap.get("getType()"));
+		assertEquals(method2, methodMap.get("getVersion(String type)"));
 	}
 	
 	@Test
@@ -141,6 +263,34 @@ public class JavaClassTest{
 				.build();
 		String javaString = """
 				class AClassName extends AnotherClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithImplementsInterface(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className).implementsInterfaceName("SomeInterface")
+				.build();
+		String javaString = """
+				class AClassName implements SomeInterface{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithMultipleImplementsInterfaces(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.implementsInterfaceName("SomeInterface")
+				.implementsInterfaceName("SomeOtherInterface")
+				.build();
+		String javaString = """
+				class AClassName implements SomeInterface, SomeOtherInterface{
 				\t
 				}
 				""";
@@ -592,6 +742,7 @@ public class JavaClassTest{
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
 				.className(className).superClassName("AnotherClassName")
+				.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
 				.field(UneditableJavaField.builder().type("int").name("test").build())
@@ -619,7 +770,7 @@ public class JavaClassTest{
 				 */
 				@Test
 				@Derp
-				public final class AClassName extends AnotherClassName{
+				public final class AClassName extends AnotherClassName implements SomeInterface, SomeOtherInterface{
 				\t
 					class BClassName{
 					\t

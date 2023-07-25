@@ -111,7 +111,8 @@ public class UneditableJavaClass extends JavaClass{
 		protected UneditableJavaClass constructClass(){
 			return new UneditableJavaClass(isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className, superClassName,
+					visibility, isStatic, isFinal, className,
+					superClassName, implementsInterfaceNames,
 					innerClasses, fields, methods);
 		}
 	}
@@ -129,6 +130,7 @@ public class UneditableJavaClass extends JavaClass{
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
+	 * @param implementsInterfaceNames The names of interfaces this class implements
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
@@ -136,11 +138,13 @@ public class UneditableJavaClass extends JavaClass{
 	private UneditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
+			Visibility visibility, boolean isStatic, boolean isFinal, String className,
+			String superClassName, List<String> implementsInterfaceNames,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		super(false, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
-				visibility, isStatic, isFinal, className, superClassName,
+				visibility, isStatic, isFinal, className,
+				superClassName, implementsInterfaceNames,
 				innerClasses, fields, methods);
 	}
 	

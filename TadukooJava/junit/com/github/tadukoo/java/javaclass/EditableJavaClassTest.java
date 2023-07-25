@@ -519,6 +519,34 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testAddImplementsInterfaceName(){
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceName("SomeInterface");
+		assertEquals(ListUtil.createList("SomeInterface"), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceName("SomeOtherInterface");
+		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testAddImplementsInterfaceNames(){
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceNames(ListUtil.createList("SomeInterface", "SomeOtherInterface"));
+		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceNames(ListUtil.createList("AInterface", "BInterface"));
+		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface", "AInterface", "BInterface"),
+				clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testSetImplementsInterfaceNames(){
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+		clazz.setImplementsInterfaceNames(ListUtil.createList("SomeInterface", "SomeOtherInterface"));
+		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
+		clazz.setImplementsInterfaceNames(ListUtil.createList("AInterface", "BInterface"));
+		assertEquals(ListUtil.createList("AInterface", "BInterface"), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
 	public void testAddInnerClass(){
 		JavaClass clazz1 = EditableJavaClass.builder()
 				.className("Test")

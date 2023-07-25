@@ -15,7 +15,9 @@ import com.github.tadukoo.util.map.HashMultiMap;
 import com.github.tadukoo.util.map.MultiMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Java Class is used to represent a class in Java.
@@ -48,6 +50,8 @@ public abstract class JavaClass implements JavaClassType{
 	protected String className;
 	/** The name of the class this one extends (may be null) */
 	protected String superClassName;
+	/** The names of interfaces this class implements */
+	protected List<String> implementsInterfaceNames;
 	/** Inner {@link JavaClass classes} inside the class */
 	protected List<JavaClass> innerClasses;
 	/** The {@link JavaField fields} on the class */
@@ -69,6 +73,7 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
+	 * @param implementsInterfaceNames The names of interfaces this class implements
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
@@ -77,7 +82,8 @@ public abstract class JavaClass implements JavaClassType{
 			boolean editable, boolean isInnerClass,
 			JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
+			Visibility visibility, boolean isStatic, boolean isFinal, String className,
+			String superClassName, List<String> implementsInterfaceNames,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		this.editable = editable;
 		this.isInnerClass = isInnerClass;
@@ -90,6 +96,7 @@ public abstract class JavaClass implements JavaClassType{
 		this.isFinal = isFinal;
 		this.className = className;
 		this.superClassName = superClassName;
+		this.implementsInterfaceNames = implementsInterfaceNames;
 		this.innerClasses = innerClasses;
 		this.fields = fields;
 		this.methods = methods;
@@ -179,10 +186,28 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
+	 * @return The names of interfaces this class implements
+	 */
+	public List<String> getImplementsInterfaceNames(){
+		return implementsInterfaceNames;
+	}
+	
+	/**
 	 * @return Inner {@link JavaClass classes} inside this class
 	 */
 	public List<JavaClass> getInnerClasses(){
 		return innerClasses;
+	}
+	
+	/**
+	 * @return The {@link JavaClass classes} inside this class as a Map by class name
+	 */
+	public Map<String, JavaClass> getInnerClassesMap(){
+		Map<String, JavaClass> classMap = new HashMap<>();
+		for(JavaClass clazz: innerClasses){
+			classMap.put(clazz.getClassName(), clazz);
+		}
+		return classMap;
 	}
 	
 	/**
@@ -193,10 +218,32 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
+	 * @return The {@link JavaField fields} on the class as a Map by field name
+	 */
+	public Map<String, JavaField> getFieldsMap(){
+		Map<String, JavaField> fieldMap = new HashMap<>();
+		for(JavaField field: fields){
+			fieldMap.put(field.getName(), field);
+		}
+		return fieldMap;
+	}
+	
+	/**
 	 * @return The {@link JavaMethod methods} in the class
 	 */
 	public List<JavaMethod> getMethods(){
 		return methods;
+	}
+	
+	/**
+	 * @return The {@link JavaMethod methods} on the class as a Map by method name (using {@link JavaMethod#getUniqueName()})
+	 */
+	public Map<String, JavaMethod> getMethodsMap(){
+		Map<String, JavaMethod> methodMap = new HashMap<>();
+		for(JavaMethod method: methods){
+			methodMap.put(method.getUniqueName(), method);
+		}
+		return methodMap;
 	}
 	
 	/**
@@ -294,6 +341,16 @@ public abstract class JavaClass implements JavaClassType{
 		// Optionally append super class name to the declaration
 		if(StringUtil.isNotBlank(superClassName)){
 			declaration.append(' ').append(EXTENDS_TOKEN).append(' ').append(superClassName);
+		}
+		
+		// Optionally append implemented interfaces to the declaration
+		if(ListUtil.isNotBlank(implementsInterfaceNames)){
+			declaration.append(' ').append(IMPLEMENTS_TOKEN);
+			for(String implementsInterfaceName: implementsInterfaceNames){
+				declaration.append(' ').append(implementsInterfaceName).append(',');
+			}
+			// Remove final comma
+			declaration.deleteCharAt(declaration.length()-1);
 		}
 		
 		// End the declaration by opening the code block

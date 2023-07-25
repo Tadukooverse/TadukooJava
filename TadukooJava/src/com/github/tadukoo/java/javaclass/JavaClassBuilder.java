@@ -118,6 +118,8 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected String className = null;
 	/** The name of the class this one extends (can be null) */
 	protected String superClassName = null;
+	/** The names of interfaces the class implements */
+	protected List<String> implementsInterfaceNames = new ArrayList<>();
 	/** Inner {@link JavaClass classes} inside the class */
 	protected List<JavaClass> innerClasses = new ArrayList<>();
 	/** The {@link JavaField fields} on the class */
@@ -147,6 +149,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		this.isFinal = clazz.isFinal();
 		this.className = clazz.getClassName();
 		this.superClassName = clazz.getSuperClassName();
+		this.implementsInterfaceNames = clazz.getImplementsInterfaceNames();
 		this.innerClasses = clazz.getInnerClasses();
 		this.fields = clazz.getFields();
 		this.methods = clazz.getMethods();
@@ -191,10 +194,9 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @return this, to continue building
 	 */
 	public JavaClassBuilder<ClassType> packageName(String packageName){
-		packageDeclaration = getPackageDeclarationBuilder()
+		return packageDeclaration(getPackageDeclarationBuilder()
 				.packageName(packageName)
-				.build();
-		return this;
+				.build());
 	}
 	
 	/**
@@ -226,10 +228,9 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @return this, to continue building
 	 */
 	public JavaClassBuilder<ClassType> importName(String importName, boolean isStatic){
-		importStatements.add(getImportStatementBuilder()
+		return importStatement(getImportStatementBuilder()
 				.isStatic(isStatic).importName(importName)
 				.build());
-		return this;
 	}
 	
 	/**
@@ -237,13 +238,13 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @param isStatic Whether the imports are static or not
 	 * @return this, to continue building
 	 */
+	@SuppressWarnings("unchecked")
 	public JavaClassBuilder<ClassType> importNames(List<String> importNames, boolean isStatic){
-		for(String importName: importNames){
-			importStatements.add(getImportStatementBuilder()
+		return importStatements((List<JavaImportStatement>) importNames.stream()
+				.map(importName -> getImportStatementBuilder()
 					.isStatic(isStatic).importName(importName)
-					.build());
-		}
-		return this;
+					.build())
+				.toList());
 	}
 	
 	/**
@@ -335,6 +336,24 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 */
 	public JavaClassBuilder<ClassType> superClassName(String superClassName){
 		this.superClassName = superClassName;
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceName The name of an interface this class implements
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceName(String implementsInterfaceName){
+		implementsInterfaceNames.add(implementsInterfaceName);
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceNames(List<String> implementsInterfaceNames){
+		this.implementsInterfaceNames = implementsInterfaceNames;
 		return this;
 	}
 	

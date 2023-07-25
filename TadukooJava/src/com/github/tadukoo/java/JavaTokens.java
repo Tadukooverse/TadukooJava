@@ -29,6 +29,8 @@ public interface JavaTokens{
 	String THROWS_TOKEN = "throws";
 	/** Used for extending class types - {@value} */
 	String EXTENDS_TOKEN = "extends";
+	/** Used for implementing interfaces - {@value} */
+	String IMPLEMENTS_TOKEN = "implements";
 	
 	/*
 	 * Not-So-Proper "Tokens"

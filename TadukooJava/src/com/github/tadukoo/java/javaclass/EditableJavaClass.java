@@ -113,7 +113,8 @@ public class EditableJavaClass extends JavaClass{
 		protected EditableJavaClass constructClass(){
 			return new EditableJavaClass(isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className, superClassName,
+					visibility, isStatic, isFinal, className,
+					superClassName, implementsInterfaceNames,
 					innerClasses, fields, methods);
 		}
 	}
@@ -131,6 +132,7 @@ public class EditableJavaClass extends JavaClass{
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
+	 * @param implementsInterfaceNames The names of interfaces this class implements
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
@@ -138,11 +140,13 @@ public class EditableJavaClass extends JavaClass{
 	private EditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String className, String superClassName,
+			Visibility visibility, boolean isStatic, boolean isFinal, String className,
+			String superClassName, List<String> implementsInterfaceNames,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
 		super(true, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
-				visibility, isStatic, isFinal, className, superClassName,
+				visibility, isStatic, isFinal, className,
+				superClassName, implementsInterfaceNames,
 				innerClasses, fields, methods);
 	}
 	
@@ -321,6 +325,27 @@ public class EditableJavaClass extends JavaClass{
 	 */
 	public void setSuperClassName(String superClassName){
 		this.superClassName = superClassName;
+	}
+	
+	/**
+	 * @param implementsInterfaceName The name of an interface this class implements
+	 */
+	public void addImplementsInterfaceName(String implementsInterfaceName){
+		implementsInterfaceNames.add(implementsInterfaceName);
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 */
+	public void addImplementsInterfaceNames(List<String> implementsInterfaceNames){
+		this.implementsInterfaceNames.addAll(implementsInterfaceNames);
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 */
+	public void setImplementsInterfaceNames(List<String> implementsInterfaceNames){
+		this.implementsInterfaceNames = implementsInterfaceNames;
 	}
 	
 	/**
