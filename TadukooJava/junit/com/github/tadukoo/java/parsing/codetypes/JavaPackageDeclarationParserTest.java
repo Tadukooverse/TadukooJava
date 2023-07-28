@@ -1,17 +1,19 @@
-package com.github.tadukoo.java.parsing;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.parsing.BaseJavaParserTest;
+import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
+public class JavaPackageDeclarationParserTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testSimplePackageDeclaration() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				package com.example;""");
 		assertEquals("com.example", packageDeclaration.getPackageName());
 	}
@@ -19,7 +21,7 @@ public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
 	@Test
 	public void testPackageDeclarationNoPackageName(){
 		try{
-			runParserForPackageDeclaration("""
+			runFullParserForPackageDeclaration("""
 					package ;""");
 			fail();
 		}catch(JavaParsingException e){
@@ -31,7 +33,7 @@ public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
 	@Test
 	public void testPackageDeclarationNoSemicolon(){
 		try{
-			runParserForPackageDeclaration("""
+			runFullParserForPackageDeclaration("""
 					package com.example""");
 			fail();
 		}catch(JavaParsingException e){
@@ -43,7 +45,7 @@ public class JavaParserPackageDeclarationTest extends BaseJavaParserTest{
 	@Test
 	public void testPackageDeclarationNoPackageNameOrSemicolon(){
 		try{
-			runParserForPackageDeclaration("""
+			runFullParserForPackageDeclaration("""
 					package""");
 			fail();
 		}catch(JavaParsingException e){

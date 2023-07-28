@@ -1,6 +1,8 @@
-package com.github.tadukoo.java.parsing;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.parsing.BaseJavaParserTest;
+import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Test;
@@ -8,13 +10,15 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class JavaParserAnnotationTest extends BaseJavaParserTest{
+public class JavaAnnotationParserTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testSimpleAnnotation(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(new ArrayList<>(), annotation.getParameters());
 		assertEquals("@Test", annotation.toString());
@@ -22,7 +26,7 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testSimpleAnnotationParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test");
 		assertEquals("Test", annotation.getName());
 		assertEquals(new ArrayList<>(), annotation.getParameters());
 		assertEquals("@Test", annotation.toString());
@@ -30,7 +34,8 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testAnnotationWithValueParameter(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(true)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(true)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("value", "true")), annotation.getParameters());
 		assertEquals("@Test(value = true)", annotation.toString());
@@ -38,7 +43,7 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testAnnotationWithValueParameterParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(true)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(true)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("value", "true")), annotation.getParameters());
 		assertEquals("@Test(value = true)", annotation.toString());
@@ -46,7 +51,8 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testAnnotationWithParameter(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type = String.class)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type = String.class)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")), annotation.getParameters());
 		assertEquals("@Test(type = String.class)", annotation.toString());
@@ -54,7 +60,7 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testAnnotationWithParameterParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type = String.class)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type = String.class)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")), annotation.getParameters());
 		assertEquals("@Test(type = String.class)", annotation.toString());
@@ -62,7 +68,8 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testAnnotationWithMultipleParameters(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type = String.class, defaultValue = \"\")");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type = String.class, defaultValue = \"\")");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 				Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -72,7 +79,7 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testAnnotationWithMultipleParametersParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type = String.class, defaultValue = \"\")");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type = String.class, defaultValue = \"\")");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 						Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -82,6 +89,6 @@ public class JavaParserAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testNotAnAnnotation(){
-		assertNull(parser.parseAnnotation("Test(type = String.class)"));
+		assertNull(JavaAnnotationParser.parseAnnotation("Test(type = String.class)"));
 	}
 }

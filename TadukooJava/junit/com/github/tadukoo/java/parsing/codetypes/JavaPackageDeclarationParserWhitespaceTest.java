@@ -1,4 +1,4 @@
-package com.github.tadukoo.java.parsing.whitespacetests;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JavaParserWhitespacePackageDeclarationTest extends BaseJavaParserTest{
+public class JavaPackageDeclarationParserWhitespaceTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testLeadingWhitespace() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				\t    \t
 				package com.example;""");
 		assertEquals("com.example", packageDeclaration.getPackageName());
@@ -19,7 +19,7 @@ public class JavaParserWhitespacePackageDeclarationTest extends BaseJavaParserTe
 	
 	@Test
 	public void testWhitespaceBeforePackageName() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				package\t  \t
 				\tcom.example;""");
 		assertEquals("com.example", packageDeclaration.getPackageName());
@@ -27,7 +27,7 @@ public class JavaParserWhitespacePackageDeclarationTest extends BaseJavaParserTe
 	
 	@Test
 	public void testWhitespaceInPackageName() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				package com\t \t
 				\t.
 				\t  example;""");
@@ -36,7 +36,7 @@ public class JavaParserWhitespacePackageDeclarationTest extends BaseJavaParserTe
 	
 	@Test
 	public void testWhitespaceAfterPackageName() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				package com.example  \t
 				;""");
 		assertEquals("com.example", packageDeclaration.getPackageName());
@@ -44,7 +44,7 @@ public class JavaParserWhitespacePackageDeclarationTest extends BaseJavaParserTe
 	
 	@Test
 	public void testTrailingWhitespace() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				package com.example;\t
 				  \t""");
 		assertEquals("com.example", packageDeclaration.getPackageName());
@@ -52,7 +52,7 @@ public class JavaParserWhitespacePackageDeclarationTest extends BaseJavaParserTe
 	
 	@Test
 	public void testInsaneWhitespace() throws JavaParsingException{
-		JavaPackageDeclaration packageDeclaration = runParserForPackageDeclaration("""
+		JavaPackageDeclaration packageDeclaration = runFullParserForPackageDeclaration("""
 				\t    \tpackage\t  \t
 				\tcom\t \t
 				\t.

@@ -1,4 +1,4 @@
-package com.github.tadukoo.java.parsing.whitespacetests;
+package com.github.tadukoo.java.parsing.comment;
 
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JavaParserWhitespaceSingleLineCommentTest extends BaseJavaParserTest{
+public class JavaSingleLineCommentParserWhitespaceTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testLeadingWhitespace() throws JavaParsingException{
-		JavaSingleLineComment comment = runParserForSingleLineComment("""
+		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
 				\t     \t  \t
 				\t    // something useful""");
 		assertEquals(
@@ -26,7 +26,7 @@ public class JavaParserWhitespaceSingleLineCommentTest extends BaseJavaParserTes
 	
 	@Test
 	public void testTrailingWhitespace() throws JavaParsingException{
-		JavaSingleLineComment comment = runParserForSingleLineComment("""
+		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
 				// something useful \t    \t \t
 				\t     \t""");
 		assertEquals(
@@ -40,7 +40,7 @@ public class JavaParserWhitespaceSingleLineCommentTest extends BaseJavaParserTes
 	
 	@Test
 	public void testInsideWhitespace() throws JavaParsingException{
-		JavaSingleLineComment comment = runParserForSingleLineComment("""
+		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
 				// something \t     \t   useful""");
 		assertEquals(
 				EditableJavaSingleLineComment.builder()
@@ -53,7 +53,7 @@ public class JavaParserWhitespaceSingleLineCommentTest extends BaseJavaParserTes
 	
 	@Test
 	public void testWhitespaceAfterStartToken() throws JavaParsingException{
-		JavaSingleLineComment comment = runParserForSingleLineComment("""
+		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
 				// \t     \t   something useful""");
 		assertEquals(
 				EditableJavaSingleLineComment.builder()
@@ -66,7 +66,7 @@ public class JavaParserWhitespaceSingleLineCommentTest extends BaseJavaParserTes
 	
 	@Test
 	public void testInsaneWhitespace() throws JavaParsingException{
-		JavaSingleLineComment comment = runParserForSingleLineComment("""
+		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
 				\t     \t  \t
 				\t    // \t     \t   something \t     \t   useful \t     \t  \t
 				\t     \t""");

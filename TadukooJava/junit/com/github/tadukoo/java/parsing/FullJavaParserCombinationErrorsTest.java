@@ -1,19 +1,17 @@
-package com.github.tadukoo.java.parsing.odderrortests;
+package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.JavaCodeTypes;
-import com.github.tadukoo.java.parsing.BaseJavaParserTest;
-import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
+public class FullJavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testTwoPackageDeclarations(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					package com.example;
 					package com.example.other;""");
 			fail();
@@ -27,7 +25,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testPackageDeclarationAfterClass(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					class Test{
 					}
 					package com.example;""");
@@ -42,7 +40,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testImportStatementAfterClass(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					class Test{
 					}
 					import com.example;""");
@@ -57,7 +55,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testAnnotationAfterClass(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					class Test{
 					}
 					@Test""");
@@ -72,7 +70,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testTwoFields(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					String type;
 					int derp;""");
 			fail();
@@ -86,7 +84,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testClassBeforeField(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					class Test{
 					}
 					String type;""");
@@ -101,7 +99,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testPackageDeclarationBeforeField(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					package some.package;
 					String type;""");
 			fail();
@@ -115,7 +113,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testImportStatementBeforeField(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					import some.classname;
 					String type;""");
 			fail();
@@ -129,7 +127,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testTwoMethods(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					String something(){}
 					int somethingElse(){}""");
 			fail();
@@ -143,7 +141,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testClassBeforeMethod(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					class Test{
 					}
 					String something(){}""");
@@ -158,7 +156,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testPackageDeclarationBeforeMethod(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					package some.package;
 					String something(){}""");
 			fail();
@@ -172,7 +170,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testImportStatementBeforeMethod(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					import some.classname;
 					String something(){}""");
 			fail();
@@ -186,7 +184,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testTwoOuterClasses(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					class Test{
 					}
 					class Test2{
@@ -202,7 +200,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testFieldBeforeClass(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					String type;
 					class Test{
 					}""");
@@ -217,7 +215,7 @@ public class JavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testMethodBeforeClass(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					String something(){}
 					class Test{
 					}""");

@@ -1,20 +1,24 @@
-package com.github.tadukoo.java.parsing;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.parsing.BaseJavaParserTest;
+import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaParserFieldTest extends BaseJavaParserTest{
+public class JavaFieldParserTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testSimpleField() throws JavaParsingException{
-		JavaField field = parser.parseField("String name;");
+		JavaField field = JavaFieldParser.parseField("String name;");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String")
@@ -26,7 +30,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testSimpleFieldParseType() throws JavaParsingException{
-		JavaField field = runParserForField("String name;");
+		JavaField field = runFullParserForField("String name;");
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String")
@@ -38,7 +42,8 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithVisibility() throws JavaParsingException{
-		JavaField field = parser.parseField("private String name;");
+		JavaField field = JavaFieldParser.parseField("private String name;");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PRIVATE)
@@ -51,7 +56,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithVisibilityParseType() throws JavaParsingException{
-		JavaField field = runParserForField("private String name;");
+		JavaField field = runFullParserForField("private String name;");
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PRIVATE)
@@ -64,7 +69,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithProtectedVisibilityParseType() throws JavaParsingException{
-		JavaField field = runParserForField("protected String name;");
+		JavaField field = runFullParserForField("protected String name;");
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PROTECTED)
@@ -77,7 +82,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithPublicVisibilityParseType() throws JavaParsingException{
-		JavaField field = runParserForField("public String name;");
+		JavaField field = runFullParserForField("public String name;");
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PUBLIC)
@@ -90,7 +95,8 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithStatic() throws JavaParsingException{
-		JavaField field = parser.parseField("static String name;");
+		JavaField field = JavaFieldParser.parseField("static String name;");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.isStatic()
@@ -103,7 +109,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithStaticParseType() throws JavaParsingException{
-		JavaField field = runParserForField("static String name;");
+		JavaField field = runFullParserForField("static String name;");
 		assertEquals(
 				EditableJavaField.builder()
 						.isStatic()
@@ -116,7 +122,8 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithFinal() throws JavaParsingException{
-		JavaField field = parser.parseField("final String name;");
+		JavaField field = JavaFieldParser.parseField("final String name;");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.isFinal()
@@ -129,7 +136,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithFinalParseType() throws JavaParsingException{
-		JavaField field = runParserForField("final String name;");
+		JavaField field = runFullParserForField("final String name;");
 		assertEquals(
 				EditableJavaField.builder()
 						.isFinal()
@@ -142,7 +149,8 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithValue() throws JavaParsingException{
-		JavaField field = parser.parseField("String name = \"\";");
+		JavaField field = JavaFieldParser.parseField("String name = \"\";");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String")
@@ -155,7 +163,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithValueParseType() throws JavaParsingException{
-		JavaField field = runParserForField("String name = \"\";");
+		JavaField field = runFullParserForField("String name = \"\";");
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String")
@@ -168,7 +176,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithAnnotationParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				@Test
 				String name;""");
 		assertEquals(
@@ -186,7 +194,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithMultipleAnnotationsParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				@Test
 				@Derp(type=String.class)
 				String name;""");
@@ -210,7 +218,8 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithEverything() throws JavaParsingException{
-		JavaField field = parser.parseField("private static final String name = \"\";");
+		JavaField field = JavaFieldParser.parseField("private static final String name = \"\";");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PRIVATE)
@@ -225,7 +234,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testFieldWithEverythingParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				@Test
 				@Derp(type=String.class)
 				private static final String name = "";""");
@@ -258,7 +267,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	@Test
 	public void testSimpleFieldNoSemicolon(){
 		try{
-			parser.parseField("String name");
+			JavaFieldParser.parseField("String name");
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
@@ -270,7 +279,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	@Test
 	public void testFieldWithVisibilityNoSemicolon(){
 		try{
-			parser.parseField("private String name");
+			JavaFieldParser.parseField("private String name");
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
@@ -282,7 +291,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	@Test
 	public void testFieldWithStaticNoSemicolon(){
 		try{
-			parser.parseField("static String name");
+			JavaFieldParser.parseField("static String name");
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
@@ -294,7 +303,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	@Test
 	public void testFieldWithFinalNoSemicolon(){
 		try{
-			parser.parseField("final String name");
+			JavaFieldParser.parseField("final String name");
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
@@ -306,7 +315,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	@Test
 	public void testFieldWithValueNoSemicolon(){
 		try{
-			parser.parseField("String name = \"\"");
+			JavaFieldParser.parseField("String name = \"\"");
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
@@ -318,7 +327,7 @@ public class JavaParserFieldTest extends BaseJavaParserTest{
 	@Test
 	public void testFieldWithEverythingNoSemicolon(){
 		try{
-			parser.parseField("private static final String name = \"\"");
+			JavaFieldParser.parseField("private static final String name = \"\"");
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,

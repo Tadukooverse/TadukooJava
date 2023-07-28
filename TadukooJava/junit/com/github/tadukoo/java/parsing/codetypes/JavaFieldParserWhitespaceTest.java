@@ -1,4 +1,4 @@
-package com.github.tadukoo.java.parsing.whitespacetests;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
@@ -9,14 +9,16 @@ import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
+public class JavaFieldParserWhitespaceTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeType() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t  \t
 				  \tString type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -27,7 +29,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeTypeParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t  \t
 				  \tString type;""");
 		assertEquals(
@@ -40,9 +42,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeName() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				String \t  \t
 				  \t  type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -53,7 +56,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeNameParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				String \t  \t
 				  \t  type;""");
 		assertEquals(
@@ -66,9 +69,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeSemicolon() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				String type \t  \t
 				 \t;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -79,7 +83,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeSemicolonParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				String type \t  \t
 				 \t;""");
 		assertEquals(
@@ -92,9 +96,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterSemicolon() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				String type;     \t
 				  \t  \s""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -105,7 +110,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterSemicolonParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				String type;     \t
 				  \t  \s""");
 		assertEquals(
@@ -118,9 +123,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePrivate() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t
 				    \t private String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PRIVATE)
@@ -132,7 +138,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePrivateParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t
 				    \t private String type;""");
 		assertEquals(
@@ -146,9 +152,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPrivate() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				private\t     \t
 				    \t String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PRIVATE)
@@ -160,7 +167,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPrivateParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				private\t     \t
 				    \t String type;""");
 		assertEquals(
@@ -174,9 +181,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeProtected() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t
 				    \t protected String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PROTECTED)
@@ -188,7 +196,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeProtectedParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t
 				    \t protected String type;""");
 		assertEquals(
@@ -202,9 +210,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterProtected() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				protected\t     \t
 				    \t String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PROTECTED)
@@ -216,7 +225,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterProtectedParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				protected\t     \t
 				    \t String type;""");
 		assertEquals(
@@ -230,9 +239,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePublic() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t
 				    \t public String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PUBLIC)
@@ -244,7 +254,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePublicParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t
 				    \t public String type;""");
 		assertEquals(
@@ -258,9 +268,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPublic() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				public\t     \t
 				    \t String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PUBLIC)
@@ -272,7 +283,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPublicParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				public\t     \t
 				    \t String type;""");
 		assertEquals(
@@ -286,9 +297,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeStatic() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t
 				    \t static String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.isStatic()
@@ -300,7 +312,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeStaticParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t
 				    \t static String type;""");
 		assertEquals(
@@ -314,9 +326,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterStatic() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				static\t     \t
 				    \t String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.isStatic()
@@ -328,7 +341,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterStaticParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				static\t     \t
 				    \t String type;""");
 		assertEquals(
@@ -342,9 +355,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeFinal() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t
 				    \t final String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.isFinal()
@@ -356,7 +370,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeFinalParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t
 				    \t final String type;""");
 		assertEquals(
@@ -370,9 +384,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterFinal() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				final\t     \t
 				    \t String type;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.isFinal()
@@ -384,7 +399,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterFinalParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				final\t     \t
 				    \t String type;""");
 		assertEquals(
@@ -398,9 +413,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeEquals() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				String type    \t   \t
 				   \t = "";""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -412,7 +428,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeEqualsParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				String type    \t   \t
 				   \t = "";""");
 		assertEquals(
@@ -426,9 +442,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeValue() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				String type =    \t   \t
 				   \t "";""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -440,7 +457,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeValueParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				String type =    \t   \t
 				   \t "";""");
 		assertEquals(
@@ -454,9 +471,10 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterValue() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				String type = ""    \t   \t
 				   \t ;""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -468,7 +486,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterValueParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				String type = ""    \t   \t
 				   \t ;""");
 		assertEquals(
@@ -482,12 +500,13 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceSimpleField() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t  \t
 				  \tString \t  \t
 				  \t  type \t  \t
 				 \t;     \t
 				  \t  \s""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.type("String").name("type")
@@ -498,7 +517,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceSimpleFieldParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t  \t
 				  \tString \t  \t
 				  \t  type \t  \t
@@ -514,7 +533,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceEverythingField() throws JavaParsingException{
-		JavaField field = parser.parseField("""
+		JavaField field = JavaFieldParser.parseField("""
 				\t     \t
 				    \t public\t     \t
 				    \t static\t     \t
@@ -525,6 +544,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 				   \t "" \t  \t
 				 \t;     \t
 				  \t  \s""");
+		assertNotNull(field);
 		assertEquals(
 				EditableJavaField.builder()
 						.visibility(Visibility.PUBLIC)
@@ -538,7 +558,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceEverythingFieldParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t     \t
 				    \t public\t     \t
 				    \t static\t     \t
@@ -562,7 +582,7 @@ public class JavaParserWhitespaceFieldTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceEverythingFieldWithAnnotationsParseType() throws JavaParsingException{
-		JavaField field = runParserForField("""
+		JavaField field = runFullParserForField("""
 				\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
 				\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
 				  \t

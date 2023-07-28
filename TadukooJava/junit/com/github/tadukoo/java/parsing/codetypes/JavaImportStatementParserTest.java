@@ -1,7 +1,9 @@
-package com.github.tadukoo.java.parsing;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.parsing.BaseJavaParserTest;
+import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaParserImportStatementTest extends BaseJavaParserTest{
+public class JavaImportStatementParserTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testSimpleImport() throws JavaParsingException{
-		JavaImportStatement importStatement = runParserForImportStatement("""
+		JavaImportStatement importStatement = runFullParserForImportStatement("""
 				import com.example;""");
 		assertFalse(importStatement.isStatic());
 		assertEquals("com.example", importStatement.getImportName());
@@ -21,7 +23,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testStaticImport() throws JavaParsingException{
-		JavaImportStatement importStatement = runParserForImportStatement("""
+		JavaImportStatement importStatement = runFullParserForImportStatement("""
 				import static com.example;""");
 		assertTrue(importStatement.isStatic());
 		assertEquals("com.example", importStatement.getImportName());
@@ -30,7 +32,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 	@Test
 	public void testErrorNoImportName(){
 		try{
-			runParserForImportStatement("""
+			runFullParserForImportStatement("""
 					import ;""");
 			fail();
 		}catch(JavaParsingException e){
@@ -43,7 +45,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 	@Test
 	public void testErrorNoSemicolon(){
 		try{
-			runParserForImportStatement("""
+			runFullParserForImportStatement("""
 					import com.example""");
 			fail();
 		}catch(JavaParsingException e){
@@ -56,7 +58,7 @@ public class JavaParserImportStatementTest extends BaseJavaParserTest{
 	@Test
 	public void testAllErrors(){
 		try{
-			runParserForImportStatement("""
+			runFullParserForImportStatement("""
 					import\s""");
 			fail();
 		}catch(JavaParsingException e){

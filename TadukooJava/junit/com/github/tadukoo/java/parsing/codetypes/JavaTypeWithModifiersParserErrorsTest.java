@@ -1,19 +1,20 @@
-package com.github.tadukoo.java.parsing.odderrortests;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaParserTypeWithModifiersErrorsTest extends BaseJavaParserTest{
+public class JavaTypeWithModifiersParserErrorsTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testDuplicateModifiersError(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					static static class Test{
 					}
 					""");
@@ -28,7 +29,7 @@ public class JavaParserTypeWithModifiersErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testMultipleDuplicateModifiersError(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					static static final final class Test{
 					}
 					""");
@@ -44,7 +45,7 @@ public class JavaParserTypeWithModifiersErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testMultipleVisibilityModifiersError(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					private public class Test{
 					}
 					""");
@@ -59,7 +60,7 @@ public class JavaParserTypeWithModifiersErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testFailedToDetermineTypeError(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					private
 					""");
 			fail();
@@ -73,7 +74,7 @@ public class JavaParserTypeWithModifiersErrorsTest extends BaseJavaParserTest{
 	@Test
 	public void testAllErrors(){
 		try{
-			parser.parseType("""
+			FullJavaParser.parseType("""
 					private public static static final final
 					""");
 			fail();

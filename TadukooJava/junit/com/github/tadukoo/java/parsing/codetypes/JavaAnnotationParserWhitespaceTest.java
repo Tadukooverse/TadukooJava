@@ -1,4 +1,4 @@
-package com.github.tadukoo.java.parsing.whitespacetests;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
@@ -8,48 +8,53 @@ import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
+public class JavaAnnotationParserWhitespaceTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBefore(){
-		JavaAnnotation annotation = parser.parseAnnotation(" \t@Test");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation(" \t@Test");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 	}
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation(" \t@Test");
+		JavaAnnotation annotation = runFullParserForAnnotation(" \t@Test");
 		assertEquals("Test", annotation.getName());
 	}
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeName(){
-		JavaAnnotation annotation = parser.parseAnnotation("@\t Test");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@\t Test");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 	}
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeNameParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@\t Test");
+		JavaAnnotation annotation = runFullParserForAnnotation("@\t Test");
 		assertEquals("Test", annotation.getName());
 	}
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterName(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test \t");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test \t");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 	}
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterNameParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test \t");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test \t");
 		assertEquals("Test", annotation.getName());
 	}
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParams(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test (type = String.class)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test (type = String.class)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -57,7 +62,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParamsParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test (type = String.class)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test (type = String.class)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -65,7 +70,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParamName(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test( \ttype = String.class)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test( \ttype = String.class)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -73,7 +79,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParamNameParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test( \ttype = String.class)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test( \ttype = String.class)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -81,7 +87,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterParamName(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type \t = String.class)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type \t = String.class)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -89,7 +96,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterParamNameParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type \t = String.class)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type \t = String.class)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -97,7 +104,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParamValue(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type =  \tString.class)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type =  \tString.class)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -105,7 +113,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeParamValueParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type =  \tString.class)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type =  \tString.class)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -113,7 +121,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterParamValue(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type = String.class \t)");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type = String.class \t)");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -121,7 +130,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterParamValueParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type = String.class \t)");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type = String.class \t)");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -129,7 +138,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterParams(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type = String.class) \t");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type = String.class) \t");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -137,7 +147,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterParamsParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type = String.class) \t");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type = String.class) \t");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("type", "String.class")),
 				annotation.getParameters());
@@ -145,7 +155,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeComma(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type = String.class  \t, defaultValue = \"\")");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type = String.class  \t, defaultValue = \"\")");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 				Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -154,7 +165,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceBeforeCommaParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type = String.class  \t, defaultValue = \"\")");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type = String.class  \t, defaultValue = \"\")");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 						Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -163,7 +174,8 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterComma(){
-		JavaAnnotation annotation = parser.parseAnnotation("@Test(type = String.class, \t  \t defaultValue = \"\")");
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("@Test(type = String.class, \t  \t defaultValue = \"\")");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 						Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -172,7 +184,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationWhitespaceAfterCommaParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("@Test(type = String.class, \t  \t defaultValue = \"\")");
+		JavaAnnotation annotation = runFullParserForAnnotation("@Test(type = String.class, \t  \t defaultValue = \"\")");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 						Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -181,8 +193,9 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationInsaneWhitespace(){
-		JavaAnnotation annotation = parser.parseAnnotation("  \t  \t @ \t  \tTest\t  (\t \ttype \t = " +
+		JavaAnnotation annotation = JavaAnnotationParser.parseAnnotation("  \t  \t @ \t  \tTest\t  (\t \ttype \t = " +
 				"\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t\"\"  \t )    \t");
+		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(
 				Pair.of("type", "String.class"), Pair.of("defaultValue", "\"\"")),
@@ -191,7 +204,7 @@ public class JavaParserWhitespaceAnnotationTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testParseAnnotationInsaneWhitespaceParseType() throws JavaParsingException{
-		JavaAnnotation annotation = runParserForAnnotation("  \t  \t @ \t  \tTest\t  (\t \ttype \t = " +
+		JavaAnnotation annotation = runFullParserForAnnotation("  \t  \t @ \t  \tTest\t  (\t \ttype \t = " +
 				"\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t\"\"  \t )    \t");
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(

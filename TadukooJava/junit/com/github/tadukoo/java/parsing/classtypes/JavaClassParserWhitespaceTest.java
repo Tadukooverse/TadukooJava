@@ -1,4 +1,4 @@
-package com.github.tadukoo.java.parsing.whitespacetests;
+package com.github.tadukoo.java.parsing.classtypes;
 
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
+public class JavaClassParserWhitespaceTest extends BaseJavaParserTest{
 	
 	/*
 	 * Whitespace Base Cases
@@ -22,7 +22,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testLeadingWhitespace() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t  \t
 				\t class Test{
 				}
@@ -36,7 +36,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterClass() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				class \t \t
 				  \t \tTest{
 				}
@@ -50,7 +50,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterClassName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				class Test  \t
 				\t  {
 				}
@@ -64,7 +64,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterOpenBrace() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				class Test{\t   \t
 				
 				\t
@@ -79,7 +79,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterClosingBrace() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				class Test  \t
 				\t  {
 				}\t    \t
@@ -94,7 +94,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceSimpleClass() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t  \t
 				\t class \t \t
 				  \t \tTest{\t   \t
@@ -116,7 +116,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespacePackageDeclarationLeading() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t     \t
 				\t  package com.example;
 				
@@ -135,7 +135,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespacePackageDeclarationBeforePackageName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				package \t  \t
 				\t  com.example;
 				
@@ -154,7 +154,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespacePackageDeclarationWithinPackageName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				package com     \t
 				
 				\t    .\t \t
@@ -175,7 +175,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespacePackageDeclarationAfterPackageName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				package com.example
 				\t   \t;
 				
@@ -194,7 +194,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespacePackageDeclarationTrailing() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				package com.example;\t  \t
 				
 				class Test{
@@ -212,7 +212,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespacePackageDeclarationInsane() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t     \t
 				\t  package \t  \t
 				\t  com     \t
@@ -240,7 +240,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementLeading() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t   \t
 				\t  import com.example;
 				
@@ -259,7 +259,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementBeforeImportName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				import \t\s
 				\t     com.example;
 				
@@ -278,7 +278,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementWithinImportName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				import com     \t
 				
 				\t    .\t       \s
@@ -299,7 +299,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementAfterImportName() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				import com.example     \t
 				
 				\t      ;
@@ -319,7 +319,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementBeforeStatic() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				import    \t
 				 \t     static com.example;
 				
@@ -339,7 +339,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementAfterStatic() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				import static   \t
 				 \t     com.example;
 				
@@ -359,7 +359,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceImportStatementInsane() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t   \t
 				\t  import    \t
 				 \t     static   \t
@@ -386,7 +386,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAnnotationInsane() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t  \t @ \t  \tTest\t  (\t \ttype \t =\s
 				  \t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t
 				
@@ -407,7 +407,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceFieldInsane() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				class Test{
 					\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
 				\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
@@ -447,7 +447,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceMethodInsane() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				class Test{
 					\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
 					\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
@@ -508,7 +508,7 @@ public class JavaParserWhitespaceClassTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testClassWithInsaneWhitespaceEverywhere() throws JavaParsingException{
-		JavaClass clazz = runParserForClass("""
+		JavaClass clazz = runFullParserForClass("""
 				\t     \t
 				\t  package \t  \t
 				\t  com     \t

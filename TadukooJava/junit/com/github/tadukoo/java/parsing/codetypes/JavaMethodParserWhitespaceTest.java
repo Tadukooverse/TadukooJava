@@ -1,4 +1,4 @@
-package com.github.tadukoo.java.parsing.whitespacetests;
+package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
@@ -9,13 +9,15 @@ import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
+public class JavaMethodParserWhitespaceTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testNoWhitespaceSimpleMethod(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -28,7 +30,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testNoWhitespaceSimpleMethodParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(){}""");
 		assertEquals(
 				EditableJavaMethod.builder()
@@ -42,8 +44,9 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testNoWhitespaceEverythingMethod(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				private static String test(String type, int derp)throws Exception,Throwable{doSomething();doSomethingElse();}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
@@ -66,7 +69,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testNoWhitespaceEverythingMethodParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				private static String test(String type, int derp)throws Exception,Throwable{doSomething();doSomethingElse();}""");
 		assertEquals(
 				EditableJavaMethod.builder()
@@ -90,9 +93,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testLeadingWhitespace(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				\t   \s
 				  \t    Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -105,7 +109,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testLeadingWhitespaceParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				\t   \s
 				  \t    Test(){}""");
 		assertEquals(
@@ -120,9 +124,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterReturnType(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test    \t   \s
 				  \t   (){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -135,7 +140,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterReturnTypeParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test    \t   \s
 				  \t   (){}""");
 		assertEquals(
@@ -150,9 +155,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceInEmptyParameters(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test (    \t
 				    \t    ){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -165,7 +171,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceInEmptyParametersParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test (    \t
 				    \t    ){}""");
 		assertEquals(
@@ -180,9 +186,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBetweenParametersAndOpen(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test()      \t
 				  \t    \t{}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -195,7 +202,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBetweenParametersAndOpenParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test()      \t
 				  \t    \t{}""");
 		assertEquals(
@@ -210,10 +217,11 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceInMethod(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(){       \t
 				   \t    \t
 				    \t }""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -226,7 +234,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceInMethodParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(){       \t
 				   \t    \t
 				    \t }""");
@@ -242,10 +250,11 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testTrailingWhitespace(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(){}     \t
 				   \t    \t
 				   \t""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -258,7 +267,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testTrailingWhitespaceParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(){}     \t
 				   \t    \t
 				   \t""");
@@ -274,9 +283,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePrivate(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				\t     \t \s
 				  \tprivate Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
@@ -290,7 +300,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePrivateParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				\t     \t \s
 				  \tprivate Test(){}""");
 		assertEquals(
@@ -306,9 +316,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeProtected(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				\t     \t \s
 				  \tprotected Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PROTECTED)
@@ -322,7 +333,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeProtectedParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				\t     \t \s
 				  \tprotected Test(){}""");
 		assertEquals(
@@ -338,9 +349,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePublic(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				\t     \t \s
 				  \tpublic Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PUBLIC)
@@ -354,7 +366,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforePublicParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				\t     \t \s
 				  \tpublic Test(){}""");
 		assertEquals(
@@ -370,9 +382,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPrivate(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				private\t     \t \s
 				  \tTest(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
@@ -386,7 +399,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPrivateParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				private\t     \t \s
 				  \tTest(){}""");
 		assertEquals(
@@ -402,9 +415,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterProtected(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				protected\t     \t \s
 				  \tTest(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PROTECTED)
@@ -418,7 +432,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterProtectedParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				protected\t     \t \s
 				  \tTest(){}""");
 		assertEquals(
@@ -434,9 +448,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPublic(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				public\t     \t \s
 				  \tTest(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PUBLIC)
@@ -450,7 +465,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterPublicParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				public\t     \t \s
 				  \tTest(){}""");
 		assertEquals(
@@ -466,9 +481,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeStatic(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				\t    \t     \t   \t
 				  \t  \tstatic Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.isStatic()
@@ -482,7 +498,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeStaticParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				\t    \t     \t   \t
 				  \t  \tstatic Test(){}""");
 		assertEquals(
@@ -498,9 +514,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterStatic(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				static      \t     \t
 				    \t    \t  Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.isStatic()
@@ -514,7 +531,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterStaticParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				static      \t     \t
 				    \t    \t  Test(){}""");
 		assertEquals(
@@ -530,9 +547,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeFinal(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				\t    \t     \t   \t
 				  \t  \tfinal Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.isFinal()
@@ -546,7 +564,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeFinalParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				\t    \t     \t   \t
 				  \t  \tfinal Test(){}""");
 		assertEquals(
@@ -562,9 +580,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterFinal(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				final      \t     \t
 				    \t    \t  Test(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.isFinal()
@@ -578,7 +597,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterFinalParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				final      \t     \t
 				    \t    \t  Test(){}""");
 		assertEquals(
@@ -594,9 +613,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeName(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				String    \t    \t
 				   \t   \ttest(){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("String").name("test")
@@ -609,7 +629,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeNameParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				String    \t    \t
 				   \t   \ttest(){}""");
 		assertEquals(
@@ -624,10 +644,11 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeParameterType(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(    \t     \t
 				    \t   \t
 				    String type){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -641,7 +662,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeParameterTypeParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(    \t     \t
 				    \t   \t
 				    String type){}""");
@@ -658,10 +679,11 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterParameterType(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(String    \t     \t
 				    \t   \t
 				    type){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -675,7 +697,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterParameterTypeParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(String    \t     \t
 				    \t   \t
 				    type){}""");
@@ -692,10 +714,11 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterParameterName(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(String type    \t     \t
 				    \t   \t
 				    \t ){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -709,7 +732,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterParameterNameParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(String type    \t     \t
 				    \t   \t
 				    \t ){}""");
@@ -726,9 +749,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeParameterComma(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(String type    \t
 				    \t   \t ,int derp){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -743,7 +767,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeParameterCommaParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(String type    \t
 				    \t   \t ,int derp){}""");
 		assertEquals(
@@ -760,9 +784,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterParameterComma(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test(String type,    \t
 				    \t   \t int derp){}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -777,7 +802,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterParameterCommaParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test(String type,    \t
 				    \t   \t int derp){}""");
 		assertEquals(
@@ -794,9 +819,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeThrows(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test()     \t   \t
 				    \t    throws Exception{}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -810,7 +836,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeThrowsParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test()     \t   \t
 				    \t    throws Exception{}""");
 		assertEquals(
@@ -826,9 +852,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterThrows(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test()throws     \t   \t
 				    \t    Exception{}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -842,7 +869,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterThrowsParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test()throws     \t   \t
 				    \t    Exception{}""");
 		assertEquals(
@@ -858,9 +885,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterThrowType(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test()throws Exception     \t   \t
 				    \t    {}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -874,7 +902,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterThrowTypeParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test()throws Exception     \t   \t
 				    \t    {}""");
 		assertEquals(
@@ -890,9 +918,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeThrowComma(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test()throws Exception     \t   \t
 				    \t    ,Throwable{}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -907,7 +936,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceBeforeThrowCommaParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test()throws Exception     \t   \t
 				    \t    ,Throwable{}""");
 		assertEquals(
@@ -924,9 +953,10 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterThrowComma(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				Test()throws Exception,     \t   \t
 				    \t    Throwable{}""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
@@ -941,7 +971,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testWhitespaceAfterThrowCommaParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				Test()throws Exception,     \t   \t
 				    \t    Throwable{}""");
 		assertEquals(
@@ -958,7 +988,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespace(){
-		JavaMethod method = parser.parseMethod("""
+		JavaMethod method = JavaMethodParser.parseMethod("""
 				 \t   \t
 				\t    private     \t   \t
 				    \t    static     \t   \t
@@ -983,6 +1013,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 				    \t    ;     \t   \t
 				    \t    }     \t   \t
 				    \t    \s""");
+		assertNotNull(method);
 		assertEquals(
 				EditableJavaMethod.builder()
 						.visibility(Visibility.PRIVATE)
@@ -1005,7 +1036,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceParseType() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 				 \t   \t
 				\t    private     \t   \t
 				    \t    static     \t   \t
@@ -1052,7 +1083,7 @@ public class JavaParserWhitespaceMethodTest extends BaseJavaParserTest{
 	
 	@Test
 	public void testInsaneWhitespaceWithAnnotations() throws JavaParsingException{
-		JavaMethod method = runParserForMethod("""
+		JavaMethod method = runFullParserForMethod("""
 					\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
 					\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
 					\t    \t@       Derp   \t
