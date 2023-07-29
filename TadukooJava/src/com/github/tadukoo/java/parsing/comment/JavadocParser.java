@@ -24,6 +24,30 @@ public class JavadocParser extends AbstractJavaParser{
 	private JavadocParser(){ }
 	
 	/**
+	 * Parses a {@link Javadoc} from the given content String
+	 *
+	 * @param content The String of content to parse into a {@link Javadoc}
+	 * @return The {@link Javadoc} parsed from the given String
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static Javadoc parseJavadoc(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = splitContentIntoTokens(content);
+		
+		// Skip any leading newlines
+		int startToken = skipLeadingNewlines(tokens);
+		
+		// Send the tokens to the main parsing method to get a result
+		ParsingPojo result = parseJavadoc(tokens, startToken);
+		
+		// Make sure we reached the end of the tokens
+		verifyEndOfTokens(tokens, result, JavaCodeTypes.JAVADOC);
+		
+		// Return the Javadoc that was parsed
+		return (Javadoc) result.parsedType();
+	}
+	
+	/**
 	 * Parses a {@link Javadoc} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -147,8 +171,7 @@ public class JavadocParser extends AbstractJavaParser{
 						boolean notParameterStart = currentContent.charAt(currentContent.length() - 1) !=
 								PARAMETER_OPEN_TOKEN.charAt(0);
 						boolean notParameterEnd = !token.startsWith(PARAMETER_CLOSE_TOKEN);
-						boolean notInlineAnnotationStart = !(currentContent.charAt(currentContent.length() - 1) ==
-								BLOCK_OPEN_TOKEN.charAt(0) && token.startsWith(ANNOTATION_START_TOKEN));
+						boolean notInlineAnnotationStart = !currentContent.toString().endsWith(BLOCK_OPEN_TOKEN);
 						boolean notInlineAnnotationEnd = !token.endsWith(BLOCK_CLOSE_TOKEN);
 						if(notParameterStart && notParameterEnd && notInlineAnnotationStart && notInlineAnnotationEnd){
 							currentContent.append(' ');
