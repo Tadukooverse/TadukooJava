@@ -23,6 +23,30 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 	private JavaMultiLineCommentParser(){ }
 	
 	/**
+	 * Parses a {@link JavaMultiLineComment multi-line comment} from the given content String
+	 *
+	 * @param content The String to parse into a {@link JavaMultiLineComment multi-line comment}
+	 * @return The parsed {@link JavaMultiLineComment multi-line comment}
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static JavaMultiLineComment parseMultiLineComment(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = splitContentIntoTokens(content);
+		
+		// Skip any leading newlines
+		int startToken = skipLeadingNewlines(tokens);
+		
+		// Send the tokens to the main parsing method to get a result
+		ParsingPojo result = parseMultiLineComment(tokens, startToken);
+		
+		// Make sure we reached the end of the tokens
+		verifyEndOfTokens(tokens, result, JavaCodeTypes.MULTI_LINE_COMMENT);
+		
+		// Return the multi-line comment that was parsed
+		return (JavaMultiLineComment) result.parsedType();
+	}
+	
+	/**
 	 * Parses a {@link JavaMultiLineComment multi-line comment} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -31,13 +55,11 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	public static ParsingPojo parseMultiLineComment(List<String> tokens, int startToken) throws JavaParsingException{
-		// Keep track of errors
-		List<String> errors = new ArrayList<>();
-		
 		// First token must start with /*
 		String firstToken = tokens.get(startToken);
 		if(!firstToken.startsWith(MULTI_LINE_COMMENT_START_TOKEN)){
-			errors.add("First token of multi-line comment must start with '" + MULTI_LINE_COMMENT_START_TOKEN + "'");
+			throw new JavaParsingException(JavaCodeTypes.MULTI_LINE_COMMENT,
+					"First token of multi-line comment must start with '" + MULTI_LINE_COMMENT_START_TOKEN + "'");
 		}
 		
 		// Start building the first line (we may have some in the first token)
@@ -46,11 +68,17 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 			line.append(firstToken.substring(MULTI_LINE_COMMENT_START_TOKEN.length()));
 		}
 		
+		// Skip the next token if it's a newline (this avoids having an extra blank line in the content)
+		boolean justHadNewline = false;
+		int currentToken = startToken + 1;
+		if(currentToken < tokens.size() && StringUtil.equals(tokens.get(currentToken), "\n")){
+			currentToken++;
+			justHadNewline = true;
+		}
+		
 		// Parsing
 		List<String> content = new ArrayList<>();
 		boolean foundClosing = false;
-		int currentToken = startToken;
-		boolean justHadNewline = false;
 		for(; currentToken < tokens.size() && !foundClosing; currentToken++){
 			String token = tokens.get(currentToken);
 			
@@ -70,12 +98,13 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 				}
 			}else{
 				toAddToLine = token;
+				justHadNewline = false;
 			}
 			
 			// Add to line if we have something
 			if(StringUtil.isNotBlank(toAddToLine)){
-				// Add space if line is not empty and doesn't end with space already
-				if(!line.isEmpty() && !line.toString().endsWith(" ")){
+				// Add space if line is not empty
+				if(!line.isEmpty()){
 					line.append(' ');
 				}
 				line.append(toAddToLine);
@@ -89,12 +118,8 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 		
 		// Error if we didn't find the closing token
 		if(!foundClosing){
-			errors.add("Failed to find closing multi-line comment token!");
-		}
-		
-		// If we had any errors, throw 'em
-		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaCodeTypes.MULTI_LINE_COMMENT, StringUtil.buildStringWithNewLines(errors));
+			throw new JavaParsingException(JavaCodeTypes.MULTI_LINE_COMMENT,
+					"Failed to find closing multi-line comment token!");
 		}
 		
 		return new ParsingPojo(currentToken, EditableJavaMultiLineComment.builder()

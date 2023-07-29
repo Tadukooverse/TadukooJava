@@ -9,77 +9,130 @@ import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static com.github.tadukoo.java.JavaCodeTypes.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class JavaCodeTypesTest{
 	
-	@Test
-	public void testUNKNOWN(){
-		assertEquals("UNKNOWN", UNKNOWN.toString());
-		assertNull(UNKNOWN.getJavaTypeClass());
+	// The below warnings aren't really valid for this, looks like JUnit is not properly detecting
+	// this abstract class is inherited later
+	@SuppressWarnings({"JUnitMalformedDeclaration", "JUnit3StyleTestMethodInJUnit4Class", "unused"})
+	private static abstract class BaseJavaCodeTypesTest{
+		private final JavaCodeTypes type;
+		private final String toString;
+		private final Class<?> javaTypeClass;
+		private final String standardName;
+		
+		protected BaseJavaCodeTypesTest(JavaCodeTypes type, String toString, Class<?> javaTypeClass, String standardName){
+			this.type = type;
+			this.toString = toString;
+			this.javaTypeClass = javaTypeClass;
+			this.standardName = standardName;
+		}
+		
+		@Test
+		public void testToString(){
+			assertEquals(toString, type.toString());
+		}
+		
+		@Test
+		public void testJavaTypeClass(){
+			assertEquals(javaTypeClass, type.getJavaTypeClass());
+		}
+		
+		@Test
+		public void testStandardName(){
+			assertEquals(standardName, type.getStandardName());
+		}
 	}
 	
-	@Test
-	public void testPACKAGE_DECLARATION(){
-		assertEquals("PACKAGE_DECLARATION", PACKAGE_DECLARATION.toString());
-		assertEquals(JavaPackageDeclaration.class, PACKAGE_DECLARATION.getJavaTypeClass());
+	@Nested
+	public class UNKNOWNTest extends BaseJavaCodeTypesTest{
+		public UNKNOWNTest(){
+			super(UNKNOWN, "UNKNOWN", null, "unknown");
+		}
 	}
 	
-	@Test
-	public void testIMPORT_STATEMENT(){
-		assertEquals("IMPORT_STATEMENT", IMPORT_STATEMENT.toString());
-		assertEquals(JavaImportStatement.class, IMPORT_STATEMENT.getJavaTypeClass());
+	@Nested
+	public class PACKAGE_DECLARATIONTest extends BaseJavaCodeTypesTest{
+		public PACKAGE_DECLARATIONTest(){
+			super(PACKAGE_DECLARATION,
+					"PACKAGE_DECLARATION", JavaPackageDeclaration.class, "package declaration");
+		}
 	}
 	
-	@Test
-	public void testJAVADOC(){
-		assertEquals("JAVADOC", JAVADOC.toString());
-		assertEquals(Javadoc.class, JAVADOC.getJavaTypeClass());
+	@Nested
+	public class IMPORT_STATEMENTTest extends BaseJavaCodeTypesTest{
+		public IMPORT_STATEMENTTest(){
+			super(IMPORT_STATEMENT,
+					"IMPORT_STATEMENT", JavaImportStatement.class, "import statement");
+		}
 	}
 	
-	@Test
-	public void testMULTI_LINE_COMMENT(){
-		assertEquals("MULTI_LINE_COMMENT", MULTI_LINE_COMMENT.toString());
-		assertEquals(JavaMultiLineComment.class, MULTI_LINE_COMMENT.getJavaTypeClass());
+	@Nested
+	public class JAVADOCTest extends BaseJavaCodeTypesTest{
+		public JAVADOCTest(){
+			super(JAVADOC,
+					"JAVADOC", Javadoc.class, "Javadoc");
+		}
 	}
 	
-	@Test
-	public void testSINGLE_LINE_COMMENT(){
-		assertEquals("SINGLE_LINE_COMMENT", SINGLE_LINE_COMMENT.toString());
-		assertEquals(JavaSingleLineComment.class, SINGLE_LINE_COMMENT.getJavaTypeClass());
+	@Nested
+	public class MULTI_LINE_COMMENTTest extends BaseJavaCodeTypesTest{
+		public MULTI_LINE_COMMENTTest(){
+			super(MULTI_LINE_COMMENT,
+					"MULTI_LINE_COMMENT", JavaMultiLineComment.class, "multi-line comment");
+		}
 	}
 	
-	@Test
-	public void testANNOTATION(){
-		assertEquals("ANNOTATION", ANNOTATION.toString());
-		assertEquals(JavaAnnotation.class, ANNOTATION.getJavaTypeClass());
+	@Nested
+	public class SINGLE_LINE_COMMENTTest extends BaseJavaCodeTypesTest{
+		public SINGLE_LINE_COMMENTTest(){
+			super(SINGLE_LINE_COMMENT,
+					"SINGLE_LINE_COMMENT", JavaSingleLineComment.class, "single-line comment");
+		}
 	}
 	
-	@Test
-	public void testTYPE_WITH_MODIFIERS(){
-		assertEquals("TYPE_WITH_MODIFIERS", TYPE_WITH_MODIFIERS.toString());
-		assertNull(TYPE_WITH_MODIFIERS.getJavaTypeClass());
+	@Nested
+	public class ANNOTATIONTest extends BaseJavaCodeTypesTest{
+		public ANNOTATIONTest(){
+			super(ANNOTATION,
+					"ANNOTATION", JavaAnnotation.class, "annotation");
+		}
 	}
 	
-	@Test
-	public void testFIELD(){
-		assertEquals("FIELD", FIELD.toString());
-		assertEquals(JavaField.class, FIELD.getJavaTypeClass());
+	@Nested
+	public class TYPE_WITH_MODIFIERSTest extends BaseJavaCodeTypesTest{
+		public TYPE_WITH_MODIFIERSTest(){
+			super(TYPE_WITH_MODIFIERS,
+					"TYPE_WITH_MODIFIERS", null, "type with modifiers");
+		}
 	}
 	
-	@Test
-	public void testMETHOD(){
-		assertEquals("METHOD", METHOD.toString());
-		assertEquals(JavaMethod.class, METHOD.getJavaTypeClass());
+	@Nested
+	public class FIELDTest extends BaseJavaCodeTypesTest{
+		public FIELDTest(){
+			super(FIELD,
+					"FIELD", JavaField.class, "field");
+		}
 	}
 	
-	@Test
-	public void testCLASS(){
-		assertEquals("CLASS", CLASS.toString());
-		assertEquals(JavaClass.class, CLASS.getJavaTypeClass());
+	@Nested
+	public class METHODTest extends BaseJavaCodeTypesTest{
+		public METHODTest(){
+			super(METHOD,
+					"METHOD", JavaMethod.class, "method");
+		}
+	}
+	
+	@Nested
+	public class CLASSTest extends BaseJavaCodeTypesTest{
+		public CLASSTest(){
+			super(CLASS,
+					"CLASS", JavaClass.class, "class");
+		}
 	}
 }

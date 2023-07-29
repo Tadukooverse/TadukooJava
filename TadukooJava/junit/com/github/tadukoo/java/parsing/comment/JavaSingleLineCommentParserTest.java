@@ -21,9 +21,10 @@ public class JavaSingleLineCommentParserTest extends BaseJavaSingleLineCommentPa
 					// some other comment""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(e.getMessage(),
+			assertEquals(
 					buildJavaParsingExceptionMessage(JavaCodeTypes.SINGLE_LINE_COMMENT,
-							"Found extra content after the single-line comment!"));
+							"Found extra content after the single-line comment!"),
+					e.getMessage());
 		}
 	}
 	
@@ -34,10 +35,11 @@ public class JavaSingleLineCommentParserTest extends BaseJavaSingleLineCommentPa
 					/* some comment */""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(e.getMessage(),
+			assertEquals(
 					buildJavaParsingExceptionMessage(JavaCodeTypes.SINGLE_LINE_COMMENT,
 							"First token of single-line comment must start with '" +
-									SINGLE_LINE_COMMENT_TOKEN + "'"));
+									SINGLE_LINE_COMMENT_TOKEN + "'"),
+					e.getMessage());
 		}
 	}
 }

@@ -2,6 +2,7 @@ package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.JavaTokens;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -87,6 +88,21 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 		assertEquals(JavaCodeTypes.SINGLE_LINE_COMMENT, type.getJavaCodeType());
 		assertTrue(type instanceof JavaSingleLineComment);
 		return (JavaSingleLineComment) type;
+	}
+	
+	/**
+	 * Used to run the {@link FullJavaParser} and get back a {@link JavaMultiLineComment}. Will fail some
+	 * assertions if some other thing is returned instead
+	 *
+	 * @param content The String to be parsed into a {@link JavaMultiLineComment}
+	 * @return The parsed {@link JavaMultiLineComment}
+	 * @throws JavaParsingException If anything goes wrong with parsing
+	 */
+	protected static JavaMultiLineComment runFullParserForMultiLineComment(String content) throws JavaParsingException{
+		JavaCodeType type = FullJavaParser.parseType(content);
+		assertEquals(JavaCodeTypes.MULTI_LINE_COMMENT, type.getJavaCodeType());
+		assertTrue(type instanceof JavaMultiLineComment);
+		return (JavaMultiLineComment) type;
 	}
 	
 	/**

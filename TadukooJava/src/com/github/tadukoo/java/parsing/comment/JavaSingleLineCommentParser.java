@@ -30,24 +30,16 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 	 */
 	public static JavaSingleLineComment parseSingleLineComment(String content) throws JavaParsingException{
 		// Split the content into "tokens"
-		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, TOKEN_REGEX, false).stream()
-				.filter(StringUtil::isNotBlank)
-				.toList();
+		List<String> tokens = splitContentIntoTokens(content);
 		
 		// Skip any leading newlines
-		int startToken = 0;
-		while(StringUtil.equals(tokens.get(startToken), "\n")){
-			startToken++;
-		}
+		int startToken = skipLeadingNewlines(tokens);
 		
 		// Send the tokens to the main parsing method to get a result
 		ParsingPojo result = parseSingleLineComment(tokens, startToken);
 		
 		// Make sure we reached the end of the tokens
-		if(result.nextTokenIndex() != tokens.size()){
-			throw new JavaParsingException(JavaCodeTypes.SINGLE_LINE_COMMENT,
-					"Found extra content after the single-line comment!");
-		}
+		verifyEndOfTokens(tokens, result, JavaCodeTypes.SINGLE_LINE_COMMENT);
 		
 		// Return the single line comment that was parsed
 		return (JavaSingleLineComment) result.parsedType();

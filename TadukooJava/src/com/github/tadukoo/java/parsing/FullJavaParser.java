@@ -36,9 +36,8 @@ import java.util.List;
  */
 public class FullJavaParser extends AbstractJavaParser{
 	
-	private FullJavaParser(){
-	
-	}
+	/** Not allowed to instantiate {@link FullJavaParser} */
+	private FullJavaParser(){ }
 	
 	/**
 	 * Parses the given text as Java code and returns it as the proper {@link JavaCodeType}
@@ -49,9 +48,7 @@ public class FullJavaParser extends AbstractJavaParser{
 	 */
 	public static JavaCodeType parseType(String content) throws JavaParsingException{
 		// Split the content into "tokens"
-		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, TOKEN_REGEX, false).stream()
-				.filter(StringUtil::isNotBlank)
-				.toList();
+		List<String> tokens = splitContentIntoTokens(content);
 		
 		// The Java types we've collected in order while parsing
 		List<JavaCodeType> types = new ArrayList<>();

@@ -93,6 +93,23 @@ public abstract class BaseJavaSingleLineCommentParserTest extends BaseJavaParser
 	}
 	
 	@Test
+	public void testMoreTrailingWhitespace() throws JavaParsingException{
+		JavaSingleLineComment comment = parseMethod.apply("""
+				// something useful \t      \t \t
+				\t     \t
+				\t  \t
+				\t  \t""");
+		assertEquals(
+				EditableJavaSingleLineComment.builder()
+						.content("something useful")
+						.build(),
+				comment
+		);
+		assertEquals("""
+				// something useful""", comment.toString());
+	}
+	
+	@Test
 	public void testInsideWhitespace() throws JavaParsingException{
 		JavaSingleLineComment comment = parseMethod.apply("""
 				// something \t     \t   useful""");
