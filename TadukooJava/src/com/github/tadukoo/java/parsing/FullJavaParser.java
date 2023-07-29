@@ -49,7 +49,7 @@ public class FullJavaParser extends AbstractJavaParser{
 	 */
 	public static JavaCodeType parseType(String content) throws JavaParsingException{
 		// Split the content into "tokens"
-		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, "\n|\\(|\\)|\\{|}|[^\\s(){}]+", false).stream()
+		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, TOKEN_REGEX, false).stream()
 				.filter(StringUtil::isNotBlank)
 				.toList();
 		

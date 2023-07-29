@@ -13,25 +13,20 @@ import java.util.List;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.5
  */
-public class AbstractJavaParser implements JavaTokens{
+public abstract class AbstractJavaParser implements JavaTokens{
 	
-	/**
-	 * A regular expression used for {@link Visibility}
-	 */
+	/** A regular expression used for {@link Visibility} */
 	private static final String VISIBILITY_REGEX = "(?:(" + PUBLIC_MODIFIER + "|" + PROTECTED_MODIFIER + "|" +
 			PRIVATE_MODIFIER + ")\\s*)?";
-	/**
-	 * A regular expression used for the static modifier
-	 */
+	/** A regular expression used for the static modifier */
 	private static final String STATIC_REGEX = "(" + STATIC_MODIFIER + "\\s*)?";
-	/**
-	 * A regular expression used for the final modifier
-	 */
+	/** A regular expression used for the final modifier */
 	private static final String FINAL_REGEX = "(" + FINAL_MODIFIER + "\\s*)?";
-	/**
-	 * A regular expression used for all the modifiers
-	 */
+	/** A regular expression used for all the modifiers */
 	protected static final String MODIFIERS_REGEX = VISIBILITY_REGEX + STATIC_REGEX + FINAL_REGEX;
+	
+	/** A regular expression used for tokens to match on when splitting tokens from a content String */
+	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|[^\\s(){}]+";
 	
 	/**
 	 * Used to determine if we have a field or method based on the token we're looking at in parsing.

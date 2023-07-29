@@ -8,7 +8,6 @@ import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.java.parsing.ParsingPojo;
 import com.github.tadukoo.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +22,38 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 	private JavaSingleLineCommentParser(){ }
 	
 	/**
+	 * Parses a {@link JavaSingleLineComment single-line comment} from the given content String
+	 *
+	 * @param content The String to be parsed as a {@link JavaSingleLineComment single-line comment}
+	 * @return The parsed {@link JavaSingleLineComment single-line comment}
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static JavaSingleLineComment parseSingleLineComment(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = StringUtil.parseListFromStringWithPattern(content, TOKEN_REGEX, false).stream()
+				.filter(StringUtil::isNotBlank)
+				.toList();
+		
+		// Skip any leading newlines
+		int startToken = 0;
+		while(StringUtil.equals(tokens.get(startToken), "\n")){
+			startToken++;
+		}
+		
+		// Send the tokens to the main parsing method to get a result
+		ParsingPojo result = parseSingleLineComment(tokens, startToken);
+		
+		// Make sure we reached the end of the tokens
+		if(result.nextTokenIndex() != tokens.size()){
+			throw new JavaParsingException(JavaCodeTypes.SINGLE_LINE_COMMENT,
+					"Found extra content after the single-line comment!");
+		}
+		
+		// Return the single line comment that was parsed
+		return (JavaSingleLineComment) result.parsedType();
+	}
+	
+	/**
 	 * Parses a {@link JavaSingleLineComment single-line comment} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -31,13 +62,11 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	public static ParsingPojo parseSingleLineComment(List<String> tokens, int startToken) throws JavaParsingException{
-		// Keep track of errors
-		List<String> errors = new ArrayList<>();
-		
 		// First token must start with //
 		String firstToken = tokens.get(startToken);
 		if(!firstToken.startsWith(SINGLE_LINE_COMMENT_TOKEN)){
-			errors.add("First token of single-line comment must start with '" + SINGLE_LINE_COMMENT_TOKEN + "'");
+			throw new JavaParsingException(JavaCodeTypes.SINGLE_LINE_COMMENT,
+					"First token of single-line comment must start with '" + SINGLE_LINE_COMMENT_TOKEN + "'");
 		}
 		
 		// Add the first token to the content if it has anything other than the start token
@@ -59,11 +88,6 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 				content.append(' ');
 			}
 			content.append(token);
-		}
-		
-		// If we had any errors, throw 'em
-		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaCodeTypes.SINGLE_LINE_COMMENT, StringUtil.buildStringWithNewLines(errors));
 		}
 		
 		// Build and return the single-line comment

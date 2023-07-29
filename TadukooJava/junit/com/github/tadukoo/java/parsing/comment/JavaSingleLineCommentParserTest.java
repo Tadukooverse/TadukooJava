@@ -1,50 +1,43 @@
 package com.github.tadukoo.java.parsing.comment;
 
-import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
-import com.github.tadukoo.java.comment.JavaSingleLineComment;
-import com.github.tadukoo.java.parsing.BaseJavaParserTest;
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaSingleLineCommentParserTest extends BaseJavaParserTest{
+public class JavaSingleLineCommentParserTest extends BaseJavaSingleLineCommentParserTest{
 	
-	@Test
-	public void testEmptyComment() throws JavaParsingException{
-		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
-				//""");
-		assertEquals(
-				EditableJavaSingleLineComment.builder()
-						.build(),
-				comment);
-		assertEquals("""
-				//\s""", comment.toString());
+	public JavaSingleLineCommentParserTest(){
+		super(JavaSingleLineCommentParser::parseSingleLineComment);
 	}
 	
 	@Test
-	public void testCommentWithContent() throws JavaParsingException{
-		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
-				// something useful here""");
-		assertEquals(
-				EditableJavaSingleLineComment.builder()
-						.content("something useful here")
-						.build(),
-				comment);
-		assertEquals("""
-				// something useful here""", comment.toString());
+	public void testExtraContentFoundError(){
+		try{
+			JavaSingleLineCommentParser.parseSingleLineComment("""
+					// some comment
+					// some other comment""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(e.getMessage(),
+					buildJavaParsingExceptionMessage(JavaCodeTypes.SINGLE_LINE_COMMENT,
+							"Found extra content after the single-line comment!"));
+		}
 	}
 	
 	@Test
-	public void testCommentWithImmediateContent() throws JavaParsingException{
-		JavaSingleLineComment comment = runFullParserForSingleLineComment("""
-				//something useful here""");
-		assertEquals(
-				EditableJavaSingleLineComment.builder()
-						.content("something useful here")
-						.build(),
-				comment);
-		assertEquals("""
-				// something useful here""", comment.toString());
+	public void testCommentDoesNotStartWithTokenError(){
+		try{
+			JavaSingleLineCommentParser.parseSingleLineComment("""
+					/* some comment */""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(e.getMessage(),
+					buildJavaParsingExceptionMessage(JavaCodeTypes.SINGLE_LINE_COMMENT,
+							"First token of single-line comment must start with '" +
+									SINGLE_LINE_COMMENT_TOKEN + "'"));
+		}
 	}
 }

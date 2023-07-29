@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.parsing;
 
+import com.github.tadukoo.java.JavaTokens;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -14,7 +15,7 @@ import com.github.tadukoo.java.JavaCodeTypes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class BaseJavaParserTest{
+public abstract class BaseJavaParserTest implements JavaTokens{
 	
 	/**
 	 * Used to build a {@link JavaParsingException} error message to check that proper error messages
@@ -81,7 +82,7 @@ public abstract class BaseJavaParserTest{
 	 * @return The parsed {@link JavaSingleLineComment}
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
-	protected JavaSingleLineComment runFullParserForSingleLineComment(String content) throws JavaParsingException{
+	protected static JavaSingleLineComment runFullParserForSingleLineComment(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.SINGLE_LINE_COMMENT, type.getJavaCodeType());
 		assertTrue(type instanceof JavaSingleLineComment);
