@@ -23,6 +23,30 @@ public class JavaPackageDeclarationParser extends AbstractJavaParser{
 	private JavaPackageDeclarationParser(){ }
 	
 	/**
+	 * Parses a {@link JavaPackageDeclaration package declaration} from the given content String
+	 *
+	 * @param content The String of content to parse into a {@link JavaPackageDeclaration package declaration}
+	 * @return The {@link JavaPackageDeclaration package declaration} parsed from the given String
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static JavaPackageDeclaration parsePackageDeclaration(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = splitContentIntoTokens(content);
+		
+		// Skip any leading newlines
+		int startToken = skipLeadingNewlines(tokens);
+		
+		// Send the tokens to the main parsing method to get a result
+		ParsingPojo result = parsePackageDeclaration(tokens, startToken);
+		
+		// Make sure we reached the end of the tokens
+		verifyEndOfTokens(tokens, result, JavaCodeTypes.PACKAGE_DECLARATION);
+		
+		// Return the package declaration that was parsed
+		return (JavaPackageDeclaration) result.parsedType();
+	}
+	
+	/**
 	 * Parses a {@link JavaPackageDeclaration package declaration} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -36,7 +60,8 @@ public class JavaPackageDeclarationParser extends AbstractJavaParser{
 		
 		// Ensure first token is "package"
 		if(StringUtil.notEquals(tokens.get(startToken), PACKAGE_TOKEN)){
-			errors.add("First token of package declaration must be '" + PACKAGE_TOKEN + "'");
+			throw new JavaParsingException(JavaCodeTypes.PACKAGE_DECLARATION,
+					"First token of package declaration must be '" + PACKAGE_TOKEN + "'");
 		}
 		
 		// We will start iterating at startToken+1 (since startToken is the "package" token)
