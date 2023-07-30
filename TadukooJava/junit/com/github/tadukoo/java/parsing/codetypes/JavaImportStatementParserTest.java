@@ -1,70 +1,28 @@
 package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.JavaCodeTypes;
-import com.github.tadukoo.java.importstatement.JavaImportStatement;
-import com.github.tadukoo.java.parsing.BaseJavaParserTest;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaImportStatementParserTest extends BaseJavaParserTest{
+public class JavaImportStatementParserTest extends BaseJavaImportStatementParserTest{
 	
-	@Test
-	public void testSimpleImport() throws JavaParsingException{
-		JavaImportStatement importStatement = runFullParserForImportStatement("""
-				import com.example;""");
-		assertFalse(importStatement.isStatic());
-		assertEquals("com.example", importStatement.getImportName());
+	public JavaImportStatementParserTest(){
+		super(JavaImportStatementParser::parseImportStatement);
 	}
 	
 	@Test
-	public void testStaticImport() throws JavaParsingException{
-		JavaImportStatement importStatement = runFullParserForImportStatement("""
-				import static com.example;""");
-		assertTrue(importStatement.isStatic());
-		assertEquals("com.example", importStatement.getImportName());
-	}
-	
-	@Test
-	public void testErrorNoImportName(){
+	public void testMissingImportToken(){
 		try{
-			runFullParserForImportStatement("""
-					import ;""");
+			JavaImportStatementParser.parseImportStatement("""
+					com.example;""");
 			fail();
 		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
-					"Failed to find import name in import statement!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testErrorNoSemicolon(){
-		try{
-			runFullParserForImportStatement("""
-					import com.example""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
-					"Failed to find semicolon ending import statement!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAllErrors(){
-		try{
-			runFullParserForImportStatement("""
-					import\s""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
-							"Failed to find import name in import statement!\n" +
-									"Failed to find semicolon ending import statement!"),
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.IMPORT_STATEMENT,
+							"First token of import statement must be '" + IMPORT_TOKEN + "'"),
 					e.getMessage());
 		}
 	}

@@ -23,6 +23,30 @@ public class JavaImportStatementParser extends AbstractJavaParser{
 	private JavaImportStatementParser(){ }
 	
 	/**
+	 * Parses an {@link JavaImportStatement import statement} from the given content String
+	 *
+	 * @param content The String of content to parse into an {@link JavaImportStatement import statement}
+	 * @return The {@link JavaImportStatement import statement} parsed from the given String
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static JavaImportStatement parseImportStatement(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = splitContentIntoTokens(content);
+		
+		// Skip any leading newlines
+		int startToken = skipLeadingNewlines(tokens);
+		
+		// Send the tokens to the main parsing method to get a result
+		ParsingPojo result = parseImportStatement(tokens, startToken);
+		
+		// Make sure we reached the end of the tokens
+		verifyEndOfTokens(tokens, result, JavaCodeTypes.IMPORT_STATEMENT);
+		
+		// Return the import statement that was parsed
+		return (JavaImportStatement) result.parsedType();
+	}
+	
+	/**
 	 * Parses an {@link JavaImportStatement import statement} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -36,7 +60,8 @@ public class JavaImportStatementParser extends AbstractJavaParser{
 		
 		// Ensure the first token is "import"
 		if(StringUtil.notEquals(tokens.get(startToken), IMPORT_TOKEN)){
-			errors.add("First token of import statement must be '" + IMPORT_TOKEN + "'");
+			throw new JavaParsingException(JavaCodeTypes.IMPORT_STATEMENT,
+					"First token of import statement must be '" + IMPORT_TOKEN + "'");
 		}
 		
 		// Skip any newline tokens here

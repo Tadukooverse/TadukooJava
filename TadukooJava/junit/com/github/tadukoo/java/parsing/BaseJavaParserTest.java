@@ -53,7 +53,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	 * @return The parsed {@link JavaImportStatement}
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
-	protected JavaImportStatement runFullParserForImportStatement(String content) throws JavaParsingException{
+	protected static JavaImportStatement runFullParserForImportStatement(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.IMPORT_STATEMENT, type.getJavaCodeType());
 		assertTrue(type instanceof JavaImportStatement);
