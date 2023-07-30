@@ -9,7 +9,6 @@ import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.java.parsing.ParsingPojo;
 import com.github.tadukoo.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,12 +81,10 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	public static ParsingPojo parseAnnotation(List<String> tokens, int startToken) throws JavaParsingException{
-		// Keep track of errors
-		List<String> errors = new ArrayList<>();
-		
 		// Ensure the first token starts with an @
 		if(!tokens.get(startToken).startsWith(ANNOTATION_START_TOKEN)){
-			errors.add("First token of annotation must start with '" + ANNOTATION_START_TOKEN + "'");
+			throw new JavaParsingException(JavaCodeTypes.ANNOTATION,
+					"First token of annotation must start with '" + ANNOTATION_START_TOKEN + "'");
 		}
 		
 		// Start building the full annotation String - we're using regexes here
@@ -102,33 +99,19 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 			currentToken++;
 		}
 		
-		// Now check if we started/ended parameters
+		// Only way to continue now is if we have the parameter open token next
 		boolean parametersOpen = false, parametersDone = false;
-		if(fullAnnotation.toString().contains(PARAMETER_OPEN_TOKEN)){
+		if(currentToken < tokens.size() && StringUtil.equals(tokens.get(currentToken), PARAMETER_OPEN_TOKEN)){
+			fullAnnotation.append(PARAMETER_OPEN_TOKEN);
 			parametersOpen = true;
-			if(fullAnnotation.toString().contains(PARAMETER_CLOSE_TOKEN)){
-				parametersDone = true;
-			}
-		}
-		
-		// If we did not start parameters, the only way to continue is if the next token starts parameters
-		if(!parametersOpen && currentToken < tokens.size()){
-			String nextToken = tokens.get(currentToken);
-			if(nextToken.startsWith(PARAMETER_OPEN_TOKEN)){
-				currentToken++;
-				parametersOpen = true;
-				fullAnnotation.append(nextToken);
-				if(nextToken.endsWith(PARAMETER_CLOSE_TOKEN)){
-					parametersDone = true;
-				}
-			}
+			currentToken++;
 		}
 		
 		// Keep going until we complete the parameters
 		while(parametersOpen && !parametersDone && currentToken < tokens.size()){
 			String token = tokens.get(currentToken);
 			fullAnnotation.append(token);
-			if(token.endsWith(PARAMETER_CLOSE_TOKEN)){
+			if(StringUtil.equals(token, PARAMETER_CLOSE_TOKEN)){
 				parametersDone = true;
 			}
 			currentToken++;
@@ -136,21 +119,11 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 		
 		// If we opened and never finished parameters, that's an issue
 		if(parametersOpen && !parametersDone){
-			errors.add("Didn't find end of parameters");
+			throw new JavaParsingException(JavaCodeTypes.ANNOTATION, "Didn't find end of parameters");
 		}
 		
 		// Parse the annotation using the regex method
 		JavaAnnotation annotation = parseAnnotation(fullAnnotation.toString());
-		
-		// If annotation is null, we got problems
-		if(annotation == null){
-			errors.add("Failed to parse annotation");
-		}
-		
-		// If we had any errors, throw 'em
-		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaCodeTypes.ANNOTATION, StringUtil.buildStringWithNewLines(errors));
-		}
 		
 		return new ParsingPojo(currentToken, annotation);
 	}
@@ -161,7 +134,7 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 	 * @param content The text to be parsed into a {@link JavaAnnotation annotation}
 	 * @return The {@link JavaAnnotation annotation} parsed from the text, or {@code null} if it can't be parsed
 	 */
-	public static JavaAnnotation parseAnnotation(String content){
+	public static JavaAnnotation parseAnnotation(String content) throws JavaParsingException{
 		Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(content);
 		if(annotationMatcher.matches()){
 			JavaAnnotationBuilder<EditableJavaAnnotation> builder = EditableJavaAnnotation.builder();
@@ -188,7 +161,7 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 			
 			return builder.build();
 		}else{
-			return null;
+			throw new JavaParsingException(JavaCodeTypes.ANNOTATION, "Failed to parse annotation");
 		}
 	}
 }

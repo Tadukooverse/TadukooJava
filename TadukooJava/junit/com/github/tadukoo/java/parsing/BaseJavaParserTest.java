@@ -113,7 +113,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	 * @return The parsed {@link JavaAnnotation}
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
-	protected JavaAnnotation runFullParserForAnnotation(String content) throws JavaParsingException{
+	protected static JavaAnnotation runFullParserForAnnotation(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.ANNOTATION, type.getJavaCodeType());
 		assertTrue(type instanceof JavaAnnotation);
