@@ -121,8 +121,18 @@ public class JavaMethodParser extends AbstractJavaParser{
 			boolean beforeOrAfterBraces = ((token.startsWith(BLOCK_OPEN_TOKEN) || token.startsWith(BLOCK_CLOSE_TOKEN))) ||
 					(!methodString.isEmpty() && methodString.charAt(methodString.length()-1) == BLOCK_CLOSE_TOKEN.charAt(0));
 			boolean beforeComma = token.startsWith(LIST_SEPARATOR_TOKEN);
+			boolean equalsPartOfOperator = StringUtil.equals(token, ASSIGNMENT_OPERATOR_TOKEN) &&
+					!methodString.isEmpty() && (
+					methodString.charAt(methodString.length()-1) == '<' ||
+							methodString.charAt(methodString.length()-1) == '>' ||
+							methodString.charAt(methodString.length()-1) == '+' ||
+							methodString.charAt(methodString.length()-1) == '!' ||
+							methodString.charAt(methodString.length()-1) == ASSIGNMENT_OPERATOR_TOKEN.charAt(0));
+			boolean plusEqualsOperator = !methodString.isEmpty() && methodString.charAt(methodString.length()-2) == '+' &&
+					methodString.charAt(methodString.length()-1) == '=';
 			if(!methodString.isEmpty() && !beforeOrAfterOpenParens && !beforeOrAfterCloseParens &&
-					!otherCloseParensCase && !beforeOrAfterBraces && !beforeComma){
+					!otherCloseParensCase && !beforeOrAfterBraces && !beforeComma && !equalsPartOfOperator &&
+					!plusEqualsOperator){
 				methodString.append(' ');
 			}
 			methodString.append(token);

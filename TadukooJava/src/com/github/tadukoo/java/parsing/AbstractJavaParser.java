@@ -26,7 +26,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	protected static final String MODIFIERS_REGEX = VISIBILITY_REGEX + STATIC_REGEX + FINAL_REGEX;
 	
 	/** A regular expression used for tokens to match on when splitting tokens from a content String */
-	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|[^\\s(){}]+";
+	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|=|[^\\s(){}=]+";
 	
 	/** Not allowed to instantiate {@link AbstractJavaParser} */
 	protected AbstractJavaParser(){ }
@@ -91,61 +91,46 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @return Either {@link JavaCodeTypes#FIELD}, {@link JavaCodeTypes#METHOD}, or {@link JavaCodeTypes#UNKNOWN}
 	 */
 	protected static JavaCodeTypes determineFieldOrMethod(List<String> tokens, int currentToken){
-		int thisToken = currentToken;
-		// Skip any newlines
+		// First token is a type, can't have parameter open or assignment, so skip it
+		int thisToken = currentToken + 1;
+		// Skip newlines again
 		while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
 			thisToken++;
 		}
-		// Check we didn't reach the end of tokens
+		// Check we're not at the end of tokens
 		if(thisToken >= tokens.size()){
 			return JavaCodeTypes.UNKNOWN;
 		}
+		
+		// Next token is either open parameter (for constructors) or method name or variable name
+		// - variable name can end with semicolon for field
 		String token = tokens.get(thisToken);
-		// First token is a type (possibly with start of parameters if a method)
-		if(token.contains(PARAMETER_OPEN_TOKEN)){
-			// We got a method
+		if(StringUtil.equals(token, PARAMETER_OPEN_TOKEN)){
 			return JavaCodeTypes.METHOD;
-		}else if(token.contains(ASSIGNMENT_OPERATOR_TOKEN)){
-			// We got a field
+		}else if(token.endsWith(SEMICOLON)){
+			return JavaCodeTypes.FIELD;
+		}
+		
+		// Move to next token
+		thisToken++;
+		// Skip newlines again
+		while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
+			thisToken++;
+		}
+		// Check we're not at the end of tokens
+		if(thisToken >= tokens.size()){
+			return JavaCodeTypes.UNKNOWN;
+		}
+		
+		// Next token is either parameter open token or assignment operator token, or semicolon
+		token = tokens.get(thisToken);
+		if(StringUtil.equals(token, PARAMETER_OPEN_TOKEN)){
+			return JavaCodeTypes.METHOD;
+		}else if(StringUtil.equalsAny(token, ASSIGNMENT_OPERATOR_TOKEN, SEMICOLON)){
 			return JavaCodeTypes.FIELD;
 		}else{
-			// Move to next token to check
-			thisToken++;
-			// Skip any newlines
-			while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
-				thisToken++;
-			}
-			// Check we didn't reach the end of tokens
-			if(thisToken >= tokens.size()){
-				return JavaCodeTypes.UNKNOWN;
-			}
-			String nextToken = tokens.get(thisToken);
-			if(nextToken.contains(PARAMETER_OPEN_TOKEN)){
-				// We got a method
-				return JavaCodeTypes.METHOD;
-			}else if(nextToken.contains(SEMICOLON)){
-				// We got a field
-				return JavaCodeTypes.FIELD;
-			}else{
-				// Move to next token to check
-				thisToken++;
-				// Skip any newlines
-				while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
-					thisToken++;
-				}
-				// Check we didn't reach the end of tokens
-				if(thisToken >= tokens.size()){
-					return JavaCodeTypes.UNKNOWN;
-				}
-				String nextNextToken = tokens.get(thisToken);
-				if(nextNextToken.startsWith(PARAMETER_OPEN_TOKEN)){
-					// We got a method
-					return JavaCodeTypes.METHOD;
-				}else{
-					// We got a field
-					return JavaCodeTypes.FIELD;
-				}
-			}
+			// If we haven't hit parameter open or assignment operator at this point, it's not a field or method
+			return JavaCodeTypes.UNKNOWN;
 		}
 	}
 }

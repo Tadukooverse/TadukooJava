@@ -1,13 +1,19 @@
 package com.github.tadukoo.java.parsing.codetypes;
 
+import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
+import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.parsing.AbstractJavaParser;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.java.parsing.ParsingPojo;
+import com.github.tadukoo.java.parsing.comment.JavadocParser;
+import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
+import com.github.tadukoo.util.functional.function.ThrowingFunction2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +72,91 @@ public class JavaFieldParser extends AbstractJavaParser{
 	private JavaFieldParser(){ }
 	
 	/**
+	 * Parses a {@link JavaField field} from the given content String
+	 *
+	 * @param content The String of content to parse into a {@link JavaField field}
+	 * @return The {@link JavaField field} parsed from the given String
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static JavaField parseField(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = splitContentIntoTokens(content);
+		
+		// Iterate over the tokens to parse stuff - we could get Javadocs, Annotations, and the field itself
+		int currentToken = 0;
+		List<JavaCodeType> types = new ArrayList<>();
+		while(currentToken < tokens.size()){
+			String token = tokens.get(currentToken);
+			
+			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
+			
+			if(StringUtil.equals(token, "\n")){
+				// Skip newlines
+				currentToken++;
+				continue;
+			}else if(token.startsWith(JAVADOC_START_TOKEN)){
+				// Parse a javadoc
+				parseMethod = JavadocParser::parseJavadoc;
+			}else if(token.startsWith(ANNOTATION_START_TOKEN)){
+				// Parse an annotation
+				parseMethod = JavaAnnotationParser::parseAnnotation;
+			}else{
+				// Assume it's a field
+				parseMethod = JavaFieldParser::parseField;
+			}
+			
+			// Use the parse method and handle its results
+			ParsingPojo pojo = parseMethod.apply(tokens, currentToken);
+			types.add(pojo.parsedType());
+			currentToken = pojo.nextTokenIndex();
+		}
+		
+		// Combine the types
+		Javadoc doc = null;
+		List<JavaAnnotation> annotations = new ArrayList<>();
+		JavaField field = null;
+		for(JavaCodeType type: types){
+			if(type instanceof Javadoc javadoc){
+				if(doc != null){
+					// Can't have multiple Javadocs
+					throw new JavaParsingException(JavaCodeTypes.FIELD, "Only one Javadoc allowed on a field!");
+				}else if(field != null){
+					// Can't have Javadoc after the field
+					throw new JavaParsingException(JavaCodeTypes.FIELD, "Encountered Javadoc after field!");
+				}
+				doc = javadoc;
+			}else if(type instanceof JavaAnnotation annotation){
+				// Can't have annotations after the field
+				if(field != null){
+					throw new JavaParsingException(JavaCodeTypes.FIELD, "Encountered annotation after field!");
+				}
+				annotations.add(annotation);
+			}else if(type instanceof EditableJavaField javaField){
+				// Can't have multiple fields
+				if(field != null){
+					throw new JavaParsingException(JavaCodeTypes.FIELD, "Encountered multiple fields!");
+				}
+				// Set Javadoc if we have it
+				if(doc != null){
+					javaField.setJavadoc(doc);
+				}
+				// Set annotations if we have them
+				if(ListUtil.isNotBlank(annotations)){
+					javaField.setAnnotations(annotations);
+				}
+				field = javaField;
+			}
+		}
+		
+		// Error if we didn't find a field
+		if(field == null){
+			throw new JavaParsingException(JavaCodeTypes.FIELD, "Failed to parse an actual field!");
+		}
+		
+		return field;
+	}
+	
+	/**
 	 * Parses a {@link JavaField field} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -74,9 +165,6 @@ public class JavaFieldParser extends AbstractJavaParser{
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	public static ParsingPojo parseField(List<String> tokens, int startToken) throws JavaParsingException{
-		// Keep track of any errors
-		List<String> errors = new ArrayList<>();
-		
 		StringBuilder field = new StringBuilder();
 		// Iterate over tokens until we find the semicolon
 		int currentToken = startToken;
@@ -102,19 +190,11 @@ public class JavaFieldParser extends AbstractJavaParser{
 		
 		// If we don't have a semicolon, it's a problem
 		if(!foundSemicolon){
-			errors.add("Failed to find semicolon at end of field");
+			throw new JavaParsingException(JavaCodeTypes.FIELD, "Failed to find semicolon at end of field");
 		}
 		
 		// If we don't get a field, it's a problem
-		JavaField javaField = parseField(field.toString());
-		if(javaField == null){
-			errors.add("Failed to parse a field");
-		}
-		
-		// If we had any errors, throw 'em
-		if(!errors.isEmpty()){
-			throw new JavaParsingException(JavaCodeTypes.FIELD, StringUtil.buildStringWithNewLines(errors));
-		}
+		JavaField javaField = parseJustField(field.toString());
 		
 		return new ParsingPojo(currentToken, javaField);
 	}
@@ -126,12 +206,7 @@ public class JavaFieldParser extends AbstractJavaParser{
 	 * @return The parsed {@link JavaField field}, or null if we don't have a field
 	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
-	public static JavaField parseField(String content) throws JavaParsingException{
-		// Check if field ends with semicolon for failure
-		if(!StringUtil.trim(content).endsWith(SEMICOLON)){
-			throw new JavaParsingException(JavaCodeTypes.FIELD, "Failed to find semicolon at end of field");
-		}
-		
+	private static JavaField parseJustField(String content) throws JavaParsingException{
 		// Find the equals signs in the field
 		int equalsIndex = content.indexOf(ASSIGNMENT_OPERATOR_TOKEN);
 		
@@ -140,12 +215,8 @@ public class JavaFieldParser extends AbstractJavaParser{
 		
 		// Anything after equals is the value (if we even have equals)
 		if(equalsIndex != -1){
-			value = StringUtil.trim(content.substring(equalsIndex + 1));
-			
-			// remove semicolon from value if it exists
-			if(value.endsWith(SEMICOLON)){
-				value = StringUtil.trim(value.substring(0, value.length()-1));
-			}
+			// Remove semicolon from the end and trim the value
+			value = StringUtil.trim(content.substring(equalsIndex + 1, content.length() - 1));
 			
 			// Before equals is the modifiers, type, and name
 			firstPart = content.substring(0, equalsIndex);
@@ -166,8 +237,8 @@ public class JavaFieldParser extends AbstractJavaParser{
 					.type(type).name(name)
 					.value(value)
 					.build();
+		}else{
+			throw new JavaParsingException(JavaCodeTypes.FIELD, "Failed to parse a field");
 		}
-		
-		return null;
 	}
 }
