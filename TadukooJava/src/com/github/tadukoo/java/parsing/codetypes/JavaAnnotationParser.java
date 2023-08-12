@@ -91,11 +91,21 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 		String firstToken = tokens.get(startToken);
 		StringBuilder fullAnnotation = new StringBuilder(firstToken);
 		
-		// Add the next token if we were missing the annotation name
+		// Skip any whitespace
 		int currentToken = startToken+1;
+		while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
+			currentToken++;
+		}
+		
+		// Add the next token if we were missing the annotation name
 		if(StringUtil.equals(firstToken, ANNOTATION_START_TOKEN)){
 			String nextToken = tokens.get(currentToken);
 			fullAnnotation.append(nextToken);
+			currentToken++;
+		}
+		
+		// Skip any whitespace
+		while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
 			currentToken++;
 		}
 		

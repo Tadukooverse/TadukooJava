@@ -61,8 +61,8 @@ public class FullJavaParser extends AbstractJavaParser{
 			
 			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
 			
-			if(StringUtil.equals(token, "\n")){
-				// Skip newline tokens
+			if(WHITESPACE_MATCHER.reset(token).matches()){
+				// Skip whitespace tokens
 				currentToken++;
 				continue;
 			}else if(StringUtil.equals(token, PACKAGE_TOKEN)){

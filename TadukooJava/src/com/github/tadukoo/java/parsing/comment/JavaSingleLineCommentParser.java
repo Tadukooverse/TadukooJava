@@ -33,7 +33,7 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 		List<String> tokens = splitContentIntoTokens(content);
 		
 		// Skip any leading newlines
-		int startToken = skipLeadingNewlines(tokens);
+		int startToken = skipLeadingWhitespace(tokens);
 		
 		// Send the tokens to the main parsing method to get a result
 		ParsingPojo result = parseSingleLineComment(tokens, startToken);
@@ -67,8 +67,15 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 			content.append(firstToken, SINGLE_LINE_COMMENT_TOKEN.length(), firstToken.length());
 		}
 		
-		// Continue adding to content
+		// Skip leading whitespace if we didn't start content yet
 		int currentToken = startToken + 1;
+		if(content.isEmpty()){
+			while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
+				currentToken++;
+			}
+		}
+		
+		// Continue adding to content
 		while(currentToken < tokens.size()){
 			String token = tokens.get(currentToken);
 			currentToken++;
@@ -76,15 +83,12 @@ public class JavaSingleLineCommentParser extends AbstractJavaParser{
 			if(StringUtil.equals(token, "\n")){
 				break;
 			}
-			if(!content.isEmpty()){
-				content.append(' ');
-			}
 			content.append(token);
 		}
 		
 		// Build and return the single-line comment
 		return new ParsingPojo(currentToken, EditableJavaSingleLineComment.builder()
-				.content(content.toString())
+				.content(StringUtil.trim(content.toString()))
 				.build());
 	}
 }

@@ -115,11 +115,11 @@ public abstract class BaseJavaSingleLineCommentParserTest extends BaseJavaParser
 				// something \t     \t   useful""");
 		assertEquals(
 				EditableJavaSingleLineComment.builder()
-						.content("something useful")
+						.content("something \t     \t   useful")
 						.build(),
 				comment);
 		assertEquals("""
-				// something useful""", comment.toString());
+				// something \t     \t   useful""", comment.toString());
 	}
 	
 	@Test
@@ -143,10 +143,10 @@ public abstract class BaseJavaSingleLineCommentParserTest extends BaseJavaParser
 				\t     \t""");
 		assertEquals(
 				EditableJavaSingleLineComment.builder()
-						.content("something useful")
+						.content("something \t     \t   useful")
 						.build(),
 				comment);
 		assertEquals("""
-				// something useful""", comment.toString());
+				// something \t     \t   useful""", comment.toString());
 	}
 }

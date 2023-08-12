@@ -6,6 +6,8 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.util.StringUtil;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A base parser for Java parsing that contains any shared logic
@@ -26,7 +28,9 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	protected static final String MODIFIERS_REGEX = VISIBILITY_REGEX + STATIC_REGEX + FINAL_REGEX;
 	
 	/** A regular expression used for tokens to match on when splitting tokens from a content String */
-	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|=|[^\\s(){}=]+";
+	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|=|[^\\S\n]+|[^\\s(){}=]+";
+	/** A matcher to use to find whitespace (usually to skip it) */
+	protected static final Matcher WHITESPACE_MATCHER = Pattern.compile("\\s+").matcher("");
 	
 	/** Not allowed to instantiate {@link AbstractJavaParser} */
 	protected AbstractJavaParser(){ }
@@ -49,9 +53,9 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @param tokens The List of tokens to be parsed
 	 * @return The token to start at (skipping leading newlines)
 	 */
-	protected static int skipLeadingNewlines(List<String> tokens){
+	protected static int skipLeadingWhitespace(List<String> tokens){
 		int startToken = 0;
-		while(StringUtil.equals(tokens.get(startToken), "\n")){
+		while(WHITESPACE_MATCHER.reset(tokens.get(startToken)).matches()){
 			startToken++;
 		}
 		return startToken;
@@ -72,7 +76,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 		if(result.nextTokenIndex() != tokens.size()){
 			// Check if the remaining stuff is just newlines (they don't matter)
 			int lastTokenIndex = result.nextTokenIndex();
-			while(lastTokenIndex < tokens.size() && StringUtil.equals(tokens.get(lastTokenIndex), "\n")){
+			while(lastTokenIndex < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(lastTokenIndex)).matches()){
 				lastTokenIndex++;
 			}
 			if(lastTokenIndex != tokens.size()){
@@ -93,8 +97,8 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	protected static JavaCodeTypes determineFieldOrMethod(List<String> tokens, int currentToken){
 		// First token is a type, can't have parameter open or assignment, so skip it
 		int thisToken = currentToken + 1;
-		// Skip newlines again
-		while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
+		// Skip whitespace
+		while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
 			thisToken++;
 		}
 		// Check we're not at the end of tokens
@@ -113,8 +117,8 @@ public abstract class AbstractJavaParser implements JavaTokens{
 		
 		// Move to next token
 		thisToken++;
-		// Skip newlines again
-		while(thisToken < tokens.size() && StringUtil.equals(tokens.get(thisToken), "\n")){
+		// Skip whitespace again
+		while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
 			thisToken++;
 		}
 		// Check we're not at the end of tokens

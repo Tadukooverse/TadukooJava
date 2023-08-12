@@ -34,7 +34,7 @@ public class JavaPackageDeclarationParser extends AbstractJavaParser{
 		List<String> tokens = splitContentIntoTokens(content);
 		
 		// Skip any leading newlines
-		int startToken = skipLeadingNewlines(tokens);
+		int startToken = skipLeadingWhitespace(tokens);
 		
 		// Send the tokens to the main parsing method to get a result
 		ParsingPojo result = parsePackageDeclaration(tokens, startToken);
@@ -80,7 +80,7 @@ public class JavaPackageDeclarationParser extends AbstractJavaParser{
 			}else if(token.endsWith(SEMICOLON)){
 				packageName.append(token, 0, token.length()-1);
 				gotSemicolon = true;
-			}else if(StringUtil.notEquals(token, "\n")){
+			}else if(!WHITESPACE_MATCHER.reset(token).matches()){
 				// If we got a newline, skip it
 				packageName.append(token);
 			}

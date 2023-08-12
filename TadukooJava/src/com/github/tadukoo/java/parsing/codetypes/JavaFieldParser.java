@@ -90,8 +90,8 @@ public class JavaFieldParser extends AbstractJavaParser{
 			
 			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
 			
-			if(StringUtil.equals(token, "\n")){
-				// Skip newlines
+			if(WHITESPACE_MATCHER.reset(token).matches()){
+				// Skip whitespace
 				currentToken++;
 				continue;
 			}else if(token.startsWith(JAVADOC_START_TOKEN)){
@@ -177,9 +177,6 @@ public class JavaFieldParser extends AbstractJavaParser{
 				continue;
 			}
 			
-			if(!field.isEmpty()){
-				field.append(' ');
-			}
 			field.append(token);
 			
 			// Check if we got the semicolon

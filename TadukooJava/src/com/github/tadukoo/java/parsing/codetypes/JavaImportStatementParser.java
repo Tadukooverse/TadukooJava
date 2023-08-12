@@ -34,7 +34,7 @@ public class JavaImportStatementParser extends AbstractJavaParser{
 		List<String> tokens = splitContentIntoTokens(content);
 		
 		// Skip any leading newlines
-		int startToken = skipLeadingNewlines(tokens);
+		int startToken = skipLeadingWhitespace(tokens);
 		
 		// Send the tokens to the main parsing method to get a result
 		ParsingPojo result = parseImportStatement(tokens, startToken);
@@ -64,9 +64,9 @@ public class JavaImportStatementParser extends AbstractJavaParser{
 					"First token of import statement must be '" + IMPORT_TOKEN + "'");
 		}
 		
-		// Skip any newline tokens here
+		// Skip any whitespace tokens here
 		int currentToken = startToken + 1;
-		while(currentToken < tokens.size() && StringUtil.equals(tokens.get(currentToken), "\n")){
+		while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
 			currentToken++;
 		}
 		
@@ -91,8 +91,8 @@ public class JavaImportStatementParser extends AbstractJavaParser{
 			}else if(token.endsWith(SEMICOLON)){
 				importName.append(token, 0, token.length()-1);
 				gotSemicolon = true;
-			}else if(StringUtil.notEquals(token, "\n")){
-				// Skip newlines
+			}else if(!WHITESPACE_MATCHER.reset(token).matches()){
+				// Skip whitespace
 				importName.append(token);
 			}
 		}

@@ -3,6 +3,8 @@ package com.github.tadukoo.java.parsing.classtypes;
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.javaclass.EditableJavaClass;
 import com.github.tadukoo.java.javaclass.JavaClass;
@@ -56,8 +58,8 @@ public class JavaClassParser extends AbstractJavaParser{
 		// Start parsing tokens after "class"
 		int currentToken = startToken+1;
 		
-		// Skip any newlines
-		while(currentToken < tokens.size() && StringUtil.equals(tokens.get(currentToken), "\n")){
+		// Skip any whitespace
+		while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
 			currentToken++;
 		}
 		
@@ -94,8 +96,13 @@ public class JavaClassParser extends AbstractJavaParser{
 					errors.add("found '" + EXTENDS_TOKEN + "' after hitting the block open token!");
 				}
 				
-				// Class has a super class
+				// Skip whitespace
 				currentToken++;
+				while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
+					currentToken++;
+				}
+				
+				// Class has a super class
 				superClassName = tokens.get(currentToken);
 				
 				// Check if we've hit the block closed/open tokens
@@ -140,8 +147,8 @@ public class JavaClassParser extends AbstractJavaParser{
 			}else if(MODIFIERS.contains(token)){
 				// Parse a type with modifiers (could be field, method, class, etc.)
 				parseMethod = JavaTypeWithModifiersParser::parseTypeWithModifiers;
-			}else if(StringUtil.equals(token, "\n")){
-				// Skip newlines
+			}else if(WHITESPACE_MATCHER.reset(token).matches()){
+				// Skip whitespace
 				currentToken++;
 				continue;
 			}else{
@@ -168,7 +175,13 @@ public class JavaClassParser extends AbstractJavaParser{
 		Javadoc doc = null;
 		List<JavaAnnotation> annotations = new ArrayList<>();
 		for(JavaCodeType type: itemsInClass){
-			if(type instanceof Javadoc javadoc){
+			if(type instanceof JavaSingleLineComment singleLineComment){
+				// Single-Line comment goes on the class
+				builder.singleLineComment(singleLineComment);
+			}else if(type instanceof JavaMultiLineComment multiLineComment){
+				// Multi-Line comment goes on the class
+				builder.multiLineComment(multiLineComment);
+			}else if(type instanceof Javadoc javadoc){
 				// Javadoc needs to go on another type later
 				doc = javadoc;
 			}else if(type instanceof JavaAnnotation annotation){

@@ -35,7 +35,7 @@ public class JavadocParser extends AbstractJavaParser{
 		List<String> tokens = splitContentIntoTokens(content);
 		
 		// Skip any leading newlines
-		int startToken = skipLeadingNewlines(tokens);
+		int startToken = skipLeadingWhitespace(tokens);
 		
 		// Send the tokens to the main parsing method to get a result
 		ParsingPojo result = parseJavadoc(tokens, startToken);
@@ -113,7 +113,8 @@ public class JavadocParser extends AbstractJavaParser{
 			if(justHadNewline){
 				if(token.startsWith(ANNOTATION_START_TOKEN)){
 					annotation = token.substring(ANNOTATION_START_TOKEN.length());
-				}else if(StringUtil.equalsAny(token, "\n", JAVADOC_LINE_TOKEN)){
+				}else if(StringUtil.equalsAny(token, "\n", JAVADOC_LINE_TOKEN) ||
+						WHITESPACE_MATCHER.reset(token).matches()){
 					continue;
 				}else{
 					currentContent.append(token);
@@ -128,23 +129,23 @@ public class JavadocParser extends AbstractJavaParser{
 								if(StringUtil.isNotBlank(author)){
 									multipleAuthor = true;
 								}
-								author = currentContent.toString();
+								author = StringUtil.trim(currentContent.toString());
 							}
 							case JAVADOC_VERSION_TOKEN -> {
 								if(StringUtil.isNotBlank(version)){
 									multipleVersion = true;
 								}
-								version = currentContent.toString();
+								version = StringUtil.trim(currentContent.toString());
 							}
 							case JAVADOC_SINCE_TOKEN -> {
 								if(StringUtil.isNotBlank(since)){
 									multipleSince = true;
 								}
-								since = currentContent.toString();
+								since = StringUtil.trim(currentContent.toString());
 							}
 							case JAVADOC_PARAM_TOKEN -> {
-								String paramString = currentContent.toString();
-								String paramName = paramString.split("\\s+")[0];
+								String paramString = StringUtil.trim(currentContent.toString());
+								String paramName = StringUtil.trim(paramString.split("\\s+")[0]);
 								parameters.add(Pair.of(paramName, StringUtil.trim(
 										paramString.substring(paramName.length()))));
 							}
@@ -152,32 +153,19 @@ public class JavadocParser extends AbstractJavaParser{
 								if(StringUtil.isNotBlank(returnVal)){
 									multipleReturn = true;
 								}
-								returnVal = currentContent.toString();
+								returnVal = StringUtil.trim(currentContent.toString());
 							}
-							default -> content.add(ANNOTATION_START_TOKEN + annotation + " " + currentContent);
+							default -> content.add(ANNOTATION_START_TOKEN + annotation + " " +
+									StringUtil.trim(currentContent.toString()));
 						}
 						annotation = null;
 					}else{
-						content.add(currentContent.toString());
+						content.add(StringUtil.trim(currentContent.toString()));
 					}
 					currentContent = new StringBuilder();
 					justHadNewline = true;
 				}else{
-					// If the currentContent is empty, quit now
-					if(currentContent.isEmpty()){
-						currentContent.append(token);
-					}else{
-						// If current content is not empty, check if we should add a space before the current token
-						boolean notParameterStart = currentContent.charAt(currentContent.length() - 1) !=
-								PARAMETER_OPEN_TOKEN.charAt(0);
-						boolean notParameterEnd = !token.startsWith(PARAMETER_CLOSE_TOKEN);
-						boolean notInlineAnnotationStart = !currentContent.toString().endsWith(BLOCK_OPEN_TOKEN);
-						boolean notInlineAnnotationEnd = !token.endsWith(BLOCK_CLOSE_TOKEN);
-						if(notParameterStart && notParameterEnd && notInlineAnnotationStart && notInlineAnnotationEnd){
-							currentContent.append(' ');
-						}
-						currentContent.append(token);
-					}
+					currentContent.append(token);
 				}
 			}
 		}
@@ -189,23 +177,23 @@ public class JavadocParser extends AbstractJavaParser{
 					if(StringUtil.isNotBlank(author)){
 						multipleAuthor = true;
 					}
-					author = currentContent.toString();
+					author = StringUtil.trim(currentContent.toString());
 				}
 				case JAVADOC_VERSION_TOKEN -> {
 					if(StringUtil.isNotBlank(version)){
 						multipleVersion = true;
 					}
-					version = currentContent.toString();
+					version = StringUtil.trim(currentContent.toString());
 				}
 				case JAVADOC_SINCE_TOKEN -> {
 					if(StringUtil.isNotBlank(since)){
 						multipleSince = true;
 					}
-					since = currentContent.toString();
+					since = StringUtil.trim(currentContent.toString());
 				}
 				case JAVADOC_PARAM_TOKEN -> {
-					String paramString = currentContent.toString();
-					String paramName = paramString.split("\\s+")[0];
+					String paramString = StringUtil.trim(currentContent.toString());
+					String paramName = StringUtil.trim(paramString.split("\\s+")[0]);
 					parameters.add(Pair.of(paramName, StringUtil.trim(
 							paramString.substring(paramName.length()))));
 				}
@@ -213,12 +201,13 @@ public class JavadocParser extends AbstractJavaParser{
 					if(StringUtil.isNotBlank(returnVal)){
 						multipleReturn = true;
 					}
-					returnVal = currentContent.toString();
+					returnVal = StringUtil.trim(currentContent.toString());
 				}
-				default -> content.add(ANNOTATION_START_TOKEN + annotation + " " + currentContent);
+				default -> content.add(ANNOTATION_START_TOKEN + annotation + " " +
+						StringUtil.trim(currentContent.toString()));
 			}
 		}else if(!currentContent.isEmpty()){
-			content.add(currentContent.toString());
+			content.add(StringUtil.trim(currentContent.toString()));
 		}
 		
 		// Handle error flags

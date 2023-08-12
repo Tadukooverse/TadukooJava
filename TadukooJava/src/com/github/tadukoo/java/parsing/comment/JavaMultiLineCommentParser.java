@@ -34,7 +34,7 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 		List<String> tokens = splitContentIntoTokens(content);
 		
 		// Skip any leading newlines
-		int startToken = skipLeadingNewlines(tokens);
+		int startToken = skipLeadingWhitespace(tokens);
 		
 		// Send the tokens to the main parsing method to get a result
 		ParsingPojo result = parseMultiLineComment(tokens, startToken);
@@ -86,8 +86,11 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 			if(StringUtil.equals(token, "\n")){
 				// Newline means we can finish the current line of content
 				justHadNewline = true;
-				content.add(line.toString());
+				content.add(StringUtil.trim(line.toString()));
 				line = new StringBuilder();
+			}else if(justHadNewline && WHITESPACE_MATCHER.reset(token).matches()){
+				// If we just had a newline, and we have whitespace, skip it
+				continue;
 			}else if(StringUtil.equals(token, JAVADOC_LINE_TOKEN) && justHadNewline){
 				// Can skip this token if we just had a newline
 				justHadNewline = false;
@@ -103,17 +106,13 @@ public class JavaMultiLineCommentParser extends AbstractJavaParser{
 			
 			// Add to line if we have something
 			if(StringUtil.isNotBlank(toAddToLine)){
-				// Add space if line is not empty
-				if(!line.isEmpty()){
-					line.append(' ');
-				}
 				line.append(toAddToLine);
 			}
 		}
 		
-		// Add the last line if it's still dangling
-		if(!line.isEmpty()){
-			content.add(line.toString());
+		// Add the last line if it's still dangling and not whitespace
+		if(!line.isEmpty() && !WHITESPACE_MATCHER.reset(line.toString()).matches()){
+			content.add(StringUtil.trim(line.toString()));
 		}
 		
 		// Error if we didn't find the closing token

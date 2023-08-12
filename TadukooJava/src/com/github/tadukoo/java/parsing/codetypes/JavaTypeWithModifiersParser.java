@@ -78,8 +78,8 @@ public class JavaTypeWithModifiersParser extends AbstractJavaParser{
 				}
 				
 				break;
-			}else if(StringUtil.notEquals(token, "\n")){
-				// Skip newlines
+			}else if(!WHITESPACE_MATCHER.reset(token).matches()){
+				// Skip whitespace
 				type = determineFieldOrMethod(tokens, currentToken);
 				if(type == JavaCodeTypes.METHOD){
 					// Parse the method and handle modifiers on it
