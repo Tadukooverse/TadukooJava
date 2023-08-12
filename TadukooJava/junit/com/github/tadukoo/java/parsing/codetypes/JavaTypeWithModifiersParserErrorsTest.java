@@ -4,12 +4,42 @@ import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
 import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.java.parsing.JavaParsingException;
+import com.github.tadukoo.util.ListUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class JavaTypeWithModifiersParserErrorsTest extends BaseJavaParserTest{
+	
+	@Test
+	public void testDoesNotStartWithModifierError(){
+		try{
+			JavaTypeWithModifiersParser.parseTypeWithModifiers(
+					ListUtil.createList("String", " ", "type;"), 0);
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
+							"First token of type with modifiers must be a modifier"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testFailedToDetermineTypeError(){
+		try{
+			JavaTypeWithModifiersParser.parseTypeWithModifiers(
+					ListUtil.createList("static", " ", "yep"), 0);
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
+							"Failed to determine type\n" +
+									"Failed to determine result type"),
+					e.getMessage());
+		}
+	}
 	
 	@Test
 	public void testDuplicateModifiersError(){
@@ -58,7 +88,7 @@ public class JavaTypeWithModifiersParserErrorsTest extends BaseJavaParserTest{
 	}
 	
 	@Test
-	public void testFailedToDetermineTypeError(){
+	public void testFailedToDetermineResultTypeError(){
 		try{
 			FullJavaParser.parseType("""
 					private

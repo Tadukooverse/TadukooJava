@@ -1,13 +1,19 @@
 package com.github.tadukoo.java.parsing.codetypes;
 
+import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.parsing.AbstractJavaParser;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.java.parsing.ParsingPojo;
+import com.github.tadukoo.java.parsing.comment.JavadocParser;
+import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
+import com.github.tadukoo.util.functional.function.ThrowingFunction2;
 import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
@@ -85,6 +91,91 @@ public class JavaMethodParser extends AbstractJavaParser{
 	private JavaMethodParser(){ }
 	
 	/**
+	 * Parses a {@link JavaMethod method} from the given content String
+	 *
+	 * @param content The String of content to parse into a {@link JavaMethod method}
+	 * @return The {@link JavaMethod method} parsed from the given String
+	 * @throws JavaParsingException If anything goes wrong in parsing
+	 */
+	public static JavaMethod parseMethod(String content) throws JavaParsingException{
+		// Split the content into "tokens"
+		List<String> tokens = splitContentIntoTokens(content);
+		
+		// Iterate over the tokens to parse stuff - we could get Javadocs, Annotations, and the method itself
+		int currentToken = 0;
+		List<JavaCodeType> types = new ArrayList<>();
+		while(currentToken < tokens.size()){
+			String token = tokens.get(currentToken);
+			
+			ThrowingFunction2<List<String>, Integer, ParsingPojo, JavaParsingException> parseMethod;
+			
+			if(WHITESPACE_MATCHER.reset(token).matches()){
+				// Skip whitespace
+				currentToken++;
+				continue;
+			}else if(token.startsWith(JAVADOC_START_TOKEN)){
+				// Parse a javadoc
+				parseMethod = JavadocParser::parseJavadoc;
+			}else if(token.startsWith(ANNOTATION_START_TOKEN)){
+				// Parse an annotation
+				parseMethod = JavaAnnotationParser::parseAnnotation;
+			}else{
+				// Assume it's a method
+				parseMethod = JavaMethodParser::parseMethod;
+			}
+			
+			// Use the parse method and handle its results
+			ParsingPojo pojo = parseMethod.apply(tokens, currentToken);
+			types.add(pojo.parsedType());
+			currentToken = pojo.nextTokenIndex();
+		}
+		
+		// Combine the types
+		Javadoc doc = null;
+		List<JavaAnnotation> annotations = new ArrayList<>();
+		JavaMethod method = null;
+		for(JavaCodeType type: types){
+			if(type instanceof Javadoc javadoc){
+				if(doc != null){
+					// Can't have multiple Javadocs
+					throw new JavaParsingException(JavaCodeTypes.METHOD, "Only one Javadoc allowed on a method!");
+				}else if(method != null){
+					// Can't have Javadoc after the method
+					throw new JavaParsingException(JavaCodeTypes.METHOD, "Encountered Javadoc after method!");
+				}
+				doc = javadoc;
+			}else if(type instanceof JavaAnnotation annotation){
+				// Can't have annotations after the method
+				if(method != null){
+					throw new JavaParsingException(JavaCodeTypes.METHOD, "Encountered annotation after method!");
+				}
+				annotations.add(annotation);
+			}else if(type instanceof EditableJavaMethod javaMethod){
+				// Can't have multiple methods
+				if(method != null){
+					throw new JavaParsingException(JavaCodeTypes.METHOD, "Encountered multiple methods!");
+				}
+				// Set Javadoc if we have it
+				if(doc != null){
+					javaMethod.setJavadoc(doc);
+				}
+				// Set annotations if we have them
+				if(ListUtil.isNotBlank(annotations)){
+					javaMethod.setAnnotations(annotations);
+				}
+				method = javaMethod;
+			}
+		}
+		
+		// Error if we didn't find a method
+		if(method == null){
+			throw new JavaParsingException(JavaCodeTypes.METHOD, "Failed to parse an actual method!");
+		}
+		
+		return method;
+	}
+	
+	/**
 	 * Parses a {@link JavaMethod method} from the given tokens and starting index
 	 *
 	 * @param tokens The List of tokens to be parsed
@@ -127,23 +218,12 @@ public class JavaMethodParser extends AbstractJavaParser{
 			// If inside the method, update the number of open blocks
 			if(insideMethod){
 				// Count open and close block tokens
-				int openTokens = 0, closeTokens = 0;
-				if(token.contains(BLOCK_OPEN_TOKEN)){
-					openTokens = 1;
-					String[] openSplit = token.split("\\" + BLOCK_OPEN_TOKEN);
-					if(openSplit.length > 2){
-						openTokens = openSplit.length - 1;
-					}
+				if(StringUtil.equals(token, BLOCK_OPEN_TOKEN)){
+					openBlocks++;
 				}
-				if(token.contains(BLOCK_CLOSE_TOKEN)){
-					closeTokens = 1;
-					String[] closeSplit = token.split(BLOCK_CLOSE_TOKEN);
-					if(closeSplit.length > 2){
-						closeTokens = closeSplit.length - 1;
-					}
+				if(StringUtil.equals(token, BLOCK_CLOSE_TOKEN)){
+					openBlocks--;
 				}
-				// Figure out current number of open blocks (update previous count)
-				openBlocks += openTokens - closeTokens;
 				
 				// If open blocks = 0, we're done
 				if(openBlocks == 0){
@@ -168,7 +248,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 		}
 		
 		// Build the method
-		return new ParsingPojo(currentToken, parseMethod(methodString.toString()));
+		return new ParsingPojo(currentToken, parseJustMethod(methodString.toString()));
 	}
 	
 	/**
@@ -177,7 +257,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 	 * @param content The text to be parsed into a {@link JavaMethod method)}
 	 * @return The parsed {@link JavaMethod method}, or null if we don't have a method
 	 */
-	public static JavaMethod parseMethod(String content){
+	public static JavaMethod parseJustMethod(String content){
 		String methodString = StringUtil.trim(content);
 		
 		// Use regex to parse the method
@@ -231,11 +311,8 @@ public class JavaMethodParser extends AbstractJavaParser{
 					for(String line: contentString.split("\n")){
 						line = StringUtil.trim(line);
 						if(StringUtil.equals(line, SEMICOLON)){
-							String lastLine = lines.get(lines.size()-1);
-							if(!lastLine.endsWith(SEMICOLON)){
-								lines.remove(lines.size()-1);
-								lines.add(lastLine + SEMICOLON);
-							}
+							String lastLine = lines.remove(lines.size()-1);
+							lines.add(lastLine + SEMICOLON);
 						}
 						if(line.contains(SEMICOLON) && !line.endsWith(BLOCK_OPEN_TOKEN)){
 							for(String subLine: line.split(SEMICOLON)){
@@ -254,12 +331,10 @@ public class JavaMethodParser extends AbstractJavaParser{
 							}
 						}
 					}
-				}else if(contentString.contains(SEMICOLON)){
+				}else{
 					for(String line: contentString.split(SEMICOLON)){
 						lines.add("\t".repeat(insideBlocks) + StringUtil.trim(line) + SEMICOLON);
 					}
-				}else{
-					lines.add("\t".repeat(insideBlocks) + contentString);
 				}
 			}
 			
