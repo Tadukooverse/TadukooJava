@@ -1,7 +1,14 @@
 package com.github.tadukoo.java.javaclass;
 
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
@@ -19,9 +26,11 @@ import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
+import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,6 +43,7 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	public EditableJavaClassTest(){
 		super(EditableJavaClass::builder, EditableJavaPackageDeclaration::builder, EditableJavaImportStatement::builder,
 				EditableJavaAnnotation::builder, EditableJavadoc::builder,
+				EditableJavaSingleLineComment::builder, EditableJavaMultiLineComment::builder,
 				EditableJavaField::builder, EditableJavaMethod::builder);
 	}
 	
@@ -99,6 +109,36 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testBuilderUneditableSingleLineCommentError(){
+		try{
+			EditableJavaClass.builder()
+					.className(className)
+					.singleLineComment(UneditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("some single-line comments are not editable in this editable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderUneditableMultiLineCommentError(){
+		try{
+			EditableJavaClass.builder()
+					.className(className)
+					.multiLineComment(UneditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.build())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("some multi-line comments are not editable in this editable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderUneditableInnerClassError(){
 		try{
 			EditableJavaClass.builder()
@@ -157,6 +197,12 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 					.className(className)
 					.javadoc(UneditableJavadoc.builder().build())
 					.annotation(UneditableJavaAnnotation.builder().name("Test").build())
+					.singleLineComment(UneditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.multiLineComment(UneditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.build())
 					.innerClass(UneditableJavaClass.builder()
 							.innerClass()
 							.className(className)
@@ -175,6 +221,8 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 					some import statements are not editable in this editable JavaClass
 					javadoc is not editable in this editable JavaClass
 					some annotations are not editable in this editable JavaClass
+					some single-line comments are not editable in this editable JavaClass
+					some multi-line comments are not editable in this editable JavaClass
 					some inner classes are not editable in this editable JavaClass
 					some fields are not editable in this editable JavaClass
 					some methods are not editable in this editable JavaClass""", e.getMessage());
@@ -547,6 +595,192 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testAddSingleLineComment(){
+		JavaSingleLineComment comment1 = EditableJavaSingleLineComment.builder()
+				.content("some comment")
+				.build();
+		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
+				.content("some other comment")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getSingleLineComments());
+		clazz.addSingleLineComment(comment1);
+		assertEquals(ListUtil.createList(comment1), clazz.getSingleLineComments());
+		clazz.addSingleLineComment(comment2);
+		assertEquals(ListUtil.createList(comment1, comment2), clazz.getSingleLineComments());
+	}
+	
+	@Test
+	public void testAddSingleLineCommentUneditable(){
+		try{
+			clazz.addSingleLineComment(UneditableJavaSingleLineComment.builder()
+					.content("some comment")
+					.build());
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable single-line comments", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testAddSingleLineComments(){
+		JavaSingleLineComment comment1 = EditableJavaSingleLineComment.builder()
+				.content("some comment")
+				.build();
+		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
+				.content("some other comment")
+				.build();
+		JavaSingleLineComment comment3 = EditableJavaSingleLineComment.builder()
+				.content("some 3rd comment")
+				.build();
+		JavaSingleLineComment comment4 = EditableJavaSingleLineComment.builder()
+				.content("some other 4th comment")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getSingleLineComments());
+		clazz.addSingleLineComments(ListUtil.createList(comment1, comment2));
+		assertEquals(ListUtil.createList(comment1, comment2), clazz.getSingleLineComments());
+		clazz.addSingleLineComments(ListUtil.createList(comment3, comment4));
+		assertEquals(ListUtil.createList(comment1, comment2, comment3, comment4), clazz.getSingleLineComments());
+	}
+	
+	@Test
+	public void testAddSingleLineCommentsUneditable(){
+		try{
+			clazz.addSingleLineComments(ListUtil.createList(UneditableJavaSingleLineComment.builder()
+					.content("some comment")
+					.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable single-line comments", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSetSingleLineComments(){
+		JavaSingleLineComment comment1 = EditableJavaSingleLineComment.builder()
+				.content("some comment")
+				.build();
+		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
+				.content("some other comment")
+				.build();
+		JavaSingleLineComment comment3 = EditableJavaSingleLineComment.builder()
+				.content("some 3rd comment")
+				.build();
+		JavaSingleLineComment comment4 = EditableJavaSingleLineComment.builder()
+				.content("some other 4th comment")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getSingleLineComments());
+		clazz.setSingleLineComments(ListUtil.createList(comment1, comment2));
+		assertEquals(ListUtil.createList(comment1, comment2), clazz.getSingleLineComments());
+		clazz.setSingleLineComments(ListUtil.createList(comment3, comment4));
+		assertEquals(ListUtil.createList(comment3, comment4), clazz.getSingleLineComments());
+	}
+	
+	@Test
+	public void testSetSingleLineCommentsUneditable(){
+		try{
+			clazz.setSingleLineComments(ListUtil.createList(UneditableJavaSingleLineComment.builder()
+					.content("some comment")
+					.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable single-line comments", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testAddMultiLineComment(){
+		JavaMultiLineComment comment1 = EditableJavaMultiLineComment.builder()
+				.content("some comment")
+				.build();
+		JavaMultiLineComment comment2 = EditableJavaMultiLineComment.builder()
+				.content("some other comment")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getMultiLineComments());
+		clazz.addMultiLineComment(comment1);
+		assertEquals(ListUtil.createList(comment1), clazz.getMultiLineComments());
+		clazz.addMultiLineComment(comment2);
+		assertEquals(ListUtil.createList(comment1, comment2), clazz.getMultiLineComments());
+	}
+	
+	@Test
+	public void testAddMultiLineCommentUneditable(){
+		try{
+			clazz.addMultiLineComment(UneditableJavaMultiLineComment.builder()
+					.content("some comment")
+					.build());
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable multi-line comments", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testAddMultiLineComments(){
+		JavaMultiLineComment comment1 = EditableJavaMultiLineComment.builder()
+				.content("some comment")
+				.build();
+		JavaMultiLineComment comment2 = EditableJavaMultiLineComment.builder()
+				.content("some other comment")
+				.build();
+		JavaMultiLineComment comment3 = EditableJavaMultiLineComment.builder()
+				.content("some 3rd comment")
+				.build();
+		JavaMultiLineComment comment4 = EditableJavaMultiLineComment.builder()
+				.content("some other 4th comment")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getMultiLineComments());
+		clazz.addMultiLineComments(ListUtil.createList(comment1, comment2));
+		assertEquals(ListUtil.createList(comment1, comment2), clazz.getMultiLineComments());
+		clazz.addMultiLineComments(ListUtil.createList(comment3, comment4));
+		assertEquals(ListUtil.createList(comment1, comment2, comment3, comment4), clazz.getMultiLineComments());
+	}
+	
+	@Test
+	public void testAddMultiLineCommentsUneditable(){
+		try{
+			clazz.addMultiLineComments(ListUtil.createList(UneditableJavaMultiLineComment.builder()
+					.content("some comment")
+					.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable multi-line comments", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSetMultiLineComments(){
+		JavaMultiLineComment comment1 = EditableJavaMultiLineComment.builder()
+				.content("some comment")
+				.build();
+		JavaMultiLineComment comment2 = EditableJavaMultiLineComment.builder()
+				.content("some other comment")
+				.build();
+		JavaMultiLineComment comment3 = EditableJavaMultiLineComment.builder()
+				.content("some 3rd comment")
+				.build();
+		JavaMultiLineComment comment4 = EditableJavaMultiLineComment.builder()
+				.content("some other 4th comment")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getMultiLineComments());
+		clazz.setMultiLineComments(ListUtil.createList(comment1, comment2));
+		assertEquals(ListUtil.createList(comment1, comment2), clazz.getMultiLineComments());
+		clazz.setMultiLineComments(ListUtil.createList(comment3, comment4));
+		assertEquals(ListUtil.createList(comment3, comment4), clazz.getMultiLineComments());
+	}
+	
+	@Test
+	public void testSetMultiLineCommentsUneditable(){
+		try{
+			clazz.setMultiLineComments(ListUtil.createList(UneditableJavaMultiLineComment.builder()
+					.content("some comment")
+					.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable multi-line comments", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testAddInnerClass(){
 		JavaClass clazz1 = EditableJavaClass.builder()
 				.className("Test")
@@ -847,5 +1081,32 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 		}catch(IllegalArgumentException e){
 			assertEquals("editable Java Class requires editable Java Methods", e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testSetInnerElementsOrder(){
+		List<Pair<JavaCodeTypes, String>> list1 = ListUtil.createList(
+				Pair.of(JavaCodeTypes.METHOD, "getVersion()"));
+		List<Pair<JavaCodeTypes, String>> list2 = ListUtil.createList(
+				Pair.of(JavaCodeTypes.FIELD, "version"));
+		assertEquals(new ArrayList<>(), clazz.getInnerElementsOrder());
+		clazz.setInnerElementsOrder(list1);
+		assertEquals(list1, clazz.getInnerElementsOrder());
+		clazz.setInnerElementsOrder(list2);
+		assertEquals(list2, clazz.getInnerElementsOrder());
+	}
+	
+	@Test
+	public void testToStringSkipsInvalidInnerElementType(){
+		clazz = EditableJavaClass.builder()
+				.className(className)
+				.build();
+		clazz.setInnerElementsOrder(ListUtil.createList(
+				Pair.of(JavaCodeTypes.ANNOTATION, null)
+		));
+		assertEquals("""
+				class AClassName{
+				}
+				""", clazz.toString());
 	}
 }

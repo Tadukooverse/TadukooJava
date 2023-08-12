@@ -1,6 +1,9 @@
 package com.github.tadukoo.java.javaclass;
 
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
@@ -11,6 +14,7 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +84,22 @@ public class UneditableJavaClass extends JavaClass{
 				}
 			}
 			
+			// Single-Line Comments can't be editable
+			for(JavaSingleLineComment singleLineComment: singleLineComments){
+				if(singleLineComment.isEditable()){
+					errors.add("some single-line comments are not uneditable in this uneditable JavaClass");
+					break;
+				}
+			}
+			
+			// Multi-Line Comments can't be editable
+			for(JavaMultiLineComment multiLineComment: multiLineComments){
+				if(multiLineComment.isEditable()){
+					errors.add("some multi-line comments are not uneditable in this uneditable JavaClass");
+					break;
+				}
+			}
+			
 			// Inner Classes can't be editable
 			for(JavaClass clazz: innerClasses){
 				if(clazz.isEditable()){
@@ -113,7 +133,9 @@ public class UneditableJavaClass extends JavaClass{
 					javadoc, annotations,
 					visibility, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
-					innerClasses, fields, methods);
+					singleLineComments, multiLineComments,
+					innerClasses, fields, methods,
+					innerElementsOrder);
 		}
 	}
 	
@@ -131,21 +153,28 @@ public class UneditableJavaClass extends JavaClass{
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
 	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
+	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
+	 * @param innerElementsOrder The order of the elements inside the class
 	 */
 	private UneditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal, String className,
 			String superClassName, List<String> implementsInterfaceNames,
-			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
+			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
+			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
+			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 		super(false, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
 				visibility, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
-				innerClasses, fields, methods);
+				singleLineComments, multiLineComments,
+				innerClasses, fields, methods,
+				innerElementsOrder);
 	}
 	
 	/**

@@ -1,8 +1,16 @@
 package com.github.tadukoo.java.javaclass;
 
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
+import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
+import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -10,6 +18,7 @@ import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.field.UneditableJavaField;
+import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
@@ -18,6 +27,7 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
+import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +51,16 @@ public class JavaClassBuilderTest{
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, boolean isFinal, String className,
 				String superClassName, List<String> implementsInterfaceNames,
-				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
+				List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
+				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
+				List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
-					innerClasses, fields, methods);
+					singleLineComments, multiLineComments,
+					innerClasses, fields, methods,
+					innerElementsOrder);
 		}
 	}
 	
@@ -73,7 +87,9 @@ public class JavaClassBuilderTest{
 					javadoc, annotations,
 					visibility, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
-					innerClasses, fields, methods);
+					singleLineComments, multiLineComments,
+					innerClasses, fields, methods,
+					innerElementsOrder);
 		}
 	}
 	
@@ -140,9 +156,33 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testDefaultSingleLineComments(){
+		assertNotNull(clazz.getSingleLineComments());
+		assertTrue(clazz.getSingleLineComments().isEmpty());
+	}
+	
+	@Test
+	public void testDefaultMultiLineComments(){
+		assertNotNull(clazz.getMultiLineComments());
+		assertTrue(clazz.getMultiLineComments().isEmpty());
+	}
+	
+	@Test
 	public void testDefaultFields(){
 		assertNotNull(clazz.getFields());
 		assertTrue(clazz.getFields().isEmpty());
+	}
+	
+	@Test
+	public void testDefaultMethods(){
+		assertNotNull(clazz.getMethods());
+		assertTrue(clazz.getMethods().isEmpty());
+	}
+	
+	@Test
+	public void testDefaultInnerElementsOrder(){
+		assertNotNull(clazz.getInnerElementsOrder());
+		assertTrue(clazz.getInnerElementsOrder().isEmpty());
 	}
 	
 	@Test
@@ -164,6 +204,13 @@ public class JavaClassBuilderTest{
 				.className(className)
 				.superClassName("BClassName")
 				.implementsInterfaceName("SomeInterface")
+				.singleLineComment(UneditableJavaSingleLineComment.builder()
+						.content("some comment")
+						.build())
+				.multiLineComment(UneditableJavaMultiLineComment.builder()
+						.content("some content")
+						.content("more comment")
+						.build())
 				.innerClass(new TestJavaClassBuilder()
 						.innerClass()
 						.className("CClassName")
@@ -417,6 +464,68 @@ public class JavaClassBuilderTest{
 	}
 	
 	@Test
+	public void testSetSingleLineComments(){
+		List<JavaSingleLineComment> comments = ListUtil.createList(
+				UneditableJavaSingleLineComment.builder()
+						.content("some comment")
+						.build(),
+				UneditableJavaSingleLineComment.builder()
+						.content("some more comment")
+						.build());
+		clazz = new TestJavaClassBuilder()
+				.className(className)
+				.singleLineComments(comments)
+				.build();
+		assertEquals(comments, clazz.getSingleLineComments());
+	}
+	
+	@Test
+	public void testSet1SingleLineComment(){
+		JavaSingleLineComment comment = UneditableJavaSingleLineComment.builder()
+				.content("some comment")
+				.build();
+		clazz = new TestJavaClassBuilder()
+				.className(className)
+				.singleLineComment(comment)
+				.build();
+		List<JavaSingleLineComment> comments = clazz.getSingleLineComments();
+		assertEquals(1, comments.size());
+		assertEquals(comment, comments.get(0));
+	}
+	
+	@Test
+	public void testSetMultiLineComments(){
+		List<JavaMultiLineComment> comments = ListUtil.createList(
+				UneditableJavaMultiLineComment.builder()
+						.content("some comment")
+						.content("more content")
+						.build(),
+				UneditableJavaMultiLineComment.builder()
+						.content("some more comment")
+						.build());
+		clazz = new TestJavaClassBuilder()
+				.className(className)
+				.multiLineComments(comments)
+				.build();
+		assertEquals(comments, clazz.getMultiLineComments());
+	}
+	
+	@Test
+	public void testSet1MultiLineComment(){
+		JavaMultiLineComment comment = UneditableJavaMultiLineComment.builder()
+				.content("some comment")
+				.content("more content")
+				.build();
+		clazz = new TestJavaClassBuilder()
+				.className(className)
+				.multiLineComment(comment)
+				.build();
+		List<JavaMultiLineComment> comments = clazz.getMultiLineComments();
+		assertEquals(1, comments.size());
+		assertEquals(comment, comments.get(0));
+	}
+	
+	@Test
 	public void testSetInnerClasses(){
 		List<JavaClass> classes = ListUtil.createList(new TestJavaClassBuilder().innerClass().className("AClass").build(),
 				new TestJavaClassBuilder().innerClass().className("BClass").build());
@@ -466,8 +575,9 @@ public class JavaClassBuilderTest{
 	
 	@Test
 	public void testSetMethods(){
-		List<JavaMethod> methods = ListUtil.createList(UneditableJavaMethod.builder().returnType("int").build(),
-				UneditableJavaMethod.builder().returnType("String").build());
+		List<JavaMethod> methods = ListUtil.createList(UneditableJavaMethod.builder()
+						.returnType("int").name("test").build(),
+				UneditableJavaMethod.builder().returnType("String").name("derp").build());
 		clazz = new TestJavaClassBuilder()
 				.className(className)
 				.methods(methods)
@@ -636,6 +746,470 @@ public class JavaClassBuilderTest{
 					Inner class 'AClassName' is not an inner class!
 					Not allowed to have package declaration for an inner class!
 					Not allowed to have import statements for an inner class!""", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissingInnerElementsOrderWhenSingleLineCommentsPresent(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(UneditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.innerElementsOrder(new ArrayList<>())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("innerElementsOrder is required when comments are present!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissingInnerElementsOrderWhenMultiLineCommentsPresent(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.multiLineComment(UneditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.content("more content")
+							.build())
+					.innerElementsOrder(new ArrayList<>())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("innerElementsOrder is required when comments are present!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissingInnerElementsOrderWhenBothTypesOfCommentsPresent(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(UneditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.multiLineComment(UneditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.content("more content")
+							.build())
+					.innerElementsOrder(new ArrayList<>())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("innerElementsOrder is required when comments are present!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSpecifiedTooManySingleLineCommentsInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null),
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Specified more single-line comments in innerElementsOrder than we have!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSpecifiedTooManyMultiLineCommentsInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.content("more content")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null),
+							Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Specified more multi-line comments in innerElementsOrder than we have!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testReusedInnerClassNameInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.innerClass(new TestJavaClassBuilder()
+							.innerClass()
+							.className("BClassName")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.CLASS, "BClassName"),
+							Pair.of(JavaCodeTypes.CLASS, "BClassName")
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Already used inner class named: BClassName", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testUnknownInnerClassNameInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.innerClass(new TestJavaClassBuilder()
+							.innerClass()
+							.className("BClassName")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.CLASS, "BClassName"),
+							Pair.of(JavaCodeTypes.CLASS, "CClassName")
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Unknown inner class name: CClassName", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testReusedFieldNameInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.field(EditableJavaField.builder()
+							.type("int").name("test")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.FIELD, "test"),
+							Pair.of(JavaCodeTypes.FIELD, "test")
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Already used field named: test", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testUnknownFieldNameInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.field(EditableJavaField.builder()
+							.type("int").name("test")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.FIELD, "test"),
+							Pair.of(JavaCodeTypes.FIELD, "derp")
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Unknown field name: derp", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testReusedMethodNameInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.method(EditableJavaMethod.builder()
+							.returnType("int").name("getVersion")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.METHOD, "getVersion()"),
+							Pair.of(JavaCodeTypes.METHOD, "getVersion()")
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Already used method named: getVersion()", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testUnknownMethodNameInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.method(EditableJavaMethod.builder()
+							.returnType("int").name("getVersion")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.METHOD, "getVersion()"),
+							Pair.of(JavaCodeTypes.METHOD, "getSomething()")
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Unknown method name: getSomething()", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testUnknownInnerElementType(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.innerElementsOrder(ListUtil.createList(Pair.of(JavaCodeTypes.ANNOTATION, "something")))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Unknown inner element type: " + JavaCodeTypes.ANNOTATION.getStandardName(),
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedOneSingleLineCommentInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some other comment")
+							.build())
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some third comment")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null),
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Missed 1 single-line comments in innerElementsOrder!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedTwoSingleLineCommentsInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some other comment")
+							.build())
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some third comment")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Missed 2 single-line comments in innerElementsOrder!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedOneMultiLineCommentInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.build())
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some other comment")
+							.build())
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some third comment")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null),
+							Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Missed 1 multi-line comments in innerElementsOrder!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedTwoMultiLineCommentsInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.build())
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some other comment")
+							.build())
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some third comment")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Missed 2 multi-line comments in innerElementsOrder!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedOneInnerClassInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.innerClass(new TestJavaClassBuilder()
+							.innerClass()
+							.className("BClassName")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("The following inner classes were not specified in innerElementsOrder: BClassName",
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedTwoInnerClassesInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.innerClass(new TestJavaClassBuilder()
+							.innerClass()
+							.className("BClassName")
+							.build())
+					.innerClass(new TestJavaClassBuilder()
+							.innerClass()
+							.className("CClassName")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("The following inner classes were not specified in innerElementsOrder: BClassName,CClassName",
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedOneFieldInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.field(EditableJavaField.builder()
+							.type("int").name("version")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("The following fields were not specified in innerElementsOrder: version",
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedTwoFieldsInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.field(EditableJavaField.builder()
+							.type("int").name("version")
+							.build())
+					.field(EditableJavaField.builder()
+							.type("String").name("test")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("The following fields were not specified in innerElementsOrder: version,test",
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedOneMethodInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.method(EditableJavaMethod.builder()
+							.returnType("int").name("getVersion")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("The following methods were not specified in innerElementsOrder: getVersion()",
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMissedTwoMethodsInnerElementsOrder(){
+		try{
+			clazz = new TestJavaClassBuilder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.method(EditableJavaMethod.builder()
+							.returnType("int").name("getVersion")
+							.build())
+					.method(EditableJavaMethod.builder()
+							.returnType("String").name("getTest")
+							.build())
+					.innerElementsOrder(ListUtil.createList(
+							Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null)
+					))
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("The following methods were not specified in innerElementsOrder: getVersion(),getTest()",
+					e.getMessage());
 		}
 	}
 }

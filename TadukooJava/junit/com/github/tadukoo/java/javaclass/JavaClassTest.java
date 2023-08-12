@@ -4,6 +4,10 @@ import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
@@ -17,6 +21,7 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
+import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,12 +44,16 @@ public class JavaClassTest{
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, boolean isFinal, String className,
 				String superClassName, List<String> implementsInterfaceNames,
-				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
+				List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
+				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
+				List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
-					innerClasses, fields, methods);
+					singleLineComments, multiLineComments,
+					innerClasses, fields, methods,
+					innerElementsOrder);
 		}
 	}
 	
@@ -77,7 +86,9 @@ public class JavaClassTest{
 					javadoc, annotations,
 					visibility, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
-					innerClasses, fields, methods);
+					singleLineComments, multiLineComments,
+					innerClasses, fields, methods,
+					innerElementsOrder);
 		}
 	}
 	
@@ -616,6 +627,44 @@ public class JavaClassTest{
 	}
 	
 	@Test
+	public void testToStringWithSingleLineComment(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.singleLineComment(UneditableJavaSingleLineComment.builder()
+						.content("some comment")
+						.build())
+				.build();
+		String javaString = """
+				class AClassName{
+				\t
+					// some comment
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithMultiLineComment(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.multiLineComment(UneditableJavaMultiLineComment.builder()
+						.content("some comment")
+						.content("more content")
+						.build())
+				.build();
+		String javaString = """
+				class AClassName{
+				\t
+					/*
+					 * some comment
+					 * more content
+					 */
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
 	public void testToStringWithInnerClasses(){
 		clazz = new TestJavaClassBuilder(false)
 				.className(className)
@@ -639,6 +688,32 @@ public class JavaClassTest{
 	}
 	
 	@Test
+	public void testToStringWithInnerClassesSwapOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
+				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
+				.innerElementsOrder(ListUtil.createList(
+						Pair.of(JavaCodeTypes.CLASS, "CClassName"),
+						Pair.of(JavaCodeTypes.CLASS, "BClassName")))
+				.build();
+		String javaString = """
+				class AClassName{
+				\t
+					class CClassName{
+					\t
+					}
+				\t
+					class BClassName{
+					\t
+					}
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
 	public void testToStringWithFields(){
 		clazz = new TestJavaClassBuilder(false)
 				.className(className)
@@ -650,6 +725,27 @@ public class JavaClassTest{
 				\t
 					int test;
 					String derp;
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithFieldsSwapOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.field(UneditableJavaField.builder().type("int").name("test").build())
+				.field(UneditableJavaField.builder().type("String").name("derp").build())
+				.innerElementsOrder(ListUtil.createList(
+						Pair.of(JavaCodeTypes.FIELD, "derp"),
+						Pair.of(JavaCodeTypes.FIELD, "test")
+				))
+				.build();
+		String javaString = """
+				class AClassName{
+				\t
+					String derp;
+					int test;
 				}
 				""";
 		assertEquals(javaString, clazz.toString());
@@ -689,6 +785,149 @@ public class JavaClassTest{
 				.build();
 		String javaString = """
 				class AClassName{
+				\t
+					AClassName(){
+					}
+				\t
+					String getSomething(int test){
+						return doSomething();
+					}
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithMethodsSwapOrder(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.method(UneditableJavaMethod.builder().returnType(className).build())
+				.method(UneditableJavaMethod.builder().returnType("String").name("getSomething")
+						.parameter("int", "test").line("return doSomething();").build())
+				.innerElementsOrder(ListUtil.createList(
+						Pair.of(JavaCodeTypes.METHOD, "getSomething(int test)"),
+						Pair.of(JavaCodeTypes.METHOD, "init()")
+				))
+				.build();
+		String javaString = """
+				class AClassName{
+				\t
+					String getSomething(int test){
+						return doSomething();
+					}
+				\t
+					AClassName(){
+					}
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithMethodsOrderNotSpecified(){
+		clazz = new TestJavaClassBuilder(false)
+				.className(className)
+				.method(UneditableJavaMethod.builder().returnType(className).build())
+				.method(UneditableJavaMethod.builder().returnType("String").name("getSomething")
+						.parameter("int", "test").line("return doSomething();").build())
+				.innerElementsOrder(new ArrayList<>())
+				.build();
+		String javaString = """
+				class AClassName{
+				\t
+					AClassName(){
+					}
+				\t
+					String getSomething(int test){
+						return doSomething();
+					}
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithEverythingOrderNotSpecified(){
+		clazz = new TestJavaClassBuilder(false)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
+				.javadoc(UneditableJavadoc.builder().build())
+				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
+				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
+				.visibility(Visibility.PUBLIC)
+				.isFinal()
+				.className(className).superClassName("AnotherClassName")
+				.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
+				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
+				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
+				.field(UneditableJavaField.builder().type("int").name("test").build())
+				.field(UneditableJavaField.builder().type("String").name("derp").build())
+				.method(UneditableJavaMethod.builder().returnType(className).build())
+				.method(UneditableJavaMethod.builder().returnType("String").name("getSomething")
+						.parameter("int", "test").line("return doSomething();").build())
+				.innerElementsOrder(new ArrayList<>())
+				.build();
+		String javaString = """
+				package some.package;
+				
+				import com.example.*;
+				import com.whatever;
+				
+				import org.test;
+				import org.yep;
+				
+				import static com.example.test.*;
+				import static com.whatever.electric_boogaloo;
+				
+				import static org.test.yep;
+				import static org.yep.dope;
+				
+				/**
+				 */
+				@Test
+				@Derp
+				public final class AClassName extends AnotherClassName implements SomeInterface, SomeOtherInterface{
+				\t
+					class BClassName{
+					\t
+					}
+				\t
+					class CClassName{
+					\t
+					}
+				\t
+					int test;
+					String derp;
 				\t
 					AClassName(){
 					}
@@ -743,6 +982,13 @@ public class JavaClassTest{
 				.isFinal()
 				.className(className).superClassName("AnotherClassName")
 				.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
+				.singleLineComment(UneditableJavaSingleLineComment.builder()
+						.content("some comment")
+						.build())
+				.multiLineComment(UneditableJavaMultiLineComment.builder()
+						.content("some comment")
+						.content("more content")
+						.build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
 				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
 				.field(UneditableJavaField.builder().type("int").name("test").build())
@@ -772,6 +1018,11 @@ public class JavaClassTest{
 				@Derp
 				public final class AClassName extends AnotherClassName implements SomeInterface, SomeOtherInterface{
 				\t
+					// some comment
+					/*
+					 * some comment
+					 * more content
+					 */
 					class BClassName{
 					\t
 					}
@@ -789,6 +1040,122 @@ public class JavaClassTest{
 					String getSomething(int test){
 						return doSomething();
 					}
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithEverythingReordered(){
+		clazz = new TestJavaClassBuilder(false)
+				.packageDeclaration(UneditableJavaPackageDeclaration.builder()
+						.packageName("some.package")
+						.build())
+				.importStatements(ListUtil.createList(
+						UneditableJavaImportStatement.builder()
+								.importName("com.whatever")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.yep")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("com.example.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.importName("org.test")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.whatever.electric_boogaloo")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.yep.dope")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("com.example.test.*")
+								.build(),
+						UneditableJavaImportStatement.builder()
+								.isStatic()
+								.importName("org.test.yep")
+								.build()))
+				.javadoc(UneditableJavadoc.builder().build())
+				.annotation(UneditableJavaAnnotation.builder().name("Test").build())
+				.annotation(UneditableJavaAnnotation.builder().name("Derp").build())
+				.visibility(Visibility.PUBLIC)
+				.isFinal()
+				.className(className).superClassName("AnotherClassName")
+				.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
+				.singleLineComment(UneditableJavaSingleLineComment.builder()
+						.content("some comment")
+						.build())
+				.multiLineComment(UneditableJavaMultiLineComment.builder()
+						.content("some comment")
+						.content("more content")
+						.build())
+				.innerClass(new TestJavaClassBuilder(false).innerClass().className("BClassName").build())
+				.innerClass(new TestJavaClassBuilder(false).innerClass().className("CClassName").build())
+				.field(UneditableJavaField.builder().type("int").name("test").build())
+				.field(UneditableJavaField.builder().type("String").name("derp").build())
+				.method(UneditableJavaMethod.builder().returnType(className).build())
+				.method(UneditableJavaMethod.builder().returnType("String").name("getSomething")
+						.parameter("int", "test").line("return doSomething();").build())
+				.innerElementsOrder(ListUtil.createList(
+						Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null),
+						Pair.of(JavaCodeTypes.CLASS, "CClassName"),
+						Pair.of(JavaCodeTypes.FIELD, "derp"),
+						Pair.of(JavaCodeTypes.METHOD, "getSomething(int test)"),
+						Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null),
+						Pair.of(JavaCodeTypes.METHOD, "init()"),
+						Pair.of(JavaCodeTypes.FIELD, "test"),
+						Pair.of(JavaCodeTypes.CLASS, "BClassName")
+				))
+				.build();
+		String javaString = """
+				package some.package;
+				
+				import com.example.*;
+				import com.whatever;
+				
+				import org.test;
+				import org.yep;
+				
+				import static com.example.test.*;
+				import static com.whatever.electric_boogaloo;
+				
+				import static org.test.yep;
+				import static org.yep.dope;
+				
+				/**
+				 */
+				@Test
+				@Derp
+				public final class AClassName extends AnotherClassName implements SomeInterface, SomeOtherInterface{
+				\t
+					/*
+					 * some comment
+					 * more content
+					 */
+					class CClassName{
+					\t
+					}
+				\t
+					String derp;
+				\t
+					String getSomething(int test){
+						return doSomething();
+					}
+				\t
+					// some comment
+					AClassName(){
+					}
+				\t
+					int test;
+					class BClassName{
+					\t
+					}
+				\t
 				}
 				""";
 		assertEquals(javaString, clazz.toString());

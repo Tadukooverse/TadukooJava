@@ -4,6 +4,8 @@ import com.github.tadukoo.java.JavaClassType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -13,6 +15,7 @@ import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.map.HashMultiMap;
 import com.github.tadukoo.util.map.MultiMap;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,12 +55,18 @@ public abstract class JavaClass implements JavaClassType{
 	protected String superClassName;
 	/** The names of interfaces this class implements */
 	protected List<String> implementsInterfaceNames;
+	/** The {@link JavaSingleLineComment single-line comments} inside the class */
+	protected List<JavaSingleLineComment> singleLineComments;
+	/** The {@link JavaMultiLineComment multi-line comments} inside the class */
+	protected List<JavaMultiLineComment> multiLineComments;
 	/** Inner {@link JavaClass classes} inside the class */
 	protected List<JavaClass> innerClasses;
 	/** The {@link JavaField fields} on the class */
 	protected List<JavaField> fields;
 	/** The {@link JavaMethod methods} in the class */
 	protected List<JavaMethod> methods;
+	/** The order of the elements inside the class */
+	protected List<Pair<JavaCodeTypes, String>> innerElementsOrder;
 	
 	/**
 	 * Constructs a new Java Class with the given parameters
@@ -74,9 +83,12 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
 	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
+	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
+	 * @param innerElementsOrder The order of the elements inside the class
 	 */
 	protected JavaClass(
 			boolean editable, boolean isInnerClass,
@@ -84,7 +96,9 @@ public abstract class JavaClass implements JavaClassType{
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal, String className,
 			String superClassName, List<String> implementsInterfaceNames,
-			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
+			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
+			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
+			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 		this.editable = editable;
 		this.isInnerClass = isInnerClass;
 		this.packageDeclaration = packageDeclaration;
@@ -97,9 +111,12 @@ public abstract class JavaClass implements JavaClassType{
 		this.className = className;
 		this.superClassName = superClassName;
 		this.implementsInterfaceNames = implementsInterfaceNames;
+		this.singleLineComments = singleLineComments;
+		this.multiLineComments = multiLineComments;
 		this.innerClasses = innerClasses;
 		this.fields = fields;
 		this.methods = methods;
+		this.innerElementsOrder = innerElementsOrder;
 	}
 	
 	/** {@inheritDoc} */
@@ -193,6 +210,20 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
+	 * @return The {@link JavaSingleLineComment single-line comments} inside this class
+	 */
+	public List<JavaSingleLineComment> getSingleLineComments(){
+		return singleLineComments;
+	}
+	
+	/**
+	 * @return The {@link JavaMultiLineComment multi-line comments} inside this class
+	 */
+	public List<JavaMultiLineComment> getMultiLineComments(){
+		return multiLineComments;
+	}
+	
+	/**
 	 * @return Inner {@link JavaClass classes} inside this class
 	 */
 	public List<JavaClass> getInnerClasses(){
@@ -244,6 +275,13 @@ public abstract class JavaClass implements JavaClassType{
 			methodMap.put(method.getUniqueName(), method);
 		}
 		return methodMap;
+	}
+	
+	/**
+	 * @return The order of elements inside the class
+	 */
+	public List<Pair<JavaCodeTypes, String>> getInnerElementsOrder(){
+		return innerElementsOrder;
 	}
 	
 	/**
@@ -360,38 +398,74 @@ public abstract class JavaClass implements JavaClassType{
 		// Newline at start of class
 		content.add("\t");
 		
-		// Inner classes of the class
-		if(ListUtil.isNotBlank(innerClasses)){
-			for(JavaClass clazz: innerClasses){
-				content.add(StringUtil.indentAllLines(clazz.toString()));
-			}
-		}
-		
-		// Fields on the class
-		if(ListUtil.isNotBlank(fields)){
-			for(JavaField field: fields){
-				// Use indent all lines because Javadoc may make it multiline
-				content.add(StringUtil.indentAllLines(field.toString()));
-			}
-		}
-		
-		// Methods in the class
-		if(ListUtil.isNotBlank(methods)){
-			// Newline to separate fields from methods
-			if(ListUtil.isNotBlank(fields)){
-				content.add("\t");
-			}
-			for(JavaMethod method: methods){
-				// Split the method into its lines, so we can add it to our lines
-				List<String> lines = StringUtil.parseListFromStringWithSeparator(
-						method.toString(), "\n", false);
-				for(String line: lines){
-					content.add("\t" + line);
+		if(ListUtil.isNotBlank(innerElementsOrder)){
+			int singleLineCommentIndex = 0, multiLineCommentIndex = 0;
+			Map<String, JavaClass> innerClassesByName = getInnerClassesMap();
+			Map<String, JavaField> fieldsByName = getFieldsMap();
+			Map<String, JavaMethod> methodsByName = getMethodsMap();
+			JavaCodeTypes lastType = null;
+			for(Pair<JavaCodeTypes, String> elementInfo: innerElementsOrder){
+				switch(elementInfo.getLeft()){
+					case SINGLE_LINE_COMMENT -> {
+						content.add(StringUtil.indentAllLines(
+								singleLineComments.get(singleLineCommentIndex).toString()));
+						singleLineCommentIndex++;
+					}
+					case MULTI_LINE_COMMENT -> {
+						content.add(StringUtil.indentAllLines(multiLineComments.get(multiLineCommentIndex).toString()));
+						multiLineCommentIndex++;
+					}
+					case CLASS -> content.add(StringUtil.indentAllLines(
+							innerClassesByName.get(elementInfo.getRight()).toString()));
+					case FIELD -> content.add(StringUtil.indentAllLines(
+							fieldsByName.get(elementInfo.getRight()).toString()));
+					case METHOD -> {
+						// Add line before method if last item was a field
+						if(lastType == JavaCodeTypes.FIELD){
+							content.add("\t");
+						}
+						content.add(StringUtil.indentAllLines(methodsByName.get(elementInfo.getRight()).toString()));
+						// Add line after method
+						content.add("\t");
+					}
 				}
-				content.add("\t");
+				lastType = elementInfo.getLeft();
 			}
-			// Remove extra newline at the end
-			content.remove(content.size()-1);
+			// Remove last line if it's just a newline from the method
+			if(StringUtil.equals(content.get(content.size() - 1), "\t")){
+				content.remove(content.size()-1);
+			}
+		}else{
+			// Default order is inner classes, then fields, then methods
+			
+			// Inner classes of the class
+			if(ListUtil.isNotBlank(innerClasses)){
+				for(JavaClass clazz: innerClasses){
+					content.add(StringUtil.indentAllLines(clazz.toString()));
+				}
+			}
+			
+			// Fields on the class
+			if(ListUtil.isNotBlank(fields)){
+				for(JavaField field: fields){
+					// Use indent all lines because Javadoc may make it multiline
+					content.add(StringUtil.indentAllLines(field.toString()));
+				}
+			}
+			
+			// Methods in the class
+			if(ListUtil.isNotBlank(methods)){
+				// Newline to separate fields from methods
+				if(ListUtil.isNotBlank(fields)){
+					content.add("\t");
+				}
+				for(JavaMethod method: methods){
+					content.add(StringUtil.indentAllLines(method.toString()));
+					content.add("\t");
+				}
+				// Remove extra newline at the end
+				content.remove(content.size() - 1);
+			}
 		}
 		
 		// Closing brace at end of class and empty newline at end of file

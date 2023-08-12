@@ -1,6 +1,9 @@
 package com.github.tadukoo.java.javaclass;
 
+import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -11,6 +14,7 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +86,22 @@ public class EditableJavaClass extends JavaClass{
 				}
 			}
 			
+			// Single-Line Comments can't be uneditable
+			for(JavaSingleLineComment singleLineComment: singleLineComments){
+				if(!singleLineComment.isEditable()){
+					errors.add("some single-line comments are not editable in this editable JavaClass");
+					break;
+				}
+			}
+			
+			// Multi-Line Comments can't be uneditable
+			for(JavaMultiLineComment multiLineComment: multiLineComments){
+				if(!multiLineComment.isEditable()){
+					errors.add("some multi-line comments are not editable in this editable JavaClass");
+					break;
+				}
+			}
+			
 			// Inner Classes can't be uneditable
 			for(JavaClass clazz: innerClasses){
 				if(!clazz.isEditable()){
@@ -115,7 +135,9 @@ public class EditableJavaClass extends JavaClass{
 					javadoc, annotations,
 					visibility, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
-					innerClasses, fields, methods);
+					singleLineComments, multiLineComments,
+					innerClasses, fields, methods,
+					innerElementsOrder);
 		}
 	}
 	
@@ -133,21 +155,28 @@ public class EditableJavaClass extends JavaClass{
 	 * @param className The name of the class
 	 * @param superClassName The name of the class this one extends (can be null)
 	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
+	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
 	 * @param fields The {@link JavaField fields} on the class
 	 * @param methods The {@link JavaMethod methods} in the class
+	 * @param innerElementsOrder The order of the elements inside the class
 	 */
 	private EditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal, String className,
 			String superClassName, List<String> implementsInterfaceNames,
-			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods){
+			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
+			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
+			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 		super(true, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
 				visibility, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
-				innerClasses, fields, methods);
+				singleLineComments, multiLineComments,
+				innerClasses, fields, methods,
+				innerElementsOrder);
 	}
 	
 	/**
@@ -349,6 +378,78 @@ public class EditableJavaClass extends JavaClass{
 	}
 	
 	/**
+	 * @param singleLineComment A {@link JavaSingleLineComment single-line comment} to be added inside the class
+	 * - must be editable
+	 */
+	public void addSingleLineComment(JavaSingleLineComment singleLineComment){
+		if(!singleLineComment.isEditable()){
+			throw new IllegalArgumentException("editable Java Class requires editable single-line comments");
+		}
+		singleLineComments.add(singleLineComment);
+	}
+	
+	/**
+	 * @param singleLineComments {@link JavaSingleLineComment single-line comments} to be added inside the class
+	 * - must be editable
+	 */
+	public void addSingleLineComments(List<JavaSingleLineComment> singleLineComments){
+		for(JavaSingleLineComment singleLineComment: singleLineComments){
+			if(!singleLineComment.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable single-line comments");
+			}
+		}
+		this.singleLineComments.addAll(singleLineComments);
+	}
+	
+	/**
+	 * @param singleLineComments {@link JavaSingleLineComment single-line comments} inside the class - must be editable
+	 */
+	public void setSingleLineComments(List<JavaSingleLineComment> singleLineComments){
+		for(JavaSingleLineComment singleLineComment: singleLineComments){
+			if(!singleLineComment.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable single-line comments");
+			}
+		}
+		this.singleLineComments = singleLineComments;
+	}
+	
+	/**
+	 * @param multiLineComment A {@link JavaMultiLineComment multi-line comment} to be added inside the class
+	 * - must be editable
+	 */
+	public void addMultiLineComment(JavaMultiLineComment multiLineComment){
+		if(!multiLineComment.isEditable()){
+			throw new IllegalArgumentException("editable Java Class requires editable multi-line comments");
+		}
+		multiLineComments.add(multiLineComment);
+	}
+	
+	/**
+	 * @param multiLineComments {@link JavaMultiLineComment multi-line comments} to be added inside the class
+	 * - must be editable
+	 */
+	public void addMultiLineComments(List<JavaMultiLineComment> multiLineComments){
+		for(JavaMultiLineComment multiLineComment: multiLineComments){
+			if(!multiLineComment.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable multi-line comments");
+			}
+		}
+		this.multiLineComments.addAll(multiLineComments);
+	}
+	
+	/**
+	 * @param multiLineComments {@link JavaMultiLineComment multi-line comments} inside the class - must be editable
+	 */
+	public void setMultiLineComments(List<JavaMultiLineComment> multiLineComments){
+		for(JavaMultiLineComment multiLineComment: multiLineComments){
+			if(!multiLineComment.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable multi-line comments");
+			}
+		}
+		this.multiLineComments = multiLineComments;
+	}
+	
+	/**
 	 * @param innerClass An inner {@link JavaClass class} to be added inside the class - must be editable
 	 */
 	public void addInnerClass(JavaClass innerClass){
@@ -448,5 +549,12 @@ public class EditableJavaClass extends JavaClass{
 			}
 		}
 		this.methods = methods;
+	}
+	
+	/**
+	 * @param innerElementsOrder The order of the elements inside the class
+	 */
+	public void setInnerElementsOrder(List<Pair<JavaCodeTypes, String>> innerElementsOrder){
+		this.innerElementsOrder = innerElementsOrder;
 	}
 }

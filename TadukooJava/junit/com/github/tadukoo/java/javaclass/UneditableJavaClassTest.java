@@ -2,6 +2,10 @@ package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
+import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
@@ -23,6 +27,7 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 	public UneditableJavaClassTest(){
 		super(UneditableJavaClass::builder, UneditableJavaPackageDeclaration::builder, UneditableJavaImportStatement::builder,
 				UneditableJavaAnnotation::builder, UneditableJavadoc::builder,
+				UneditableJavaSingleLineComment::builder, UneditableJavaMultiLineComment::builder,
 				UneditableJavaField::builder, UneditableJavaMethod::builder);
 	}
 	
@@ -88,6 +93,36 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 	}
 	
 	@Test
+	public void testBuilderEditableSingleLineCommentError(){
+		try{
+			UneditableJavaClass.builder()
+					.className(className)
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("some single-line comments are not uneditable in this uneditable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderEditableMultiLineCommentError(){
+		try{
+			UneditableJavaClass.builder()
+					.className(className)
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.build())
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("some multi-line comments are not uneditable in this uneditable JavaClass", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderEditableInnerClassError(){
 		try{
 			UneditableJavaClass.builder()
@@ -146,6 +181,12 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 					.className(className)
 					.javadoc(EditableJavadoc.builder().build())
 					.annotation(EditableJavaAnnotation.builder().name("Test").build())
+					.singleLineComment(EditableJavaSingleLineComment.builder()
+							.content("some comment")
+							.build())
+					.multiLineComment(EditableJavaMultiLineComment.builder()
+							.content("some comment")
+							.build())
 					.innerClass(EditableJavaClass.builder()
 							.innerClass()
 							.className(className)
@@ -164,6 +205,8 @@ public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJava
 					some import statements are not uneditable in this uneditable JavaClass
 					javadoc is not uneditable in this uneditable JavaClass
 					some annotations are not uneditable in this uneditable JavaClass
+					some single-line comments are not uneditable in this uneditable JavaClass
+					some multi-line comments are not uneditable in this uneditable JavaClass
 					some inner classes are not uneditable in this uneditable JavaClass
 					some fields are not uneditable in this uneditable JavaClass
 					some methods are not uneditable in this uneditable JavaClass""", e.getMessage());
