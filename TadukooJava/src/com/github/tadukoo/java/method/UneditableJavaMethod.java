@@ -57,7 +57,8 @@ public class UneditableJavaMethod extends JavaMethod{
 		@Override
 		protected UneditableJavaMethod constructMethod(){
 			return new UneditableJavaMethod(javadoc, annotations,
-					visibility, isStatic, isFinal, returnType, name,
+					visibility, isAbstract, isStatic, isFinal,
+					returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -68,6 +69,7 @@ public class UneditableJavaMethod extends JavaMethod{
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
+	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
@@ -78,10 +80,12 @@ public class UneditableJavaMethod extends JavaMethod{
 	 */
 	private UneditableJavaMethod(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 		super(false, javadoc, annotations,
-				visibility, isStatic, isFinal, returnType, name,
+				visibility, isAbstract, isStatic, isFinal,
+				returnType, name,
 				parameters, throwTypes, lines);
 	}
 	

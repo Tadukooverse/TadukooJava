@@ -231,6 +231,8 @@ public class JavaFieldParser extends AbstractJavaParser{
 						case PUBLIC_MODIFIER -> visibility = Visibility.PUBLIC;
 						case PROTECTED_MODIFIER -> visibility = Visibility.PROTECTED;
 						case PRIVATE_MODIFIER -> visibility = Visibility.PRIVATE;
+						case ABSTRACT_MODIFIER -> throw new JavaParsingException(JavaCodeTypes.FIELD,
+								"'" + ABSTRACT_MODIFIER + "' is not a valid modifier on field!");
 						case STATIC_MODIFIER -> isStatic = true;
 						case FINAL_MODIFIER -> isFinal = true;
 					}

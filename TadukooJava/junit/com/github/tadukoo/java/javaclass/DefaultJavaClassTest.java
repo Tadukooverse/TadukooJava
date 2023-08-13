@@ -119,6 +119,11 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testDefaultIsAbstract(){
+		assertFalse(clazz.isAbstract());
+	}
+	
+	@Test
 	public void testDefaultIsStatic(){
 		assertFalse(clazz.isStatic());
 	}
@@ -500,6 +505,24 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testBuilderSetIsAbstractNoParam(){
+		clazz = builder.get()
+				.isAbstract()
+				.className(className)
+				.build();
+		assertTrue(clazz.isAbstract());
+	}
+	
+	@Test
+	public void testBuilderSetIsAbstract(){
+		clazz = builder.get()
+				.isAbstract(true)
+				.className(className)
+				.build();
+		assertTrue(clazz.isAbstract());
+	}
+	
+	@Test
 	public void testBuilderSetIsStaticNoParam(){
 		clazz = builder.get()
 				.innerClass()
@@ -724,6 +747,48 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("Must specify className!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAbstractStatic(){
+		try{
+			clazz = builder.get()
+					.className(className)
+					.innerClass()
+					.isAbstract().isStatic()
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and static!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAbstractFinal(){
+		try{
+			clazz = builder.get()
+					.className(className)
+					.isAbstract().isFinal()
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and final!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAllAbstractErrors(){
+		try{
+			clazz = builder.get()
+					.className(className)
+					.innerClass()
+					.isAbstract().isStatic().isFinal()
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and static!\n" +
+					"Can't be abstract and final!", e.getMessage());
 		}
 	}
 	
@@ -1948,6 +2013,20 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.build();
 		String javaString = """
 				final class AClassName{
+				\t
+				}
+				""";
+		assertEquals(javaString, clazz.toString());
+	}
+	
+	@Test
+	public void testToStringWithAbstract(){
+		clazz = builder.get()
+				.isAbstract()
+				.className(className)
+				.build();
+		String javaString = """
+				abstract class AClassName{
 				\t
 				}
 				""";

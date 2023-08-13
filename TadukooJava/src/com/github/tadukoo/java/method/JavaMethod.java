@@ -29,6 +29,8 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected List<JavaAnnotation> annotations;
 	/** The {@link Visibility} of the method */
 	protected Visibility visibility;
+	/** Whether the method is abstract or not */
+	protected boolean isAbstract;
 	/** Whether the method is static or not */
 	protected boolean isStatic;
 	/** Whether the method is final or not */
@@ -51,6 +53,7 @@ public abstract class JavaMethod implements JavaCodeType{
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
+	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
@@ -61,12 +64,14 @@ public abstract class JavaMethod implements JavaCodeType{
 	 */
 	protected JavaMethod(
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
 		this.visibility = visibility;
+		this.isAbstract = isAbstract;
 		this.isStatic = isStatic;
 		this.isFinal = isFinal;
 		this.returnType = returnType;
@@ -108,6 +113,13 @@ public abstract class JavaMethod implements JavaCodeType{
 	 */
 	public Visibility getVisibility(){
 		return visibility;
+	}
+	
+	/**
+	 * @return Whether the method is abstract or not
+	 */
+	public boolean isAbstract(){
+		return isAbstract;
 	}
 	
 	/**
@@ -221,7 +233,12 @@ public abstract class JavaMethod implements JavaCodeType{
 			declaration.append(' ');
 		}
 		
-		// optionally add static to the declaration
+		// Optionally add abstract to the declaration
+		if(isAbstract){
+			declaration.append(ABSTRACT_MODIFIER).append(' ');
+		}
+		
+		// Optionally add static to the declaration
 		if(isStatic){
 			declaration.append(STATIC_MODIFIER).append(' ');
 		}

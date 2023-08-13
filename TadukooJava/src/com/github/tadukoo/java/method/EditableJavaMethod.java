@@ -56,7 +56,8 @@ public class EditableJavaMethod extends JavaMethod{
 		@Override
 		protected EditableJavaMethod constructMethod(){
 			return new EditableJavaMethod(javadoc, annotations,
-					visibility, isStatic, isFinal, returnType, name,
+					visibility, isAbstract, isStatic, isFinal,
+					returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -67,6 +68,7 @@ public class EditableJavaMethod extends JavaMethod{
 	 * @param javadoc The {@link Javadoc} on the method
 	 * @param annotations The {@link JavaAnnotation annotations} on the method
 	 * @param visibility The {@link Visibility} of the method
+	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
@@ -77,10 +79,12 @@ public class EditableJavaMethod extends JavaMethod{
 	 */
 	private EditableJavaMethod(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String returnType, String name,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			String returnType, String name,
 			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
 		super(true, javadoc, annotations,
-				visibility, isStatic, isFinal, returnType, name,
+				visibility, isAbstract, isStatic, isFinal,
+				returnType, name,
 				parameters, throwTypes, lines);
 	}
 	
@@ -140,6 +144,13 @@ public class EditableJavaMethod extends JavaMethod{
 	 */
 	public void setVisibility(Visibility visibility){
 		this.visibility = visibility;
+	}
+	
+	/**
+	 * @param isAbstract Whether the method is abstract or not
+	 */
+	public void setAbstract(boolean isAbstract){
+		this.isAbstract = isAbstract;
 	}
 	
 	/**

@@ -264,7 +264,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 		Matcher matcher = METHOD_PATTERN.matcher(methodString);
 		if(matcher.matches()){
 			Visibility visibility = Visibility.NONE;
-			boolean isStatic = false, isFinal = false;
+			boolean isAbstract = false, isStatic = false, isFinal = false;
 			for(int i = 1; i <= 3; i++){
 				String token = matcher.group(i);
 				if(StringUtil.isNotBlank(token)){
@@ -272,6 +272,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 						case PUBLIC_MODIFIER -> visibility = Visibility.PUBLIC;
 						case PROTECTED_MODIFIER -> visibility = Visibility.PROTECTED;
 						case PRIVATE_MODIFIER -> visibility = Visibility.PRIVATE;
+						case ABSTRACT_MODIFIER -> isAbstract = true;
 						case STATIC_MODIFIER -> isStatic = true;
 						case FINAL_MODIFIER -> isFinal = true;
 					}
@@ -351,6 +352,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 			
 			return EditableJavaMethod.builder()
 					.visibility(visibility)
+					.isAbstract(isAbstract)
 					.isStatic(isStatic)
 					.isFinal(isFinal)
 					.returnType(returnType).name(name)

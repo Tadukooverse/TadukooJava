@@ -295,6 +295,24 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testAbstractClass() throws JavaParsingException{
+		JavaClass clazz = parseMethod.apply("""
+				abstract class Test{
+				}""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.isAbstract()
+						.className("Test")
+						.build(),
+				clazz);
+		assertEquals("""
+				abstract class Test{
+				\t
+				}
+				""", clazz.toString());
+	}
+	
+	@Test
 	public void testStaticClass() throws JavaParsingException{
 		JavaClass clazz = parseMethod.apply("""
 				static class Test{

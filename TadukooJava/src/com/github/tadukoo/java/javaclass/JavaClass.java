@@ -45,6 +45,8 @@ public abstract class JavaClass implements JavaClassType{
 	protected List<JavaAnnotation> annotations;
 	/** The {@link Visibility} of the class */
 	protected Visibility visibility;
+	/** Whether this is an abstract class or not */
+	protected boolean isAbstract;
 	/** Whether this is a static class or not */
 	protected boolean isStatic;
 	/** Whether this is a final class or not */
@@ -78,6 +80,7 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param javadoc The {@link Javadoc} for the class
 	 * @param annotations The {@link JavaAnnotation annotations} on the class
 	 * @param visibility The {@link Visibility} of the class
+	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
@@ -94,7 +97,7 @@ public abstract class JavaClass implements JavaClassType{
 			boolean editable, boolean isInnerClass,
 			JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String className,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
 			String superClassName, List<String> implementsInterfaceNames,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
@@ -106,6 +109,7 @@ public abstract class JavaClass implements JavaClassType{
 		this.javadoc = javadoc;
 		this.annotations = annotations;
 		this.visibility = visibility;
+		this.isAbstract = isAbstract;
 		this.isStatic = isStatic;
 		this.isFinal = isFinal;
 		this.className = className;
@@ -172,6 +176,13 @@ public abstract class JavaClass implements JavaClassType{
 	 */
 	public Visibility getVisibility(){
 		return visibility;
+	}
+	
+	/**
+	 * @return Whether this class is abstract or not
+	 */
+	public boolean isAbstract(){
+		return isAbstract;
 	}
 	
 	/**
@@ -361,6 +372,11 @@ public abstract class JavaClass implements JavaClassType{
 		if(!declaration.isEmpty()){
 			// If visibility is not NONE, we need a space after it
 			declaration.append(' ');
+		}
+		
+		// Optionally add abstract to the class declaration
+		if(isAbstract){
+			declaration.append(ABSTRACT_MODIFIER).append(' ');
 		}
 		
 		// Optionally add static to the class declaration

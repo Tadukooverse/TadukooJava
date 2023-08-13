@@ -77,6 +77,20 @@ public abstract class BaseJavaFieldParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testFieldWithAbstract(){
+		try{
+			parseMethod.apply("""
+					abstract String name;""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.FIELD,
+							"'abstract' is not a valid modifier on field!"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testFieldWithStatic() throws JavaParsingException{
 		JavaField field = parseMethod.apply("static String name;");
 		assertNotNull(field);

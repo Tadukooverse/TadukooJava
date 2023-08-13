@@ -63,6 +63,11 @@ import java.util.Set;
  *         <td>{@link Visibility#NONE}</td>
  *     </tr>
  *     <tr>
+ *         <td>isAbstract</td>
+ *         <td>Whether the class is abstract or not</td>
+ *         <td>false</td>
+ *     </tr>
+ *     <tr>
  *         <td>isStatic</td>
  *         <td>Whether the class is static or not</td>
  *         <td>false</td>
@@ -137,6 +142,8 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected List<JavaAnnotation> annotations = new ArrayList<>();
 	/** The {@link Visibility} of the class */
 	protected Visibility visibility = Visibility.NONE;
+	/** Whether the class is abstract or not */
+	protected boolean isAbstract = false;
 	/** Whether the class is static or not */
 	protected boolean isStatic = false;
 	/** Whether the class is final or not */
@@ -178,6 +185,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		this.javadoc = clazz.getJavadoc();
 		this.annotations = clazz.getAnnotations();
 		this.visibility = clazz.getVisibility();
+		this.isAbstract = clazz.isAbstract();
 		this.isStatic = clazz.isStatic();
 		this.isFinal = clazz.isFinal();
 		this.className = clazz.getClassName();
@@ -316,6 +324,25 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 */
 	public JavaClassBuilder<ClassType> visibility(Visibility visibility){
 		this.visibility = visibility;
+		return this;
+	}
+	
+	/**
+	 * Sets isAbstract to true, defining the class as an abstract class
+	 *
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> isAbstract(){
+		isAbstract = true;
+		return this;
+	}
+	
+	/**
+	 * @param isAbstract Whether the class is abstract or not
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> isAbstract(boolean isAbstract){
+		this.isAbstract = isAbstract;
 		return this;
 	}
 	
@@ -528,6 +555,19 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		// ClassName required
 		if(StringUtil.isBlank(className)){
 			errors.add("Must specify className!");
+		}
+		
+		// Abstract errors
+		if(isAbstract){
+			// Can't be abstract + static
+			if(isStatic){
+				errors.add("Can't be abstract and static!");
+			}
+			
+			// Can't be abstract + final
+			if(isFinal){
+				errors.add("Can't be abstract and final!");
+			}
 		}
 		
 		// If we have comments, we need innerElementOrder

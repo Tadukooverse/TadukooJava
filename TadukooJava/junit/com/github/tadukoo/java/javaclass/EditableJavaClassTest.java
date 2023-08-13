@@ -535,6 +535,15 @@ public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClas
 	}
 	
 	@Test
+	public void testSetAbstract(){
+		assertFalse(clazz.isAbstract());
+		clazz.setAbstract(false);
+		assertFalse(clazz.isAbstract());
+		clazz.setAbstract(true);
+		assertTrue(clazz.isAbstract());
+	}
+	
+	@Test
 	public void testSetStatic(){
 		assertFalse(clazz.isStatic());
 		clazz.setStatic(false);

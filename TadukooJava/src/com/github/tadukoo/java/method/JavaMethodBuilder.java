@@ -35,6 +35,11 @@ import java.util.List;
  *         <td>{@link Visibility#NONE}</td>
  *     </tr>
  *     <tr>
+ *         <td>isAbstract</td>
+ *         <td>Whether the method is abstract or not</td>
+ *         <td>Defaults to false</td>
+ *     </tr>
+ *     <tr>
  *         <td>isStatic</td>
  *         <td>Whether the method is static or not</td>
  *         <td>Defaults to false</td>
@@ -83,6 +88,8 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	protected List<JavaAnnotation> annotations = new ArrayList<>();
 	/** The {@link Visibility} of the method */
 	protected Visibility visibility = Visibility.NONE;
+	/** Whether the method is abstract or not */
+	protected boolean isAbstract = false;
 	/** Whether the method is static or not */
 	protected boolean isStatic = false;
 	/** Whether the method is final or not */
@@ -113,6 +120,7 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 		this.javadoc = method.getJavadoc();
 		this.annotations = method.getAnnotations();
 		this.visibility = method.getVisibility();
+		this.isAbstract = method.isAbstract();
 		this.isStatic = method.isStatic();
 		this.isFinal = method.isFinal();
 		this.returnType = method.getReturnType();
@@ -156,6 +164,25 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	 */
 	public JavaMethodBuilder<MethodType> visibility(Visibility visibility){
 		this.visibility = visibility;
+		return this;
+	}
+	
+	/**
+	 * Sets the method as abstract
+	 *
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> isAbstract(){
+		isAbstract = true;
+		return this;
+	}
+	
+	/**
+	 * @param isAbstract Whether the method is abstract or not
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> isAbstract(boolean isAbstract){
+		this.isAbstract = isAbstract;
 		return this;
 	}
 	
@@ -290,6 +317,24 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 		// Visibility is required
 		if(visibility == null){
 			errors.add("Visibility is required!");
+		}
+		
+		// Abstract errors
+		if(isAbstract){
+			// Can't be abstract + private (protected, public, and none fine)
+			if(visibility == Visibility.PRIVATE){
+				errors.add("Can't be abstract and private!");
+			}
+			
+			// Can't be abstract + static
+			if(isStatic){
+				errors.add("Can't be abstract and static!");
+			}
+			
+			// Can't be abstract + final
+			if(isFinal){
+				errors.add("Can't be abstract and final!");
+			}
 		}
 		
 		// Must specify return type

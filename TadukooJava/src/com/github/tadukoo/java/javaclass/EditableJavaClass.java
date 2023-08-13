@@ -133,7 +133,7 @@ public class EditableJavaClass extends JavaClass{
 		protected EditableJavaClass constructClass(){
 			return new EditableJavaClass(isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className,
+					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
@@ -150,6 +150,7 @@ public class EditableJavaClass extends JavaClass{
 	 * @param javadoc The {@link Javadoc} for the class
 	 * @param annotations The {@link JavaAnnotation annotations} on the class
 	 * @param visibility The {@link Visibility} of the class
+	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
@@ -165,14 +166,14 @@ public class EditableJavaClass extends JavaClass{
 	private EditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String className,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
 			String superClassName, List<String> implementsInterfaceNames,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 		super(true, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
-				visibility, isStatic, isFinal, className,
+				visibility, isAbstract, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
 				singleLineComments, multiLineComments,
 				innerClasses, fields, methods,
@@ -326,6 +327,13 @@ public class EditableJavaClass extends JavaClass{
 	 */
 	public void setVisibility(Visibility visibility){
 		this.visibility = visibility;
+	}
+	
+	/**
+	 * @param isAbstract Whether this is an abstract class or not
+	 */
+	public void setAbstract(boolean isAbstract){
+		this.isAbstract = isAbstract;
 	}
 	
 	/**

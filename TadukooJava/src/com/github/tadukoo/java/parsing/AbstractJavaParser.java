@@ -18,7 +18,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	
 	/** A regular expression for a single modifier */
 	private static final String SINGLE_MODIFIER_REGEX = "(?:(" + PUBLIC_MODIFIER + "|" + PROTECTED_MODIFIER + "|" +
-			PRIVATE_MODIFIER + "|" + STATIC_MODIFIER + "|" + FINAL_MODIFIER + ")\\s*)?";
+			PRIVATE_MODIFIER + "|" + STATIC_MODIFIER + "|" + FINAL_MODIFIER + "|" + ABSTRACT_MODIFIER + ")\\s*)?";
 	/** A regular expression used for all the modifiers */
 	protected static final String MODIFIERS_REGEX = SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX;
 	

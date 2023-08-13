@@ -169,6 +169,11 @@ public class JavaTokensTest{
 	 */
 	
 	@Test
+	public void testABSTRACT_MODIFIER(){
+		assertEquals("abstract", ABSTRACT_MODIFIER);
+	}
+	
+	@Test
 	public void testSTATIC_MODIFIER(){
 		assertEquals("static", STATIC_MODIFIER);
 	}
@@ -181,7 +186,7 @@ public class JavaTokensTest{
 	@Test
 	public void testMODIFIERS(){
 		assertEquals(SetUtil.createSet(PRIVATE_MODIFIER, PROTECTED_MODIFIER, PUBLIC_MODIFIER,
-				STATIC_MODIFIER, FINAL_MODIFIER),
+				ABSTRACT_MODIFIER, STATIC_MODIFIER, FINAL_MODIFIER),
 				MODIFIERS);
 	}
 }

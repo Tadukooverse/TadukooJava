@@ -72,6 +72,7 @@ public class JavaTypeWithModifiersParser extends AbstractJavaParser{
 						case PRIVATE_MODIFIER -> clazz.setVisibility(Visibility.PRIVATE);
 						case PROTECTED_MODIFIER -> clazz.setVisibility(Visibility.PROTECTED);
 						case PUBLIC_MODIFIER -> clazz.setVisibility(Visibility.PUBLIC);
+						case ABSTRACT_MODIFIER -> clazz.setAbstract(true);
 						case STATIC_MODIFIER -> clazz.setStatic(true);
 						case FINAL_MODIFIER -> clazz.setFinal(true);
 					}
@@ -90,6 +91,7 @@ public class JavaTypeWithModifiersParser extends AbstractJavaParser{
 							case PRIVATE_MODIFIER -> method.setVisibility(Visibility.PRIVATE);
 							case PROTECTED_MODIFIER -> method.setVisibility(Visibility.PROTECTED);
 							case PUBLIC_MODIFIER -> method.setVisibility(Visibility.PUBLIC);
+							case ABSTRACT_MODIFIER -> method.setAbstract(true);
 							case STATIC_MODIFIER -> method.setStatic(true);
 							case FINAL_MODIFIER -> method.setFinal(true);
 						}
@@ -106,6 +108,8 @@ public class JavaTypeWithModifiersParser extends AbstractJavaParser{
 							case PRIVATE_MODIFIER -> field.setVisibility(Visibility.PRIVATE);
 							case PROTECTED_MODIFIER -> field.setVisibility(Visibility.PROTECTED);
 							case PUBLIC_MODIFIER -> field.setVisibility(Visibility.PUBLIC);
+							case ABSTRACT_MODIFIER -> throw new JavaParsingException(JavaCodeTypes.FIELD,
+									"'" + ABSTRACT_MODIFIER + "' is not a valid modifier on field!");
 							case STATIC_MODIFIER -> field.setStatic(true);
 							case FINAL_MODIFIER -> field.setFinal(true);
 						}

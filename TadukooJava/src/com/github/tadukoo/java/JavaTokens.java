@@ -95,11 +95,13 @@ public interface JavaTokens{
 	 */
 	
 	/** Used as a modifier on some types - {@value} */
+	String ABSTRACT_MODIFIER = "abstract";
+	/** Used as a modifier on some types - {@value} */
 	String STATIC_MODIFIER = "static";
 	/** Used as a modifier on some types - {@value} */
 	String FINAL_MODIFIER = "final";
 	
 	/** All the modifiers that exist */
 	Set<String> MODIFIERS = SetUtil.createSet(PRIVATE_MODIFIER, PROTECTED_MODIFIER, PUBLIC_MODIFIER,
-			STATIC_MODIFIER, FINAL_MODIFIER);
+			ABSTRACT_MODIFIER, STATIC_MODIFIER, FINAL_MODIFIER);
 }

@@ -68,6 +68,11 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testDefaultIsAbstract(){
+		assertFalse(method.isAbstract());
+	}
+	
+	@Test
 	public void testDefaultIsStatic(){
 		assertFalse(method.isStatic());
 	}
@@ -153,6 +158,30 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testBuilderSetVisibility(){
 		method = builder.get().visibility(Visibility.PRIVATE).returnType("String").build();
 		assertEquals(Visibility.PRIVATE, method.getVisibility());
+	}
+	
+	@Test
+	public void testBuilderIsAbstract(){
+		method = builder.get()
+				.isAbstract()
+				.returnType("String")
+				.build();
+		assertTrue(method.isAbstract());
+	}
+	
+	@Test
+	public void testBuilderSetIsAbstract(){
+		method = builder.get()
+				.isAbstract(false)
+				.returnType("String")
+				.build();
+		assertFalse(method.isAbstract());
+		
+		method = builder.get()
+				.isAbstract(true)
+				.returnType("String")
+				.build();
+		assertTrue(method.isAbstract());
 	}
 	
 	@Test
@@ -309,6 +338,63 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testBuilderAbstractAndPrivate(){
+		try{
+			method = builder.get()
+					.visibility(Visibility.PRIVATE)
+					.isAbstract()
+					.returnType("String")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and private!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAbstractAndStatic(){
+		try{
+			method = builder.get()
+					.isAbstract().isStatic()
+					.returnType("String")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and static!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAbstractAndFinal(){
+		try{
+			method = builder.get()
+					.isAbstract().isFinal()
+					.returnType("String")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and final!", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testBuilderAllAbstractErrors(){
+		try{
+			method = builder.get()
+					.visibility(Visibility.PRIVATE)
+					.isAbstract().isStatic().isFinal()
+					.returnType("String")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("""
+					Can't be abstract and private!
+					Can't be abstract and static!
+					Can't be abstract and final!""", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testGetUniqueNameConstructor(){
 		assertEquals("init()", method.getUniqueName());
 	}
@@ -413,6 +499,18 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.build();
 		String javaString = """
 				private int(){
+				}""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
+	public void testToStringWithIsAbstract(){
+		method = builder.get()
+				.returnType(returnType)
+				.isAbstract()
+				.build();
+		String javaString = """
+				abstract int(){
 				}""";
 		assertEquals(javaString, method.toString());
 	}

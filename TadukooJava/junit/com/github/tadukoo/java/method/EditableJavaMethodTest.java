@@ -167,6 +167,15 @@ public class EditableJavaMethodTest extends DefaultJavaMethodTest<EditableJavaMe
 	}
 	
 	@Test
+	public void testSetAbstract(){
+		assertFalse(method.isAbstract());
+		method.setAbstract(true);
+		assertTrue(method.isAbstract());
+		method.setAbstract(true);
+		assertTrue(method.isAbstract());
+	}
+	
+	@Test
 	public void testSetStatic(){
 		assertFalse(method.isStatic());
 		method.setStatic(true);

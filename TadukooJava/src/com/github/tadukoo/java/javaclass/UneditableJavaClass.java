@@ -131,7 +131,7 @@ public class UneditableJavaClass extends JavaClass{
 		protected UneditableJavaClass constructClass(){
 			return new UneditableJavaClass(isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isStatic, isFinal, className,
+					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
@@ -148,6 +148,7 @@ public class UneditableJavaClass extends JavaClass{
 	 * @param javadoc The {@link Javadoc} for the class
 	 * @param annotations The {@link JavaAnnotation annotations} on the class
 	 * @param visibility The {@link Visibility} of the class
+	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class
@@ -163,14 +164,14 @@ public class UneditableJavaClass extends JavaClass{
 	private UneditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isStatic, boolean isFinal, String className,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
 			String superClassName, List<String> implementsInterfaceNames,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
 		super(false, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
-				visibility, isStatic, isFinal, className,
+				visibility, isAbstract, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
 				singleLineComments, multiLineComments,
 				innerClasses, fields, methods,
