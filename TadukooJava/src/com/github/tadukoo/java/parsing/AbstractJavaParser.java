@@ -2,7 +2,6 @@ package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.JavaTokens;
-import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.util.StringUtil;
 
 import java.util.List;
@@ -17,15 +16,11 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractJavaParser implements JavaTokens{
 	
-	/** A regular expression used for {@link Visibility} */
-	private static final String VISIBILITY_REGEX = "(?:(" + PUBLIC_MODIFIER + "|" + PROTECTED_MODIFIER + "|" +
-			PRIVATE_MODIFIER + ")\\s*)?";
-	/** A regular expression used for the static modifier */
-	private static final String STATIC_REGEX = "(" + STATIC_MODIFIER + "\\s*)?";
-	/** A regular expression used for the final modifier */
-	private static final String FINAL_REGEX = "(" + FINAL_MODIFIER + "\\s*)?";
+	/** A regular expression for a single modifier */
+	private static final String SINGLE_MODIFIER_REGEX = "(?:(" + PUBLIC_MODIFIER + "|" + PROTECTED_MODIFIER + "|" +
+			PRIVATE_MODIFIER + "|" + STATIC_MODIFIER + "|" + FINAL_MODIFIER + ")\\s*)?";
 	/** A regular expression used for all the modifiers */
-	protected static final String MODIFIERS_REGEX = VISIBILITY_REGEX + STATIC_REGEX + FINAL_REGEX;
+	protected static final String MODIFIERS_REGEX = SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX;
 	
 	/** A regular expression used for tokens to match on when splitting tokens from a content String */
 	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|=|[^\\S\n]+|[^\\s(){}=]+";

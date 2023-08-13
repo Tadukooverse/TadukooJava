@@ -105,6 +105,19 @@ public abstract class BaseJavaFieldParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testFieldWithModifiersReversed() throws JavaParsingException{
+		JavaField field = parseMethod.apply("final static public String name;");
+		assertEquals(
+				EditableJavaField.builder()
+						.visibility(Visibility.PUBLIC)
+						.isStatic().isFinal()
+						.type("String").name("name")
+						.build(),
+				field);
+		assertEquals("public static final String name;", field.toString());
+	}
+	
+	@Test
 	public void testFieldWithValue() throws JavaParsingException{
 		JavaField field = parseMethod.apply("String name = \"\";");
 		assertNotNull(field);

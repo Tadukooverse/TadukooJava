@@ -138,6 +138,22 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testMethodWithReversedModifiers() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				final static protected Test(){}""");
+		assertEquals(
+				EditableJavaMethod.builder()
+						.visibility(Visibility.PROTECTED)
+						.isStatic().isFinal()
+						.returnType("Test")
+						.build(),
+				method);
+		assertEquals("""
+				protected static final Test(){
+				}""", method.toString());
+	}
+	
+	@Test
 	public void testMethodWithParameter() throws JavaParsingException{
 		JavaMethod method = parseMethod.apply("""
 				Test(String type){}""");

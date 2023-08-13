@@ -222,9 +222,20 @@ public class JavaFieldParser extends AbstractJavaParser{
 		// Handle matching for the first part of the string (modifiers, type, name)
 		Matcher matcher = FIELD_START_PATTERN.matcher(firstPart);
 		if(matcher.matches()){
-			Visibility visibility = Visibility.fromToken(StringUtil.trim(matcher.group(1)));
-			boolean isStatic = StringUtil.isNotBlank(matcher.group(2));
-			boolean isFinal = StringUtil.isNotBlank(matcher.group(3));
+			Visibility visibility = Visibility.NONE;
+			boolean isStatic = false, isFinal = false;
+			for(int i = 1; i <= 3; i++){
+				String token = matcher.group(i);
+				if(StringUtil.isNotBlank(token)){
+					switch(token){
+						case PUBLIC_MODIFIER -> visibility = Visibility.PUBLIC;
+						case PROTECTED_MODIFIER -> visibility = Visibility.PROTECTED;
+						case PRIVATE_MODIFIER -> visibility = Visibility.PRIVATE;
+						case STATIC_MODIFIER -> isStatic = true;
+						case FINAL_MODIFIER -> isFinal = true;
+					}
+				}
+			}
 			String type = StringUtil.trim(matcher.group(4));
 			String name = StringUtil.trim(matcher.group(5));
 			

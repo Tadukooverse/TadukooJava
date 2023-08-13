@@ -323,6 +323,27 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testClassWithModifiersReversed() throws JavaParsingException{
+		JavaClass clazz = parseMethod.apply("""
+				final static private class Test{
+				}
+				""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.innerClass()
+						.visibility(Visibility.PRIVATE)
+						.isStatic().isFinal()
+						.className("Test")
+						.build(),
+				clazz);
+		assertEquals("""
+				private static final class Test{
+				\t
+				}
+				""", clazz.toString());
+	}
+	
+	@Test
 	public void testClassWithSuperClass() throws JavaParsingException{
 		JavaClass clazz = parseMethod.apply("""
 				class Test extends Derp{
