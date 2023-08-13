@@ -158,7 +158,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	 * @return The parsed {@link JavaClass}
 	 * @throws JavaParsingException If anything goes wrong with parsing
 	 */
-	protected JavaClass runFullParserForClass(String content) throws JavaParsingException{
+	protected static JavaClass runFullParserForClass(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.CLASS, type.getJavaCodeType());
 		assertTrue(type instanceof JavaClass);

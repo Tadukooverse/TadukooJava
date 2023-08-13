@@ -53,6 +53,66 @@ public class FullJavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testTwoJavadocs(){
+		try{
+			FullJavaParser.parseType("""
+					/** {@inheritDoc} */
+					/** something */""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
+							"Encountered two Javadocs!"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testJavadocAfterField(){
+		try{
+			FullJavaParser.parseType("""
+					String type;
+					/** {@inheritDoc} */""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
+							"Encountered a Javadoc after field!"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testJavadocAfterMethod(){
+		try{
+			FullJavaParser.parseType("""
+					void test(){}
+					/** {@inheritDoc} */""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
+							"Encountered a Javadoc after method!"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testJavadocAfterClass(){
+		try{
+			FullJavaParser.parseType("""
+					class Test{}
+					/** {@inheritDoc} */""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
+							"Encountered a Javadoc after class!"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testAnnotationAfterClass(){
 		try{
 			FullJavaParser.parseType("""
@@ -223,6 +283,20 @@ public class FullJavaParserCombinationErrorsTest extends BaseJavaParserTest{
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
 					"Encountered methods outside a class!"),
+					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testFailedToDetermineFieldOrMethodAfterWhitespace(){
+		try{
+			FullJavaParser.parseType("""
+					String something""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
+							"Failed to determine type from token 'String'"),
 					e.getMessage());
 		}
 	}
