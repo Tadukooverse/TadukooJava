@@ -448,8 +448,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	@Test
 	public void testToString(){
 		String javaString = """
-				int(){
-				}""";
+				int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -462,8 +461,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		String javaString = """
 				/**
 				 */
-				int(){
-				}""";
+				int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -473,8 +471,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		method = builder.get().returnType(returnType).annotation(test).build();
 		String javaString = """
 				@Test
-				int(){
-				}""";
+				int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -486,8 +483,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		String javaString = """
 				@Test
 				@Derp
-				int(){
-				}""";
+				int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -498,8 +494,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.returnType(returnType)
 				.build();
 		String javaString = """
-				private int(){
-				}""";
+				private int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -510,8 +505,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.isAbstract()
 				.build();
 		String javaString = """
-				abstract int(){
-				}""";
+				abstract int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -521,8 +515,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.returnType(returnType).isStatic()
 				.build();
 		String javaString = """
-				static int(){
-				}""";
+				static int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -532,8 +525,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.returnType(returnType).isFinal()
 				.build();
 		String javaString = """
-				final int(){
-				}""";
+				final int(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -541,8 +533,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithName(){
 		method = builder.get().returnType(returnType).name("someMethod").build();
 		String javaString = """
-				int someMethod(){
-				}""";
+				int someMethod(){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -550,8 +541,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithSingleParameter(){
 		method = builder.get().returnType(returnType).parameter("String", "text").build();
 		String javaString = """
-				int(String text){
-				}""";
+				int(String text){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -560,8 +550,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 		method = builder.get().returnType(returnType).parameter("String", "text")
 				.parameter("int", "something").build();
 		String javaString = """
-				int(String text, int something){
-				}""";
+				int(String text, int something){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -569,8 +558,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithSingleThrowType(){
 		method = builder.get().returnType(returnType).throwType("Throwable").build();
 		String javaString = """
-				int() throws Throwable{
-				}""";
+				int() throws Throwable{ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
@@ -578,8 +566,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToStringWithThrowTypes(){
 		method = builder.get().returnType(returnType).throwType("Throwable").throwType("Exception").build();
 		String javaString = """
-				int() throws Throwable, Exception{
-				}""";
+				int() throws Throwable, Exception{ }""";
 		assertEquals(javaString, method.toString());
 	}
 	

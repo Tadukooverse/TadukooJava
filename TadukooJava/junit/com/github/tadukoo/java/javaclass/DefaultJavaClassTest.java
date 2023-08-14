@@ -1945,8 +1945,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				class AClassName{
 				\t
-					AClassName(){
-					}
+					AClassName(){ }
 				\t
 					String getSomething(int test){
 						return doSomething();
@@ -1975,8 +1974,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 						return doSomething();
 					}
 				\t
-					AClassName(){
-					}
+					AClassName(){ }
 				}
 				""";
 		assertEquals(javaString, clazz.toString());
@@ -1994,8 +1992,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		String javaString = """
 				class AClassName{
 				\t
-					AClassName(){
-					}
+					AClassName(){ }
 				\t
 					String getSomething(int test){
 						return doSomething();
@@ -2116,8 +2113,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					int test;
 					String derp;
 				\t
-					AClassName(){
-					}
+					AClassName(){ }
 				\t
 					String getSomething(int test){
 						return doSomething();
@@ -2221,8 +2217,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					int test;
 					String derp;
 				\t
-					AClassName(){
-					}
+					AClassName(){ }
 				\t
 					String getSomething(int test){
 						return doSomething();
@@ -2335,8 +2330,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					}
 				\t
 					// some comment
-					AClassName(){
-					}
+					AClassName(){ }
 				\t
 					int test;
 					class BClassName{
@@ -2425,8 +2419,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					int test;
 					String derp;
 				\t
-					AClassName(){
-					}
+					AClassName(){ }
 				\t
 					String getSomething(int test){
 						return doSomething();

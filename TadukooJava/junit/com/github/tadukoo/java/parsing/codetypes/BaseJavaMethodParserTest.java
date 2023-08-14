@@ -38,8 +38,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-					Test(){
-					}""", method.toString());
+					Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -53,8 +52,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				String test(){
-				}""", method.toString());
+				String test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -69,8 +67,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-					private Test(){
-					}""", method.toString());
+					private Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -85,8 +82,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-					protected Test(){
-					}""", method.toString());
+					protected Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -101,8 +97,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-					public Test(){
-					}""", method.toString());
+					public Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -116,8 +111,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				abstract Test(){
-				}""", method.toString());
+				abstract Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -132,8 +126,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				static Test(){
-				}""", method.toString());
+				static Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -148,8 +141,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				final Test(){
-				}""", method.toString());
+				final Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -164,8 +156,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				protected static final Test(){
-				}""", method.toString());
+				protected static final Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -180,8 +171,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type){
-				}""", method.toString());
+				Test(String type){ }""", method.toString());
 	}
 	
 	@Test
@@ -197,8 +187,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type, int derp){
-				}""", method.toString());
+				Test(String type, int derp){ }""", method.toString());
 	}
 	
 	@Test
@@ -213,8 +202,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception{
-				}""", method.toString());
+				Test() throws Exception{ }""", method.toString());
 	}
 	
 	@Test
@@ -230,8 +218,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception, Throwable{
-				}""", method.toString());
+				Test() throws Exception, Throwable{ }""", method.toString());
 	}
 	
 	@Test
@@ -310,8 +297,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 				method);
 		assertEquals("""
 				@Test
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -335,8 +321,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals("""
 				@Test
 				@Derp(type = String.class)
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -355,8 +340,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 				method);
 		assertEquals("""
 				/** {@inheritDoc} */
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -666,8 +650,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -707,8 +690,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -723,8 +705,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -739,8 +720,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -755,8 +735,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -772,8 +751,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -789,8 +767,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(){
-				}""", method.toString());
+				Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -806,8 +783,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				private Test(){
-				}""", method.toString());
+				private Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -823,8 +799,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				protected Test(){
-				}""", method.toString());
+				protected Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -840,8 +815,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				public Test(){
-				}""", method.toString());
+				public Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -857,8 +831,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				private Test(){
-				}""", method.toString());
+				private Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -874,8 +847,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				protected Test(){
-				}""", method.toString());
+				protected Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -891,8 +863,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				public Test(){
-				}""", method.toString());
+				public Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -908,8 +879,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				static Test(){
-				}""", method.toString());
+				static Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -925,8 +895,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				static Test(){
-				}""", method.toString());
+				static Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -942,8 +911,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				final Test(){
-				}""", method.toString());
+				final Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -959,8 +927,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				final Test(){
-				}""", method.toString());
+				final Test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -975,8 +942,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				String test(){
-				}""", method.toString());
+				String test(){ }""", method.toString());
 	}
 	
 	@Test
@@ -993,8 +959,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type){
-				}""", method.toString());
+				Test(String type){ }""", method.toString());
 	}
 	
 	@Test
@@ -1011,8 +976,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type){
-				}""", method.toString());
+				Test(String type){ }""", method.toString());
 	}
 	
 	@Test
@@ -1029,8 +993,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type){
-				}""", method.toString());
+				Test(String type){ }""", method.toString());
 	}
 	
 	@Test
@@ -1047,8 +1010,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type, int derp){
-				}""", method.toString());
+				Test(String type, int derp){ }""", method.toString());
 	}
 	
 	@Test
@@ -1065,8 +1027,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test(String type, int derp){
-				}""", method.toString());
+				Test(String type, int derp){ }""", method.toString());
 	}
 	
 	@Test
@@ -1082,8 +1043,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception{
-				}""", method.toString());
+				Test() throws Exception{ }""", method.toString());
 	}
 	
 	@Test
@@ -1099,8 +1059,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception{
-				}""", method.toString());
+				Test() throws Exception{ }""", method.toString());
 	}
 	
 	@Test
@@ -1116,8 +1075,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception{
-				}""", method.toString());
+				Test() throws Exception{ }""", method.toString());
 	}
 	
 	@Test
@@ -1134,8 +1092,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception, Throwable{
-				}""", method.toString());
+				Test() throws Exception, Throwable{ }""", method.toString());
 	}
 	
 	@Test
@@ -1152,8 +1109,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				Test() throws Exception, Throwable{
-				}""", method.toString());
+				Test() throws Exception, Throwable{ }""", method.toString());
 	}
 	
 	@Test

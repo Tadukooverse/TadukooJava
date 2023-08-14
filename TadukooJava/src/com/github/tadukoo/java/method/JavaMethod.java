@@ -283,18 +283,23 @@ public abstract class JavaMethod implements JavaCodeType{
 			// If no throw types, just end the declaration
 			declaration.append(PARAMETER_CLOSE_TOKEN).append(BLOCK_OPEN_TOKEN);
 		}
-		// Add the declaration to the content
-		content.add(declaration.toString());
 		
-		// Add the lines to the method
 		if(ListUtil.isNotBlank(lines)){
+			// Add the declaration to the content
+			content.add(declaration.toString());
+			
+			// Add the lines to the method
 			for(String line: lines){
 				content.add("\t" + line);
 			}
+			
+			// Closing brace of the method
+			content.add(BLOCK_CLOSE_TOKEN);
+		}else{
+			// When method has no content, open and close on the same line
+			declaration.append(' ').append(BLOCK_CLOSE_TOKEN);
+			content.add(declaration.toString());
 		}
-		
-		// Closing brace of the method
-		content.add(BLOCK_CLOSE_TOKEN);
 		
 		return StringUtil.buildStringWithNewLines(content);
 	}
