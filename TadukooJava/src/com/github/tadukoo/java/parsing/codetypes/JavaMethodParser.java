@@ -83,7 +83,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 	private static final Pattern METHOD_PATTERN = Pattern.compile(
 			"\\s*" + MODIFIERS_REGEX +
 					"([^\\s(]*)(\\s*[^\\s(]*)?\\s*" +
-					"\\(\\s*([^)]*)\\s*\\)(?:\\s*throws (.*))?" +
+					"\\(\\s*([^)]*)\\s*\\)(?:\\s*throws ([^{]*))?" +
 					"\\s*\\{\\s*(.*)\\s*}",
 			Pattern.DOTALL);
 	
@@ -330,6 +330,9 @@ public class JavaMethodParser extends AbstractJavaParser{
 							for(String subLine: line.split(SEMICOLON)){
 								subLine = StringUtil.trim(subLine);
 								if(StringUtil.isNotBlank(subLine)){
+									if(subLine.startsWith(".")){
+										subLine = "\t\t" + subLine;
+									}
 									lines.add("\t".repeat(insideBlocks) + subLine + SEMICOLON);
 								}
 							}
@@ -337,7 +340,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 							if(line.startsWith(BLOCK_CLOSE_TOKEN) || line.endsWith(BLOCK_CLOSE_TOKEN)){
 								insideBlocks--;
 							}
-							lines.add("\t".repeat(insideBlocks) + StringUtil.trim(line));
+							lines.add("\t".repeat(insideBlocks) + (line.startsWith(".")?"\t\t":"") + StringUtil.trim(line));
 							if(line.endsWith(BLOCK_OPEN_TOKEN)){
 								insideBlocks++;
 							}
@@ -345,7 +348,8 @@ public class JavaMethodParser extends AbstractJavaParser{
 					}
 				}else{
 					for(String line: contentString.split(SEMICOLON)){
-						lines.add("\t".repeat(insideBlocks) + StringUtil.trim(line) + SEMICOLON);
+						lines.add("\t".repeat(insideBlocks) + (line.startsWith(".")?"\t\t":"") +
+								StringUtil.trim(line) + SEMICOLON);
 					}
 				}
 			}

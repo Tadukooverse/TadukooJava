@@ -425,19 +425,19 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		JavaMethod method = parseMethod.apply("""
 				Test(){
 					something.builder()
-					.build();
+							.build();
 				}""");
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
 						.line("something.builder()")
-						.line(".build();")
+						.line("\t\t.build();")
 						.build(),
 				method);
 		assertEquals("""
 				Test(){
 					something.builder()
-					.build();
+							.build();
 				}""", method.toString());
 	}
 	
@@ -631,6 +631,41 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						return hexChar - 'a' + 10;
 					}else{
 						return -1;
+					}
+				}""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithThrowsAndInnerBlockOpenToken() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				public static List<File> listAllFiles(Path directoryPath) throws IOException{
+					try(Stream<Path> pathStream = Files.walk(directoryPath)){
+						return pathStream
+								.filter(Files::isRegularFile)
+								.map(Path::toFile)
+								.collect(Collectors.toList());
+					}
+				}""");
+		assertEquals(EditableJavaMethod.builder()
+				.visibility(Visibility.PUBLIC)
+				.isStatic()
+				.returnType("List<File>").name("listAllFiles")
+				.parameter("Path", "directoryPath")
+				.throwType("IOException")
+				.line("try(Stream<Path> pathStream = Files.walk(directoryPath)){")
+				.line("\treturn pathStream")
+				.line("\t\t\t.filter(Files::isRegularFile)")
+				.line("\t\t\t.map(Path::toFile)")
+				.line("\t\t\t.collect(Collectors.toList());")
+				.line("}")
+				.build(), method);
+		assertEquals("""
+				public static List<File> listAllFiles(Path directoryPath) throws IOException{
+					try(Stream<Path> pathStream = Files.walk(directoryPath)){
+						return pathStream
+								.filter(Files::isRegularFile)
+								.map(Path::toFile)
+								.collect(Collectors.toList());
 					}
 				}""", method.toString());
 	}
