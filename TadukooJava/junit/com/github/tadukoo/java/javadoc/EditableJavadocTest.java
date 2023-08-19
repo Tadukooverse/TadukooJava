@@ -134,4 +134,51 @@ public class EditableJavadocTest extends DefaultJavadocTest<EditableJavadoc>{
 		doc.setReturnVal("this");
 		assertEquals("this", doc.getReturnVal());
 	}
+	
+	@Test
+	public void testAddThrowsInfoPieces(){
+		assertEquals(new ArrayList<>(), doc.getThrowsInfos());
+		doc.addThrowsInfo("Exception", "Because I can");
+		assertEquals(ListUtil.createList(Pair.of("Exception", "Because I can")), doc.getThrowsInfos());
+		doc.addThrowsInfo("Throwable", "Because I want to");
+		assertEquals(ListUtil.createList(Pair.of("Exception", "Because I can"),
+				Pair.of("Throwable", "Because I want to")), doc.getThrowsInfos());
+	}
+	
+	@Test
+	public void testAddThrowsInfoPair(){
+		Pair<String, String> throwsInfo1 = Pair.of("Exception", "Because I can");
+		Pair<String, String> throwsInfo2 = Pair.of("Throwable", "Because I want to");
+		assertEquals(new ArrayList<>(), doc.getThrowsInfos());
+		doc.addThrowsInfo(throwsInfo1);
+		assertEquals(ListUtil.createList(throwsInfo1), doc.getThrowsInfos());
+		doc.addThrowsInfo(throwsInfo2);
+		assertEquals(ListUtil.createList(throwsInfo1, throwsInfo2), doc.getThrowsInfos());
+	}
+	
+	@Test
+	public void testAddThrowsInfos(){
+		Pair<String, String> throwsInfo1 = Pair.of("Exception", "Because I can");
+		Pair<String, String> throwsInfo2 = Pair.of("Throwable", "Because I want to");
+		Pair<String, String> throwsInfo3 = Pair.of("CustomException", "Because why not?");
+		Pair<String, String> throwsInfo4 = Pair.of("UnknownException", "Because reasons");
+		assertEquals(new ArrayList<>(), doc.getThrowsInfos());
+		doc.addThrowsInfos(ListUtil.createList(throwsInfo1, throwsInfo2));
+		assertEquals(ListUtil.createList(throwsInfo1, throwsInfo2), doc.getThrowsInfos());
+		doc.addThrowsInfos(ListUtil.createList(throwsInfo3, throwsInfo4));
+		assertEquals(ListUtil.createList(throwsInfo1, throwsInfo2, throwsInfo3, throwsInfo4), doc.getThrowsInfos());
+	}
+	
+	@Test
+	public void testSetThrowsInfos(){
+		Pair<String, String> throwsInfo1 = Pair.of("Exception", "Because I can");
+		Pair<String, String> throwsInfo2 = Pair.of("Throwable", "Because I want to");
+		Pair<String, String> throwsInfo3 = Pair.of("CustomException", "Because why not?");
+		Pair<String, String> throwsInfo4 = Pair.of("UnknownException", "Because reasons");
+		assertEquals(new ArrayList<>(), doc.getThrowsInfos());
+		doc.setThrowsInfos(ListUtil.createList(throwsInfo1, throwsInfo2));
+		assertEquals(ListUtil.createList(throwsInfo1, throwsInfo2), doc.getThrowsInfos());
+		doc.setThrowsInfos(ListUtil.createList(throwsInfo3, throwsInfo4));
+		assertEquals(ListUtil.createList(throwsInfo3, throwsInfo4), doc.getThrowsInfos());
+	}
 }

@@ -237,6 +237,37 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testCondensedWithThrows() throws JavaParsingException{
+		Javadoc doc = parseMethod.apply("""
+				/** @throws Exception Because I can */""");
+		assertEquals(
+				EditableJavadoc.builder()
+						.condensed()
+						.throwsInfo("Exception", "Because I can")
+						.build(),
+				doc);
+		assertEquals("""
+				/** @throws Exception Because I can */""", doc.toString());
+	}
+	
+	@Test
+	public void testNotCondensedWithThrows() throws JavaParsingException{
+		Javadoc doc = parseMethod.apply("""
+				/**
+				 * @throws Exception Because I can
+				 */""");
+		assertEquals(
+				EditableJavadoc.builder()
+						.throwsInfo("Exception", "Because I can")
+						.build(),
+				doc);
+		assertEquals("""
+				/**
+				 * @throws Exception Because I can
+				 */""", doc.toString());
+	}
+	
+	@Test
 	public void testCondensedWithEverything() throws JavaParsingException{
 		Javadoc doc = parseMethod.apply("""
 				/** some content
@@ -245,7 +276,8 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 				 * @since Alpha v.0.1
 				 * @param type The type
 				 * @param derp The int
-				 * @return this, to continue building */""");
+				 * @return this, to continue building
+				 * @throws Exception Because I can */""");
 		assertEquals(
 				EditableJavadoc.builder()
 						.condensed()
@@ -256,6 +288,7 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 						.param("type", "The type")
 						.param("derp", "The int")
 						.returnVal("this, to continue building")
+						.throwsInfo("Exception", "Because I can")
 						.build(),
 				doc);
 		assertEquals("""
@@ -267,7 +300,8 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 				 *\s
 				 * @param type The type
 				 * @param derp The int
-				 * @return this, to continue building */""", doc.toString());
+				 * @return this, to continue building
+				 * @throws Exception Because I can */""", doc.toString());
 	}
 	
 	@Test
@@ -281,6 +315,7 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 				 * @param type The type
 				 * @param derp The int
 				 * @return this, to continue building
+				 * @throws Exception Because I can
 				 */""");
 		assertEquals(
 				EditableJavadoc.builder()
@@ -291,6 +326,7 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 						.param("type", "The type")
 						.param("derp", "The int")
 						.returnVal("this, to continue building")
+						.throwsInfo("Exception", "Because I can")
 						.build(),
 				doc);
 		assertEquals("""
@@ -304,6 +340,7 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 				 * @param type The type
 				 * @param derp The int
 				 * @return this, to continue building
+				 * @throws Exception Because I can
 				 */""", doc.toString());
 	}
 	

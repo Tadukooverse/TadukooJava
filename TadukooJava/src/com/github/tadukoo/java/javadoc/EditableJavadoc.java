@@ -27,7 +27,7 @@ public class EditableJavadoc extends Javadoc{
 		/** {@inheritDoc} */
 		@Override
 		protected EditableJavadoc constructJavadoc(){
-			return new EditableJavadoc(condensed, content, author, version, since, params, returnVal);
+			return new EditableJavadoc(condensed, content, author, version, since, params, returnVal, throwsInfos);
 		}
 	}
 	
@@ -41,11 +41,12 @@ public class EditableJavadoc extends Javadoc{
 	 * @param since The "since" value for the {@link Javadoc}
 	 * @param params The parameters in the {@link Javadoc}
 	 * @param returnVal The return string in the {@link Javadoc}
+	 * @param throwsInfos The throws info for the {@link Javadoc}
 	 */
 	private EditableJavadoc(
 			boolean condensed, List<String> content, String author, String version, String since,
-			List<Pair<String, String>> params, String returnVal){
-		super(true, condensed, content, author, version, since, params, returnVal);
+			List<Pair<String, String>> params, String returnVal, List<Pair<String, String>> throwsInfos){
+		super(true, condensed, content, author, version, since, params, returnVal, throwsInfos);
 	}
 	
 	/**
@@ -138,5 +139,34 @@ public class EditableJavadoc extends Javadoc{
 	 */
 	public void setReturnVal(String returnVal){
 		this.returnVal = returnVal;
+	}
+	
+	/**
+	 * @param throwable The throwable being thrown
+	 * @param explanation The explanation of the throwable
+	 */
+	public void addThrowsInfo(String throwable, String explanation){
+		throwsInfos.add(Pair.of(throwable, explanation));
+	}
+	
+	/**
+	 * @param throwsInfo The throws info to be added to the {@link Javadoc}
+	 */
+	public void addThrowsInfo(Pair<String, String> throwsInfo){
+		throwsInfos.add(throwsInfo);
+	}
+	
+	/**
+	 * @param throwsInfos The throws infos to be added to the {@link Javadoc}
+	 */
+	public void addThrowsInfos(List<Pair<String, String>> throwsInfos){
+		this.throwsInfos.addAll(throwsInfos);
+	}
+	
+	/**
+	 * @param throwsInfos The throws info for the {@link Javadoc}
+	 */
+	public void setThrowsInfos(List<Pair<String, String>> throwsInfos){
+		this.throwsInfos = throwsInfos;
 	}
 }

@@ -33,6 +33,8 @@ public abstract class Javadoc implements JavaCodeType{
 	protected List<Pair<String, String>> params;
 	/** The return string in the {@link Javadoc} */
 	protected String returnVal;
+	/** The throws info in the {@link Javadoc} */
+	protected List<Pair<String, String>> throwsInfos;
 	
 	/**
 	 * Constructs a new {@link Javadoc} using the given parameters
@@ -45,10 +47,11 @@ public abstract class Javadoc implements JavaCodeType{
 	 * @param since The "since" value for the {@link Javadoc}
 	 * @param params The parameters in the {@link Javadoc}
 	 * @param returnVal The return string in the {@link Javadoc}
+	 * @param throwsInfos The throws info in the {@link Javadoc}
 	 */
 	protected Javadoc(
 			boolean editable, boolean condensed, List<String> content, String author, String version, String since,
-			List<Pair<String, String>> params, String returnVal){
+			List<Pair<String, String>> params, String returnVal, List<Pair<String, String>> throwsInfos){
 		this.editable = editable;
 		this.condensed = condensed;
 		this.content = content;
@@ -57,6 +60,7 @@ public abstract class Javadoc implements JavaCodeType{
 		this.since = since;
 		this.params = params;
 		this.returnVal = returnVal;
+		this.throwsInfos = throwsInfos;
 	}
 	
 	/** {@inheritDoc} */
@@ -122,6 +126,13 @@ public abstract class Javadoc implements JavaCodeType{
 	}
 	
 	/**
+	 * @return The throws info for the {@link Javadoc}
+	 */
+	public List<Pair<String, String>> getThrowsInfos(){
+		return throwsInfos;
+	}
+	
+	/**
 	 * @return The actual Javadoc text this class represents
 	 */
 	@Override
@@ -132,7 +143,8 @@ public abstract class Javadoc implements JavaCodeType{
 		// Check what we have
 		boolean haveContent = ListUtil.isNotBlank(content);
 		boolean haveInfoAnnotations = StringUtil.anyNotBlank(author, version, since);
-		boolean haveCodeAnnotations = ListUtil.isNotBlank(params) || StringUtil.isNotBlank(returnVal);
+		boolean haveCodeAnnotations = ListUtil.isNotBlank(params) || StringUtil.isNotBlank(returnVal) ||
+				ListUtil.isNotBlank(throwsInfos);
 		boolean prevContent = false;
 		
 		// If not condensed, go to the next line if we have content or annotations coming up
@@ -192,7 +204,7 @@ public abstract class Javadoc implements JavaCodeType{
 			}
 			for(Pair<String, String> param: params){
 				doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_PARAM_TOKEN).append(' ')
-						.append(param.getLeft()).append(" ").append(param.getRight())
+						.append(param.getLeft()).append(' ').append(param.getRight())
 						.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
 			doc.delete(doc.length()-3, doc.length());
@@ -205,6 +217,20 @@ public abstract class Javadoc implements JavaCodeType{
 				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
 			}
 			doc.append(' ').append(ANNOTATION_START_TOKEN).append(JAVADOC_RETURN_TOKEN).append(' ').append(returnVal);
+			prevContent = true;
+		}
+		
+		// Add the throws info
+		if(ListUtil.isNotBlank(throwsInfos)){
+			if(prevContent){
+				doc.append("\n ").append(JAVADOC_LINE_TOKEN);
+			}
+			for(Pair<String, String> throwsInfo: throwsInfos){
+				doc.append(' ').append(ANNOTATION_START_TOKEN).append(THROWS_TOKEN).append(' ')
+						.append(throwsInfo.getLeft()).append(' ').append(throwsInfo.getRight())
+						.append("\n ").append(JAVADOC_LINE_TOKEN);
+			}
+			doc.delete(doc.length()-3, doc.length());
 		}
 		
 		// If not condensed, go to the next line for the closing
@@ -273,6 +299,15 @@ public abstract class Javadoc implements JavaCodeType{
 		// Set return if present
 		if(StringUtil.isNotBlank(returnVal)){
 			codeString.append(NEWLINE_WITH_2_TABS).append(".returnVal(\"").append(escapeQuotes(returnVal)).append("\")");
+		}
+		
+		// Set throws info if present
+		if(ListUtil.isNotBlank(throwsInfos)){
+			for(Pair<String, String> throwsInfo: throwsInfos){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".throwsInfo(\"")
+						.append(escapeQuotes(throwsInfo.getLeft())).append("\", \"")
+						.append(escapeQuotes(throwsInfo.getRight())).append("\")");
+			}
 		}
 		
 		// Finish building

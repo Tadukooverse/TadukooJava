@@ -14,8 +14,8 @@ public class RegularJavadocTest extends DefaultJavadocTest<RegularJavadocTest.Te
 		
 		protected TestJavadoc(
 				boolean editable, boolean condensed, List<String> content, String author, String version, String since,
-				List<Pair<String, String>> params, String returnVal){
-			super(editable, condensed, content, author, version, since, params, returnVal);
+				List<Pair<String, String>> params, String returnVal, List<Pair<String, String>> throwsInfos){
+			super(editable, condensed, content, author, version, since, params, returnVal, throwsInfos);
 		}
 		
 		public static TestJavadocBuilder builder(){
@@ -33,7 +33,7 @@ public class RegularJavadocTest extends DefaultJavadocTest<RegularJavadocTest.Te
 		
 		@Override
 		protected TestJavadoc constructJavadoc(){
-			return new TestJavadoc(editable, condensed, content, author, version, since, params, returnVal);
+			return new TestJavadoc(editable, condensed, content, author, version, since, params, returnVal, throwsInfos);
 		}
 	}
 	

@@ -79,6 +79,13 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	}
 	
 	@Test
+	public void testDefaultThrowsInfos(){
+		List<Pair<String, String>> throwsInfos = doc.getThrowsInfos();
+		assertNotNull(throwsInfos);
+		assertEquals(0, throwsInfos.size());
+	}
+	
+	@Test
 	public void testBuilderCopy(){
 		Javadoc otherDoc = builder.get()
 				.condensed()
@@ -89,6 +96,7 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.since("Alpha v.0.1")
 				.param("something", "Does something")
 				.returnVal("yep")
+				.throwsInfo("Exception", "because I can")
 				.build();
 		doc = builder.get()
 				.copy(otherDoc)
@@ -198,10 +206,38 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	}
 	
 	@Test
+	public void testSetThrowsInfos(){
+		List<Pair<String, String>> throwsInfos = ListUtil.createList(Pair.of("Exception", "Because I can"),
+				Pair.of("Throwable", "Because I want to"));
+		doc = builder.get()
+				.throwsInfos(throwsInfos)
+				.build();
+		assertEquals(throwsInfos, doc.getThrowsInfos());
+	}
+	
+	@Test
+	public void testSetThrowsInfoPair(){
+		doc = builder.get()
+				.throwsInfo(Pair.of("Exception", "Because I can"))
+				.build();
+		assertEquals(ListUtil.createList(Pair.of("Exception", "Because I can")), doc.getThrowsInfos());
+	}
+	
+	@Test
+	public void testSetThrowsInfoPieces(){
+		doc = builder.get()
+				.throwsInfo("Exception", "Because I can")
+				.build();
+		assertEquals(ListUtil.createList(Pair.of("Exception", "Because I can")), doc.getThrowsInfos());
+	}
+	
+	@Test
 	public void testBuilderSetAll(){
 		List<String> content = ListUtil.createList("test", "derp");
 		List<Pair<String, String>> params = ListUtil.createList(Pair.of("test", "yes"),
 				Pair.of("derp", "no"));
+		List<Pair<String, String>> throwsInfos = ListUtil.createList(Pair.of("Exception", "Because I can"),
+				Pair.of("Throwable", "Because I want to"));
 		doc = builder.get()
 				.condensed()
 				.content(content)
@@ -210,6 +246,7 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.since("Alpha v.0.0.1")
 				.params(params)
 				.returnVal("this, to continue building")
+				.throwsInfos(throwsInfos)
 				.build();
 		assertTrue(doc.isCondensed());
 		assertEquals(content, doc.getContent());
@@ -218,6 +255,7 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 		assertEquals("Alpha v.0.0.1", doc.getSince());
 		assertEquals(params, doc.getParams());
 		assertEquals("this, to continue building", doc.getReturnVal());
+		assertEquals(throwsInfos, doc.getThrowsInfos());
 	}
 	
 	@Test
@@ -307,6 +345,30 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	}
 	
 	@Test
+	public void testToStringWithThrowsInfo(){
+		doc = builder.get()
+				.throwsInfo("Exception", "Because I can")
+				.build();
+		assertEquals("""
+				/**
+				 * @throws Exception Because I can
+				 */""", doc.toString());
+	}
+	
+	@Test
+	public void testToStringWithMultipleThrowsInfos(){
+		doc = builder.get()
+				.throwsInfo("Exception", "Because I can")
+				.throwsInfo("Throwable", "Because I want to")
+				.build();
+		assertEquals("""
+				/**
+				 * @throws Exception Because I can
+				 * @throws Throwable Because I want to
+				 */""", doc.toString());
+	}
+	
+	@Test
 	public void testToStringWithEverything(){
 		doc = builder.get()
 				.content("test")
@@ -317,6 +379,8 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.param("test", "yes")
 				.param("derp", "no")
 				.returnVal("this, to continue building")
+				.throwsInfo("Exception", "Because I can")
+				.throwsInfo("Throwable", "Because I want to")
 				.build();
 		assertEquals("""
 				/**
@@ -330,6 +394,8 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				 * @param test yes
 				 * @param derp no
 				 * @return this, to continue building
+				 * @throws Exception Because I can
+				 * @throws Throwable Because I want to
 				 */""", doc.toString());
 	}
 	
@@ -413,6 +479,28 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	}
 	
 	@Test
+	public void testToStringWithThrowsInfoCondensed(){
+		doc = builder.get()
+				.condensed()
+				.throwsInfo("Exception", "Because I can")
+				.build();
+		assertEquals("""
+				/** @throws Exception Because I can */""", doc.toString());
+	}
+	
+	@Test
+	public void testToStringWithMultipleThrowsInfosCondensed(){
+		doc = builder.get()
+				.condensed()
+				.throwsInfo("Exception", "Because I can")
+				.throwsInfo("Throwable", "Because I want to")
+				.build();
+		assertEquals("""
+				/** @throws Exception Because I can
+				 * @throws Throwable Because I want to */""", doc.toString());
+	}
+	
+	@Test
 	public void testToStringWithEverythingCondensed(){
 		doc = builder.get()
 				.condensed()
@@ -424,6 +512,8 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.param("test", "yes")
 				.param("derp", "no")
 				.returnVal("this, to continue building")
+				.throwsInfo("Exception", "Because I can")
+				.throwsInfo("Throwable", "Because I want to")
 				.build();
 		assertEquals("""
 				/** test
@@ -435,7 +525,9 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				 *\040
 				 * @param test yes
 				 * @param derp no
-				 * @return this, to continue building */""", doc.toString());
+				 * @return this, to continue building
+				 * @throws Exception Because I can
+				 * @throws Throwable Because I want to */""", doc.toString());
 	}
 	
 	/*
@@ -485,6 +577,7 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.param("test", "yes")
 				.param("derp", "no")
 				.returnVal("this, to continue building")
+				.throwsInfo("Exception", "Because I can")
 				.build();
 		JavadocType otherDoc = builder.get()
 				.content("test")
@@ -495,6 +588,7 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.param("test", "yes")
 				.param("derp", "no")
 				.returnVal("this, to continue building")
+				.throwsInfo("Exception", "Because I can")
 				.build();
 		assertEquals(otherDoc, doc);
 	}
@@ -633,6 +727,28 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	}
 	
 	@Test
+	public void testToBuilderCodeOneThrowsInfo(){
+		doc = builder.get()
+				.throwsInfo("Exception", "Because I can")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.throwsInfo(\"Exception\", \"Because I can\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeTwoThrowsInfos(){
+		doc = builder.get()
+				.throwsInfo("Exception", "Because I can")
+				.throwsInfo("Throwable", "Because I want to")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.throwsInfo(\"Exception\", \"Because I can\")\n" +
+				"\t\t.throwsInfo(\"Throwable\", \"Because I want to\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
 	public void testToBuilderCodeEverything(){
 		doc = builder.get()
 				.condensed()
@@ -644,6 +760,8 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				.param("something", "does something")
 				.param("somethingElse", "does something else")
 				.returnVal("this, to continue building")
+				.throwsInfo("Exception", "Because I can")
+				.throwsInfo("Throwable", "Because I want to")
 				.build();
 		assertEquals(clazz.getSimpleName() + ".builder()\n" +
 				"\t\t.condensed()\n" +
@@ -655,6 +773,8 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 				"\t\t.param(\"something\", \"does something\")\n" +
 				"\t\t.param(\"somethingElse\", \"does something else\")\n" +
 				"\t\t.returnVal(\"this, to continue building\")\n" +
+				"\t\t.throwsInfo(\"Exception\", \"Because I can\")\n" +
+				"\t\t.throwsInfo(\"Throwable\", \"Because I want to\")\n" +
 				"\t\t.build()", doc.toBuilderCode());
 	}
 }

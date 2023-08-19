@@ -76,6 +76,7 @@ public class JavadocParser extends AbstractJavaParser{
 		List<String> content = new ArrayList<>();
 		String author = null, version = null, since = null, returnVal = null;
 		List<Pair<String, String>> parameters = new ArrayList<>();
+		List<Pair<String, String>> throwsInfo = new ArrayList<>();
 		
 		// Error flags
 		boolean multipleAuthor = false, multipleVersion = false, multipleSince = false, multipleReturn = false;
@@ -155,6 +156,12 @@ public class JavadocParser extends AbstractJavaParser{
 								}
 								returnVal = StringUtil.trim(currentContent.toString());
 							}
+							case THROWS_TOKEN -> {
+								String throwsString = StringUtil.trim(currentContent.toString());
+								String throwsName = StringUtil.trim(throwsString.split("\\s+")[0]);
+								throwsInfo.add(Pair.of(throwsName, StringUtil.trim(
+										throwsString.substring(throwsName.length()))));
+							}
 							default -> content.add(ANNOTATION_START_TOKEN + annotation + " " +
 									StringUtil.trim(currentContent.toString()));
 						}
@@ -203,6 +210,12 @@ public class JavadocParser extends AbstractJavaParser{
 					}
 					returnVal = StringUtil.trim(currentContent.toString());
 				}
+				case THROWS_TOKEN -> {
+					String throwsString = StringUtil.trim(currentContent.toString());
+					String throwsName = StringUtil.trim(throwsString.split("\\s+")[0]);
+					throwsInfo.add(Pair.of(throwsName, StringUtil.trim(
+							throwsString.substring(throwsName.length()))));
+				}
 				default -> content.add(ANNOTATION_START_TOKEN + annotation + " " +
 						StringUtil.trim(currentContent.toString()));
 			}
@@ -238,6 +251,7 @@ public class JavadocParser extends AbstractJavaParser{
 				.since(since)
 				.params(parameters)
 				.returnVal(returnVal)
+				.throwsInfos(throwsInfo)
 				.build());
 	}
 }

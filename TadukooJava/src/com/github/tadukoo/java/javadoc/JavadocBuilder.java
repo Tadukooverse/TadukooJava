@@ -50,10 +50,15 @@ import java.util.List;
  *         <td>The return string for the {@link Javadoc}</td>
  *         <td>Defaults to null</td>
  *     </tr>
+ *     <tr>
+ *         <td>throwsInfos</td>
+ *         <td>The throws info for the {@link Javadoc}</td>
+ *         <td>Defaults to an empty list</td>
+ *     </tr>
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Alpha v.0.4
+ * @version Beta v.0.5
  * @since Alpha v.0.3.3 (within Javadoc), Alpha v.0.4 (as its own class)
  */
 public abstract class JavadocBuilder<JavadocType extends Javadoc>{
@@ -71,6 +76,8 @@ public abstract class JavadocBuilder<JavadocType extends Javadoc>{
 	protected List<Pair<String, String>> params = new ArrayList<>();
 	/** The return string for the {@link Javadoc} */
 	protected String returnVal = null;
+	/** The throws info for the {@link Javadoc} */
+	protected List<Pair<String, String>> throwsInfos = new ArrayList<>();
 	
 	/**
 	 * Constructs a new JavadocBuilder
@@ -91,6 +98,7 @@ public abstract class JavadocBuilder<JavadocType extends Javadoc>{
 		this.since = javadoc.getSince();
 		this.params = javadoc.getParams();
 		this.returnVal = javadoc.getReturnVal();
+		this.throwsInfos = javadoc.getThrowsInfos();
 		return this;
 	}
 	
@@ -192,6 +200,34 @@ public abstract class JavadocBuilder<JavadocType extends Javadoc>{
 	 */
 	public JavadocBuilder<JavadocType> returnVal(String returnVal){
 		this.returnVal = returnVal;
+		return this;
+	}
+	
+	/**
+	 * @param throwsInfos The throws info for the {@link Javadoc}
+	 * @return this, to continue building
+	 */
+	public JavadocBuilder<JavadocType> throwsInfos(List<Pair<String, String>> throwsInfos){
+		this.throwsInfos = throwsInfos;
+		return this;
+	}
+	
+	/**
+	 * @param throwsInfo A throws info for the {@link Javadoc}
+	 * @return this, to continue building
+	 */
+	public JavadocBuilder<JavadocType> throwsInfo(Pair<String, String> throwsInfo){
+		throwsInfos.add(throwsInfo);
+		return this;
+	}
+	
+	/**
+	 * @param throwable The throwable being thrown for the {@link Javadoc}
+	 * @param explanation The explanation of the throwable being thrown
+	 * @return this, to continue building
+	 */
+	public JavadocBuilder<JavadocType> throwsInfo(String throwable, String explanation){
+		throwsInfos.add(Pair.of(throwable, explanation));
 		return this;
 	}
 	

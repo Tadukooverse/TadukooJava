@@ -30,7 +30,7 @@ public class UneditableJavadoc extends Javadoc{
 		/** {@inheritDoc} */
 		@Override
 		protected UneditableJavadoc constructJavadoc(){
-			return new UneditableJavadoc(condensed, content, author, version, since, params, returnVal);
+			return new UneditableJavadoc(condensed, content, author, version, since, params, returnVal, throwsInfos);
 		}
 	}
 	
@@ -44,11 +44,12 @@ public class UneditableJavadoc extends Javadoc{
 	 * @param since The "since" value for the {@link Javadoc}
 	 * @param params The parameters in the {@link Javadoc}
 	 * @param returnVal The return string in the {@link Javadoc}
+	 * @param throwsInfos The throws info for the {@link Javadoc}
 	 */
 	private UneditableJavadoc(
 			boolean condensed, List<String> content, String author, String version, String since,
-			List<Pair<String, String>> params, String returnVal){
-		super(false, condensed, content, author, version, since, params, returnVal);
+			List<Pair<String, String>> params, String returnVal, List<Pair<String, String>> throwsInfos){
+		super(false, condensed, content, author, version, since, params, returnVal, throwsInfos);
 	}
 	
 	/**
