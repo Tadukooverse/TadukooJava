@@ -99,12 +99,17 @@ public abstract class JavaAnnotation implements JavaCodeType{
 		// Add parameters if we have them
 		if(ListUtil.isNotBlank(parameters)){
 			annotation.append(PARAMETER_OPEN_TOKEN);
-			for(Pair<String, String> parameter: parameters){
-				annotation.append(parameter.getLeft())
-						.append(' ').append(ASSIGNMENT_OPERATOR_TOKEN).append(' ')
-						.append(parameter.getRight()).append(LIST_SEPARATOR_TOKEN).append(' ');
+			if(parameters.size() == 1 && StringUtil.equals(parameters.get(0).getLeft(), "value")){
+				annotation.append(parameters.get(0).getRight());
+			}else{
+				for(Pair<String, String> parameter: parameters){
+					annotation.append(parameter.getLeft())
+							.append(' ').append(ASSIGNMENT_OPERATOR_TOKEN).append(' ')
+							.append(parameter.getRight()).append(LIST_SEPARATOR_TOKEN).append(' ');
+				}
+				annotation.delete(annotation.length()-2, annotation.length());
 			}
-			annotation.delete(annotation.length()-2, annotation.length()).append(PARAMETER_CLOSE_TOKEN);
+			annotation.append(PARAMETER_CLOSE_TOKEN);
 		}
 		
 		return annotation.toString();

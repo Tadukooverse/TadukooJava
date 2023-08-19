@@ -41,7 +41,7 @@ public abstract class BaseJavaAnnotationParserTest extends BaseJavaParserTest{
 		assertNotNull(annotation);
 		assertEquals("Test", annotation.getName());
 		assertEquals(ListUtil.createList(Pair.of("value", "true")), annotation.getParameters());
-		assertEquals("@Test(value = true)", annotation.toString());
+		assertEquals("@Test(true)", annotation.toString());
 	}
 	
 	@Test

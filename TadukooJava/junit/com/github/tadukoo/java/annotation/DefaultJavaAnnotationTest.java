@@ -164,6 +164,15 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	}
 	
 	@Test
+	public void testToStringValueParameter(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("value", "true")
+				.build();
+		assertEquals("@Test(true)", annotation.toString());
+	}
+	
+	@Test
 	public void testToStringMultipleParameters(){
 		annotation = builder.get()
 				.name(name)
@@ -171,6 +180,16 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 				.parameter("derp", "String.class")
 				.build();
 		assertEquals("@Test(test = true, derp = String.class)", annotation.toString());
+	}
+	
+	@Test
+	public void testToStringMultipleParametersOneIsValue(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("value", "true")
+				.parameter("derp", "String.class")
+				.build();
+		assertEquals("@Test(value = true, derp = String.class)", annotation.toString());
 	}
 	
 	/*

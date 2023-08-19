@@ -20,7 +20,9 @@ public interface JavaCodeType extends JavaTokens{
 	 * @return A version of the given string with quotes escaped
 	 */
 	default String escapeQuotes(String str){
-		return str.replace("\"", "\\\"");
+		return str.replace("\"", "\\\"")
+				.replace("\t", "\\t")
+				.replace("\n", "\\n");
 	}
 	
 	/**
