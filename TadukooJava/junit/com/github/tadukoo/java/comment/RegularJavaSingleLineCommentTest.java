@@ -33,7 +33,7 @@ public class RegularJavaSingleLineCommentTest extends DefaultJavaSingleLineComme
 	}
 	
 	public RegularJavaSingleLineCommentTest(){
-		super(TestJavaSingleLineComment::builder);
+		super(TestJavaSingleLineComment.class, TestJavaSingleLineComment::builder);
 	}
 	
 	@Test

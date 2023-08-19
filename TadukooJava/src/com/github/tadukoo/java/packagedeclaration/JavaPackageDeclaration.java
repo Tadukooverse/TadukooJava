@@ -65,4 +65,12 @@ public abstract class JavaPackageDeclaration implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		return this.getClass().getSimpleName() + ".builder()" +
+				NEWLINE_WITH_2_TABS + ".packageName(\"" + packageName + "\")" +
+				NEWLINE_WITH_2_TABS + ".build()";
+	}
 }

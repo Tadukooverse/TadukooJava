@@ -15,12 +15,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaImportStatementTest<ImportStatementType extends JavaImportStatement>{
 	
+	private final Class<ImportStatementType> clazz;
 	private final ThrowingSupplier<JavaImportStatementBuilder<ImportStatementType>, NoException> builder;
 	protected String importName;
 	protected ImportStatementType importStatement;
 	
 	protected DefaultJavaImportStatementTest(
+			Class<ImportStatementType> clazz,
 			ThrowingSupplier<JavaImportStatementBuilder<ImportStatementType>, NoException> builder){
+		this.clazz = clazz;
 		this.builder = builder;
 	}
 	
@@ -123,5 +126,27 @@ public abstract class DefaultJavaImportStatementTest<ImportStatementType extends
 	public void testEqualsDifferentType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(importStatement, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCodeNotStatic(){
+		importStatement = builder.get()
+				.importName(importName)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.importName(\"" + importName + "\")\n" +
+				"\t\t.build()", importStatement.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeStatic(){
+		importStatement = builder.get()
+				.isStatic()
+				.importName(importName)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isStatic()\n" +
+				"\t\t.importName(\"" + importName + "\")\n" +
+				"\t\t.build()", importStatement.toBuilderCode());
 	}
 }

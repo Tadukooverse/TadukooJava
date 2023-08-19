@@ -196,4 +196,54 @@ public abstract class JavaField implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start the building
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add javadoc if we have it
+		if(javadoc != null){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".javadoc(")
+					.append(javadoc.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+					.append(')');
+		}
+		
+		// Add annotations if we have them
+		if(ListUtil.isNotBlank(annotations)){
+			for(JavaAnnotation annotation: annotations){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".annotation(")
+						.append(annotation.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+						.append(')');
+			}
+		}
+		
+		// Add visibility
+		if(visibility != Visibility.NONE){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".visibility(Visibility.").append(visibility).append(')');
+		}
+		
+		// Add static if we have it
+		if(isStatic){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isStatic()");
+		}
+		
+		// Add final if we have it
+		if(isFinal){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isFinal()");
+		}
+		
+		// Add type and name
+		codeString.append(NEWLINE_WITH_2_TABS).append(".type(\"").append(type).append("\").name(\"").append(name).append("\")");
+		
+		// Add value if we have it
+		if(StringUtil.isNotBlank(value)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".value(\"").append(value).append("\")");
+		}
+		
+		// Finish building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
+	}
 }

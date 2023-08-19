@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class UneditableJavaMultiLineCommentTest extends DefaultJavaMultiLineCommentTest<UneditableJavaMultiLineComment>{
 	
 	public UneditableJavaMultiLineCommentTest(){
-		super(UneditableJavaMultiLineComment::builder);
+		super(UneditableJavaMultiLineComment.class, UneditableJavaMultiLineComment::builder);
 	}
 	
 	@Test

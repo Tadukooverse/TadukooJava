@@ -519,4 +519,154 @@ public abstract class JavaClass implements JavaClassType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start builder
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add isInnerClass if present
+		if(isInnerClass){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".innerClass()");
+		}
+		
+		// Add Package Declaration if present
+		if(packageDeclaration != null){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".packageName(\"").append(packageDeclaration.getPackageName())
+					.append("\")");
+		}
+		
+		// Add Import Statements if present
+		if(ListUtil.isNotBlank(importStatements)){
+			for(JavaImportStatement importStatement: importStatements){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
+						.append(importStatement.getImportName()).append("\", ")
+						.append(importStatement.isStatic()).append(')');
+			}
+		}
+		
+		// Add Javadoc if present
+		if(javadoc != null){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".javadoc(")
+					.append(javadoc.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+					.append(')');
+		}
+		
+		// Add Annotations if present
+		if(ListUtil.isNotBlank(annotations)){
+			for(JavaAnnotation annotation: annotations){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".annotation(")
+						.append(annotation.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+						.append(')');
+			}
+		}
+		
+		// Add Visibility
+		if(visibility != Visibility.NONE){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".visibility(Visibility.").append(visibility).append(')');
+		}
+		
+		// Add abstract if we have it
+		if(isAbstract){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isAbstract()");
+		}
+		
+		// Add static if we have it
+		if(isStatic){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isStatic()");
+		}
+		
+		// Add final if we have it
+		if(isFinal){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isFinal()");
+		}
+		
+		// Class Name
+		codeString.append(NEWLINE_WITH_2_TABS).append(".className(\"").append(className).append("\")");
+		
+		// Extends
+		if(StringUtil.isNotBlank(superClassName)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".superClassName(\"").append(superClassName).append("\")");
+		}
+		
+		// Implements
+		if(ListUtil.isNotBlank(implementsInterfaceNames)){
+			for(String interfaceName: implementsInterfaceNames){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".implementsInterfaceName(\"")
+						.append(interfaceName).append("\")");
+			}
+		}
+		
+		// Other types based on innerElementsOrder
+		if(ListUtil.isNotBlank(innerElementsOrder)){
+			int singleLineCommentIndex = 0, multiLineCommentIndex = 0;
+			Map<String, JavaClass> innerClassesMap = getInnerClassesMap();
+			Map<String, JavaField> fieldsMap = getFieldsMap();
+			Map<String, JavaMethod> methodsMap = getMethodsMap();
+			
+			for(Pair<JavaCodeTypes, String> innerElementInfo: innerElementsOrder){
+				switch(innerElementInfo.getLeft()){
+					case SINGLE_LINE_COMMENT -> {
+						codeString.append(NEWLINE_WITH_2_TABS).append(".singleLineComment(")
+								.append(singleLineComments.get(singleLineCommentIndex).toBuilderCode()
+										.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+								.append(')');
+						singleLineCommentIndex++;
+					}
+					case MULTI_LINE_COMMENT -> {
+						codeString.append(NEWLINE_WITH_2_TABS).append(".multiLineComment(")
+								.append(multiLineComments.get(multiLineCommentIndex).toBuilderCode()
+										.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+								.append(')');
+						multiLineCommentIndex++;
+					}
+					case CLASS -> codeString.append(NEWLINE_WITH_2_TABS).append(".innerClass(")
+							.append(innerClassesMap.get(innerElementInfo.getRight()).toBuilderCode()
+									.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+							.append(')');
+					case FIELD -> codeString.append(NEWLINE_WITH_2_TABS).append(".field(")
+							.append(fieldsMap.get(innerElementInfo.getRight()).toBuilderCode()
+									.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+							.append(')');
+					case METHOD -> codeString.append(NEWLINE_WITH_2_TABS).append(".method(")
+							.append(methodsMap.get(innerElementInfo.getRight()).toBuilderCode()
+									.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+							.append(')');
+				}
+			}
+		}else{
+			// Inner Classes
+			if(ListUtil.isNotBlank(innerClasses)){
+				for(JavaClass innerClass: innerClasses){
+					codeString.append(NEWLINE_WITH_2_TABS).append(".innerClass(")
+							.append(innerClass.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+							.append(')');
+				}
+			}
+			
+			// Fields
+			if(ListUtil.isNotBlank(fields)){
+				for(JavaField field: fields){
+					codeString.append(NEWLINE_WITH_2_TABS).append(".field(")
+							.append(field.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+							.append(')');
+				}
+			}
+			
+			// Methods
+			if(ListUtil.isNotBlank(methods)){
+				for(JavaMethod method: methods){
+					codeString.append(NEWLINE_WITH_2_TABS).append(".method(")
+							.append(method.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+							.append(')');
+				}
+			}
+		}
+		
+		// Finish building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		
+		return codeString.toString();
+	}
 }

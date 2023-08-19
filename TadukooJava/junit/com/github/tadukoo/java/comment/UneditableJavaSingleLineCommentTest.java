@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class UneditableJavaSingleLineCommentTest extends DefaultJavaSingleLineCommentTest<UneditableJavaSingleLineComment>{
 	public UneditableJavaSingleLineCommentTest(){
-		super(UneditableJavaSingleLineComment::builder);
+		super(UneditableJavaSingleLineComment.class, UneditableJavaSingleLineComment::builder);
 	}
 	
 	@Test

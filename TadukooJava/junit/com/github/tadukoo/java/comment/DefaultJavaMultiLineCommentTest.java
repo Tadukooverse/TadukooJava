@@ -12,10 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public abstract class DefaultJavaMultiLineCommentTest<CommentType extends JavaMultiLineComment>{
 	
+	private final Class<CommentType> clazz;
 	private final ThrowingSupplier<JavaMultiLineCommentBuilder<CommentType>, NoException> builder;
 	protected CommentType comment;
 	
-	protected DefaultJavaMultiLineCommentTest(ThrowingSupplier<JavaMultiLineCommentBuilder<CommentType>, NoException> builder){
+	protected DefaultJavaMultiLineCommentTest(
+			Class<CommentType> clazz, ThrowingSupplier<JavaMultiLineCommentBuilder<CommentType>, NoException> builder){
+		this.clazz = clazz;
 		this.builder = builder;
 	}
 	
@@ -110,5 +113,35 @@ public abstract class DefaultJavaMultiLineCommentTest<CommentType extends JavaMu
 				.content(ListUtil.createList("something useful", "something else"))
 				.build();
 		assertEquals(ListUtil.createList("something useful", "something else"), comment.getContent());
+	}
+	
+	@Test
+	public void testToBuilderCodeNoContent(){
+		comment = builder.get()
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.build()", comment.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeOneContent(){
+		comment = builder.get()
+				.content("something useful")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.content(\"something useful\")\n" +
+				"\t\t.build()", comment.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeTwoContent(){
+		comment = builder.get()
+				.content("something useful")
+				.content("something else")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.content(\"something useful\")\n" +
+				"\t\t.content(\"something else\")\n" +
+				"\t\t.build()", comment.toBuilderCode());
 	}
 }

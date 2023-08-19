@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class EditableJavaMethodTest extends DefaultJavaMethodTest<EditableJavaMethod>{
 	
 	public EditableJavaMethodTest(){
-		super(EditableJavaMethod::builder, EditableJavadoc::builder, EditableJavaAnnotation::builder);
+		super(EditableJavaMethod.class, EditableJavaMethod::builder, EditableJavadoc::builder, EditableJavaAnnotation::builder);
 	}
 	
 	@Test

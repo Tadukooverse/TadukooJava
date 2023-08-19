@@ -10,10 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public abstract class DefaultJavaSingleLineCommentTest<CommentType extends JavaSingleLineComment>{
+	
+	private final Class<CommentType> clazz;
 	private final ThrowingSupplier<JavaSingleLineCommentBuilder<CommentType>, NoException> builder;
 	protected CommentType comment;
 	
-	protected DefaultJavaSingleLineCommentTest(ThrowingSupplier<JavaSingleLineCommentBuilder<CommentType>, NoException> builder){
+	protected DefaultJavaSingleLineCommentTest(
+			Class<CommentType> clazz,
+			ThrowingSupplier<JavaSingleLineCommentBuilder<CommentType>, NoException> builder){
+		this.clazz = clazz;
 		this.builder = builder;
 	}
 	
@@ -84,5 +89,15 @@ public abstract class DefaultJavaSingleLineCommentTest<CommentType extends JavaS
 	public void testEqualsDifferentType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(comment, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		comment = builder.get()
+				.content("something useful")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.content(\"something useful\")\n" +
+				"\t\t.build()", comment.toBuilderCode());
 	}
 }

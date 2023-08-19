@@ -34,7 +34,7 @@ public class RegularJavaImportStatementTest extends DefaultJavaImportStatementTe
 	}
 	
 	public RegularJavaImportStatementTest(){
-		super(TestJavaImportStatement::builder);
+		super(TestJavaImportStatement.class, TestJavaImportStatement::builder);
 	}
 	
 	@Test

@@ -227,4 +227,56 @@ public abstract class Javadoc implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start builder
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Set condensed if present
+		if(condensed){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".condensed()");
+		}
+		
+		// Set content if present
+		if(ListUtil.isNotBlank(content)){
+			for(String line: content){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".content(\"").append(escapeQuotes(line)).append("\")");
+			}
+		}
+		
+		// Set author if present
+		if(StringUtil.isNotBlank(author)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".author(\"").append(escapeQuotes(author)).append("\")");
+		}
+		
+		// Set version if present
+		if(StringUtil.isNotBlank(version)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".version(\"").append(escapeQuotes(version)).append("\")");
+		}
+		
+		// Set since if present
+		if(StringUtil.isNotBlank(since)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".since(\"").append(escapeQuotes(since)).append("\")");
+		}
+		
+		// Set params if present
+		if(ListUtil.isNotBlank(params)){
+			for(Pair<String, String> param: params){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".param(\"")
+						.append(escapeQuotes(param.getLeft())).append("\", \"")
+						.append(escapeQuotes(param.getRight())).append("\")");
+			}
+		}
+		
+		// Set return if present
+		if(StringUtil.isNotBlank(returnVal)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".returnVal(\"").append(escapeQuotes(returnVal)).append("\")");
+		}
+		
+		// Finish building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
+	}
 }

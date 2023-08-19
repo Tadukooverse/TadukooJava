@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EditableJavaSingleLineCommentTest extends DefaultJavaSingleLineCommentTest<EditableJavaSingleLineComment>{
 	public EditableJavaSingleLineCommentTest(){
-		super(EditableJavaSingleLineComment::builder);
+		super(EditableJavaSingleLineComment.class, EditableJavaSingleLineComment::builder);
 	}
 	
 	@Test

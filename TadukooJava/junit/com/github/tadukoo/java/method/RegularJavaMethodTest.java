@@ -57,7 +57,7 @@ public class RegularJavaMethodTest extends DefaultJavaMethodTest<RegularJavaMeth
 	}
 	
 	public RegularJavaMethodTest(){
-		super(TestJavaMethod::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
+		super(TestJavaMethod.class, TestJavaMethod::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
 	}
 	
 	@Test

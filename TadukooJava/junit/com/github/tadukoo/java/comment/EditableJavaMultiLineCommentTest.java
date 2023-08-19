@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EditableJavaMultiLineCommentTest extends DefaultJavaMultiLineCommentTest<EditableJavaMultiLineComment>{
 	
 	public EditableJavaMultiLineCommentTest(){
-		super(EditableJavaMultiLineComment::builder);
+		super(EditableJavaMultiLineComment.class, EditableJavaMultiLineComment::builder);
 	}
 	
 	@Test

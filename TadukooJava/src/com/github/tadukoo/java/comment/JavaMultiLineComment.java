@@ -78,4 +78,21 @@ public abstract class JavaMultiLineComment implements JavaCodeType{
 		}
 		return false;
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add content if we have it
+		if(ListUtil.isNotBlank(content)){
+			for(String line: content){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".content(\"").append(escapeQuotes(line)).append("\")");
+			}
+		}
+		
+		// End the building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
+	}
 }

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class UneditableJavaMethodTest extends DefaultJavaMethodTest<UneditableJavaMethod>{
 	
 	public UneditableJavaMethodTest(){
-		super(UneditableJavaMethod::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
+		super(UneditableJavaMethod.class, UneditableJavaMethod::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
 	}
 	
 	@Test

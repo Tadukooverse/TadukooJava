@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EditableJavadocTest extends DefaultJavadocTest<EditableJavadoc>{
 	
 	public EditableJavadocTest(){
-		super(EditableJavadoc::builder);
+		super(EditableJavadoc.class, EditableJavadoc::builder);
 	}
 	
 	@Test

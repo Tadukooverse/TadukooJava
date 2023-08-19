@@ -92,7 +92,8 @@ public class RegularJavaClassTest extends DefaultJavaClassTest<RegularJavaClassT
 	}
 	
 	public RegularJavaClassTest(){
-		super(TestJavaClass::builder, UneditableJavaPackageDeclaration::builder, UneditableJavaImportStatement::builder,
+		super(TestJavaClass.class, TestJavaClass::builder,
+				UneditableJavaPackageDeclaration::builder, UneditableJavaImportStatement::builder,
 				UneditableJavaAnnotation::builder, UneditableJavadoc::builder, UneditableJavaSingleLineComment::builder,
 				UneditableJavaMultiLineComment::builder, UneditableJavaField::builder, UneditableJavaMethod::builder);
 	}

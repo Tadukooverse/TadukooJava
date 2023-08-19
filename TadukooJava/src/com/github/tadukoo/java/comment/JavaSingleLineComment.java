@@ -64,4 +64,12 @@ public abstract class JavaSingleLineComment implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		return this.getClass().getSimpleName() + ".builder()" +
+				NEWLINE_WITH_2_TABS + ".content(\"" + escapeQuotes(content) + "\")" +
+				NEWLINE_WITH_2_TABS + ".build()";
+	}
 }

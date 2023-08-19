@@ -17,11 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnotation>{
+	
+	private final Class<AnnotationType> clazz;
 	private final ThrowingSupplier<JavaAnnotationBuilder<AnnotationType>, NoException> builder;
 	protected String name;
 	protected AnnotationType annotation;
 	
-	protected DefaultJavaAnnotationTest(ThrowingSupplier<JavaAnnotationBuilder<AnnotationType>, NoException> builder){
+	protected DefaultJavaAnnotationTest(
+			Class<AnnotationType> clazz, ThrowingSupplier<JavaAnnotationBuilder<AnnotationType>, NoException> builder){
+		this.clazz = clazz;
 		this.builder = builder;
 	}
 	
@@ -151,7 +155,7 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	}
 	
 	@Test
-	public void testToStringSingleAnnotation(){
+	public void testToStringSingleParameter(){
 		annotation = builder.get()
 				.name(name)
 				.parameter("test", "true")
@@ -160,7 +164,7 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	}
 	
 	@Test
-	public void testToStringMultipleAnnotations(){
+	public void testToStringMultipleParameters(){
 		annotation = builder.get()
 				.name(name)
 				.parameter("test", "true")
@@ -189,5 +193,69 @@ public abstract class DefaultJavaAnnotationTest<AnnotationType extends JavaAnnot
 	public void testEqualsDifferentType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(annotation, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		annotation = builder.get()
+				.name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.name(\"" + name + "\")\n" +
+				"\t\t.build()", annotation.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithCanonicalName(){
+		annotation = builder.get()
+				.name(name)
+				.canonicalName("some.canon.name")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.name(\"" + name + "\")\n" +
+				"\t\t.canonicalName(\"some.canon.name\")\n" +
+				"\t\t.build()", annotation.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneParameter(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "5")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.name(\"" + name + "\")\n" +
+				"\t\t.parameter(\"test\", \"5\")\n" +
+				"\t\t.build()", annotation.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoParameters(){
+		annotation = builder.get()
+				.name(name)
+				.parameter("test", "5")
+				.parameter("something", "42")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.name(\"" + name + "\")\n" +
+				"\t\t.parameter(\"test\", \"5\")\n" +
+				"\t\t.parameter(\"something\", \"42\")\n" +
+				"\t\t.build()", annotation.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithEverything(){
+		annotation = builder.get()
+				.name(name)
+				.canonicalName("some.canon.name")
+				.parameter("test", "5")
+				.parameter("something", "42")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.name(\"" + name + "\")\n" +
+				"\t\t.canonicalName(\"some.canon.name\")\n" +
+				"\t\t.parameter(\"test\", \"5\")\n" +
+				"\t\t.parameter(\"something\", \"42\")\n" +
+				"\t\t.build()", annotation.toBuilderCode());
 	}
 }

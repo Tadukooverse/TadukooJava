@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class UneditableJavaClassTest extends DefaultJavaClassTest<UneditableJavaClass>{
 	
 	public UneditableJavaClassTest(){
-		super(UneditableJavaClass::builder, UneditableJavaPackageDeclaration::builder, UneditableJavaImportStatement::builder,
+		super(UneditableJavaClass.class, UneditableJavaClass::builder,
+				UneditableJavaPackageDeclaration::builder, UneditableJavaImportStatement::builder,
 				UneditableJavaAnnotation::builder, UneditableJavadoc::builder,
 				UneditableJavaSingleLineComment::builder, UneditableJavaMultiLineComment::builder,
 				UneditableJavaField::builder, UneditableJavaMethod::builder);

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EditableJavaImportStatementTest extends DefaultJavaImportStatementTest<EditableJavaImportStatement>{
 	
 	public EditableJavaImportStatementTest(){
-		super(EditableJavaImportStatement::builder);
+		super(EditableJavaImportStatement.class, EditableJavaImportStatement::builder);
 	}
 	
 	@Test

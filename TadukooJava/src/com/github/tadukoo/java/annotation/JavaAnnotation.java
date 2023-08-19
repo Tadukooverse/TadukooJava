@@ -119,4 +119,32 @@ public abstract class JavaAnnotation implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start the building
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add name
+		codeString.append(NEWLINE_WITH_2_TABS).append(".name(\"").append(name).append("\")");
+		
+		// Add canonical name if we have it
+		if(StringUtil.isNotBlank(canonicalName)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".canonicalName(\"").append(canonicalName).append("\")");
+		}
+		
+		// Add parameters if we have them
+		if(ListUtil.isNotBlank(parameters)){
+			for(Pair<String, String> parameter: parameters){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".parameter(\"")
+						.append(parameter.getLeft()).append("\", \"")
+						.append(parameter.getRight().replace("\"", "\\\"")).append("\")");
+			}
+		}
+		
+		// Finish the building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
+	}
 }

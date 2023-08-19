@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class UneditableJavaFieldTest extends DefaultJavaFieldTest<UneditableJavaField>{
 	
 	public UneditableJavaFieldTest(){
-		super(UneditableJavaField::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
+		super(UneditableJavaField.class, UneditableJavaField::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
 	}
 	
 	@Test

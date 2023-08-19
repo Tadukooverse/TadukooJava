@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.javaclass;
 
+import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -40,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	
+	private final Class<ClassType> theClazz;
 	private final ThrowingSupplier<JavaClassBuilder<ClassType>, NoException> builder;
 	private final ThrowingSupplier<JavaPackageDeclarationBuilder<?>, NoException> javaPackageDeclarationBuilder;
 	private final ThrowingSupplier<JavaImportStatementBuilder<?>, NoException> javaImportStatementBuilder;
@@ -54,6 +56,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	protected String className;
 	
 	protected DefaultJavaClassTest(
+			Class<ClassType> theClazz,
 			ThrowingSupplier<JavaClassBuilder<ClassType>, NoException> builder,
 			ThrowingSupplier<JavaPackageDeclarationBuilder<?>, NoException> javaPackageDeclarationBuilder,
 			ThrowingSupplier<JavaImportStatementBuilder<?>, NoException> javaImportStatementBuilder,
@@ -63,6 +66,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 			ThrowingSupplier<JavaMultiLineCommentBuilder<?>, NoException> multiLineCommentBuilder,
 			ThrowingSupplier<JavaFieldBuilder<?>, NoException> javaFieldBuilder,
 			ThrowingSupplier<JavaMethodBuilder<?>, NoException> javaMethodBuilder){
+		this.theClazz = theClazz;
 		this.builder = builder;
 		this.javaPackageDeclarationBuilder = javaPackageDeclarationBuilder;
 		this.javaImportStatementBuilder = javaImportStatementBuilder;
@@ -2538,5 +2542,567 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	public void testEqualsNotSameType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(clazz, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		clazz = builder.get()
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeInnerClass(){
+		clazz = builder.get()
+				.innerClass()
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.innerClass()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithPackageName(){
+		clazz = builder.get()
+				.packageName("com.example")
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.packageName(\"com.example\")\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithRegularImport(){
+		clazz = builder.get()
+				.importName("com.something.*", false)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.importName(\"com.something.*\", false)\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithStaticImport(){
+		clazz = builder.get()
+				.importName("com.something.else.*", true)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.importName(\"com.something.else.*\", true)\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithRegularAndStaticImports(){
+		clazz = builder.get()
+				.importName("com.something.*", false)
+				.importName("com.something.else.*", true)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.importName(\"com.something.*\", false)\n" +
+				"\t\t.importName(\"com.something.else.*\", true)\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithJavadoc(){
+		Javadoc javadoc = javadocBuilder.get()
+				.build();
+		clazz = builder.get()
+				.javadoc(javadoc)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.javadoc(" +
+				javadoc.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneAnnotation(){
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		clazz = builder.get()
+				.annotation(annotation)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.annotation(" +
+				annotation.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoAnnotations(){
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		JavaAnnotation annotation2 = javaAnnotationBuilder.get()
+				.name("Derp")
+				.build();
+		clazz = builder.get()
+				.annotation(annotation)
+				.annotation(annotation2)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.annotation(" +
+				annotation.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.annotation(" +
+				annotation2.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithVisibility(){
+		clazz = builder.get()
+				.visibility(Visibility.PUBLIC)
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.visibility(Visibility.PUBLIC)\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithAbstract(){
+		clazz = builder.get()
+				.isAbstract()
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isAbstract()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithStatic(){
+		clazz = builder.get()
+				.innerClass()
+				.isStatic()
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.innerClass()\n" +
+				"\t\t.isStatic()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithFinal(){
+		clazz = builder.get()
+				.isFinal()
+				.className(className)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isFinal()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithExtends(){
+		clazz = builder.get()
+				.className(className)
+				.superClassName("Something")
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.superClassName(\"Something\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneImplements(){
+		clazz = builder.get()
+				.className(className)
+				.implementsInterfaceName("Test")
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.implementsInterfaceName(\"Test\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoImplements(){
+		clazz = builder.get()
+				.className(className)
+				.implementsInterfaceName("Test")
+				.implementsInterfaceName("Blah")
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.implementsInterfaceName(\"Test\")\n" +
+				"\t\t.implementsInterfaceName(\"Blah\")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithSingleLineComment(){
+		JavaSingleLineComment singleLineComment = singleLineCommentBuilder.get()
+				.content("something useful")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.singleLineComment(singleLineComment)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.singleLineComment(" +
+				singleLineComment.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoSingleLineComments(){
+		JavaSingleLineComment singleLineComment = singleLineCommentBuilder.get()
+				.content("something useful")
+				.build();
+		JavaSingleLineComment singleLineComment2 = singleLineCommentBuilder.get()
+				.content("something else useful")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.singleLineComment(singleLineComment)
+				.singleLineComment(singleLineComment2)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.singleLineComment(" +
+				singleLineComment.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.singleLineComment(" +
+				singleLineComment2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithMultiLineComment(){
+		JavaMultiLineComment multiLineComment = multiLineCommentBuilder.get()
+				.content("something useful")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.multiLineComment(multiLineComment)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.multiLineComment(" +
+				multiLineComment.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoMultiLineComments(){
+		JavaMultiLineComment multiLineComment = multiLineCommentBuilder.get()
+				.content("something useful")
+				.build();
+		JavaMultiLineComment multiLineComment2 = multiLineCommentBuilder.get()
+				.content("something else useful")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.multiLineComment(multiLineComment)
+				.multiLineComment(multiLineComment2)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.multiLineComment(" +
+				multiLineComment.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.multiLineComment(" +
+				multiLineComment2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithInnerClass(){
+		JavaClass innerClass = builder.get()
+				.innerClass()
+				.className("Test")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.innerClass(innerClass)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.innerClass(" +
+				innerClass.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoInnerClasses(){
+		JavaClass innerClass = builder.get()
+				.innerClass()
+				.className("Test")
+				.build();
+		JavaClass innerClass2 = builder.get()
+				.innerClass()
+				.className("Test2")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.innerClass(innerClass)
+				.innerClass(innerClass2)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.innerClass(" +
+				innerClass.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.innerClass(" +
+				innerClass2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithField(){
+		JavaField field = javaFieldBuilder.get()
+				.type("String").name("version")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.field(field)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.field(" +
+				field.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoFields(){
+		JavaField field = javaFieldBuilder.get()
+				.type("String").name("version")
+				.build();
+		JavaField field2 = javaFieldBuilder.get()
+				.type("int").name("something")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.field(field)
+				.field(field2)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.field(" +
+				field.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.field(" +
+				field2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithMethod(){
+		JavaMethod method = javaMethodBuilder.get()
+				.returnType(className)
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.method(method)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.method(" +
+				method.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoMethods(){
+		JavaMethod method = javaMethodBuilder.get()
+				.returnType(className)
+				.build();
+		JavaMethod method2 = javaMethodBuilder.get()
+				.returnType("int").name("getVersion")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.method(method)
+				.method(method2)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.method(" +
+				method.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.method(" +
+				method2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithInnerStuffOrdered(){
+		JavaSingleLineComment singleLineComment = singleLineCommentBuilder.get()
+				.content("something useful")
+				.build();
+		JavaSingleLineComment singleLineComment2 = singleLineCommentBuilder.get()
+				.content("something else useful")
+				.build();
+		JavaMultiLineComment multiLineComment = multiLineCommentBuilder.get()
+				.content("something useful")
+				.build();
+		JavaMultiLineComment multiLineComment2 = multiLineCommentBuilder.get()
+				.content("something else useful")
+				.build();
+		JavaClass innerClass = builder.get()
+				.innerClass()
+				.className("Test")
+				.build();
+		JavaClass innerClass2 = builder.get()
+				.innerClass()
+				.className("Test2")
+				.build();
+		JavaField field = javaFieldBuilder.get()
+				.type("String").name("version")
+				.build();
+		JavaField field2 = javaFieldBuilder.get()
+				.type("int").name("something")
+				.build();
+		JavaMethod method = javaMethodBuilder.get()
+				.returnType(className)
+				.build();
+		JavaMethod method2 = javaMethodBuilder.get()
+				.returnType("int").name("getVersion")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.multiLineComment(multiLineComment2)
+				.method(method2)
+				.field(field)
+				.singleLineComment(singleLineComment2)
+				.method(method)
+				.innerClass(innerClass2)
+				.multiLineComment(multiLineComment)
+				.field(field2)
+				.singleLineComment(singleLineComment)
+				.innerClass(innerClass)
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.multiLineComment(" +
+				multiLineComment2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.method(" +
+				method2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.field(" +
+				field.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.singleLineComment(" +
+				singleLineComment2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.method(" +
+				method.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.innerClass(" +
+				innerClass2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.multiLineComment(" +
+				multiLineComment.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.field(" +
+				field2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.singleLineComment(" +
+				singleLineComment.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.innerClass(" +
+				innerClass.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithInnerStuffNotOrdered(){
+		JavaClass innerClass = builder.get()
+				.innerClass()
+				.className("Test")
+				.build();
+		JavaClass innerClass2 = builder.get()
+				.innerClass()
+				.className("Test2")
+				.build();
+		JavaField field = javaFieldBuilder.get()
+				.type("String").name("version")
+				.build();
+		JavaField field2 = javaFieldBuilder.get()
+				.type("int").name("something")
+				.build();
+		JavaMethod method = javaMethodBuilder.get()
+				.returnType(className)
+				.build();
+		JavaMethod method2 = javaMethodBuilder.get()
+				.returnType("int").name("getVersion")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.method(method)
+				.field(field)
+				.method(method2)
+				.innerClass(innerClass)
+				.field(field2)
+				.innerClass(innerClass2)
+				.innerElementsOrder(new ArrayList<>())
+				.build();
+		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
+				"\t\t.className(\"" + className + "\")\n" +
+				"\t\t.innerClass(" +
+				innerClass.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.innerClass(" +
+				innerClass2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.field(" +
+				field.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.field(" +
+				field2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.method(" +
+				method.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.method(" +
+				method2.toBuilderCode().replace(
+						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.build()", clazz.toBuilderCode());
 	}
 }

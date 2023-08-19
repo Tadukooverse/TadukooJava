@@ -38,7 +38,7 @@ public class RegularJavadocTest extends DefaultJavadocTest<RegularJavadocTest.Te
 	}
 	
 	public RegularJavadocTest(){
-		super(TestJavadoc::builder);
+		super(TestJavadoc.class, TestJavadoc::builder);
 	}
 	
 	@Test

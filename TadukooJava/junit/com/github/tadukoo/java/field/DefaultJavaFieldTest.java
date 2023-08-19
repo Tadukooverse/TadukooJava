@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.field;
 
+import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	
+	private final Class<FieldType> clazz;
 	private final ThrowingSupplier<JavaFieldBuilder<FieldType>, NoException> builder;
 	private final ThrowingSupplier<JavadocBuilder<?>, NoException> javadocBuilder;
 	private final ThrowingSupplier<JavaAnnotationBuilder<?>, NoException> javaAnnotationBuilder;
@@ -30,9 +32,11 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	protected String type, name;
 	
 	protected DefaultJavaFieldTest(
+			Class<FieldType> clazz,
 			ThrowingSupplier<JavaFieldBuilder<FieldType>, NoException> builder,
 			ThrowingSupplier<JavadocBuilder<?>, NoException> javadocBuilder,
 			ThrowingSupplier<JavaAnnotationBuilder<?>, NoException> javaAnnotationBuilder){
+		this.clazz = clazz;
 		this.builder = builder;
 		this.javadocBuilder = javadocBuilder;
 		this.javaAnnotationBuilder = javaAnnotationBuilder;
@@ -423,5 +427,150 @@ public abstract class DefaultJavaFieldTest<FieldType extends JavaField>{
 	public void testEqualsDifferentType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(field, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		field = builder.get()
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithJavadoc(){
+		Javadoc javadoc = javadocBuilder.get()
+				.build();
+		field = builder.get()
+				.javadoc(javadoc)
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.javadoc(" + javadoc.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneAnnotation(){
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		field = builder.get()
+				.annotation(annotation)
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.annotation(" + annotation.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoAnnotations(){
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		JavaAnnotation annotation2 = javaAnnotationBuilder.get()
+				.name("Derp")
+				.build();
+		field = builder.get()
+				.annotation(annotation)
+				.annotation(annotation2)
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.annotation(" + annotation.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.annotation(" + annotation2.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithVisibility(){
+		field = builder.get()
+				.visibility(Visibility.PUBLIC)
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.visibility(Visibility.PUBLIC)\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithStatic(){
+		field = builder.get()
+				.isStatic()
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isStatic()\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithFinal(){
+		field = builder.get()
+				.isFinal()
+				.type(type).name(name)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isFinal()\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithValue(){
+		field = builder.get()
+				.type(type).name(name)
+				.value("42")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.value(\"42\")\n" +
+				"\t\t.build()", field.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithEverything(){
+		Javadoc javadoc = javadocBuilder.get()
+				.build();
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		JavaAnnotation annotation2 = javaAnnotationBuilder.get()
+				.name("Derp")
+				.build();
+		field = builder.get()
+				.javadoc(javadoc)
+				.annotation(annotation)
+				.annotation(annotation2)
+				.visibility(Visibility.PUBLIC)
+				.isStatic().isFinal()
+				.type(type).name(name)
+				.value("42")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.javadoc(" + javadoc.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.annotation(" + annotation.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.annotation(" + annotation2.toBuilderCode()
+				.replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				"\t\t.visibility(Visibility.PUBLIC)\n" +
+				"\t\t.isStatic()\n" +
+				"\t\t.isFinal()\n" +
+				"\t\t.type(\"" + type + "\").name(\"" + name + "\")\n" +
+				"\t\t.value(\"42\")\n" +
+				"\t\t.build()", field.toBuilderCode());
 	}
 }

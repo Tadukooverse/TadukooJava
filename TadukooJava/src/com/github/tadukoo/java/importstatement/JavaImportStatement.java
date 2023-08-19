@@ -86,4 +86,23 @@ public abstract class JavaImportStatement implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start builder
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName())
+				.append(".builder()");
+		
+		// Add isStatic if the import is static
+		if(isStatic){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isStatic()");
+		}
+		
+		// Add import name and finish building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"").append(importName).append("\")")
+				.append(NEWLINE_WITH_2_TABS).append(".build()");
+		
+		return codeString.toString();
+	}
 }

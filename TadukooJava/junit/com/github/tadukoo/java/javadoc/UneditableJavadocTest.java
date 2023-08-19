@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class UneditableJavadocTest extends DefaultJavadocTest<UneditableJavadoc>{
 	public UneditableJavadocTest(){
-		super(UneditableJavadoc::builder);
+		super(UneditableJavadoc.class, UneditableJavadoc::builder);
 	}
 	
 	@Test

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class UneditableJavaAnnotationTest extends DefaultJavaAnnotationTest<UneditableJavaAnnotation>{
 	
 	public UneditableJavaAnnotationTest(){
-		super(UneditableJavaAnnotation::builder);
+		super(UneditableJavaAnnotation.class, UneditableJavaAnnotation::builder);
 	}
 	
 	@Test

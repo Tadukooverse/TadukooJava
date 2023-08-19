@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class EditableJavaFieldTest extends DefaultJavaFieldTest<EditableJavaField>{
 	
 	protected EditableJavaFieldTest(){
-		super(EditableJavaField::builder, EditableJavadoc::builder, EditableJavaAnnotation::builder);
+		super(EditableJavaField.class, EditableJavaField::builder, EditableJavadoc::builder, EditableJavaAnnotation::builder);
 	}
 	
 	@Test

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class UneditableJavaPackageDeclarationTest extends DefaultJavaPackageDeclarationTest<UneditableJavaPackageDeclaration>{
 	protected UneditableJavaPackageDeclarationTest(){
-		super(UneditableJavaPackageDeclaration::builder);
+		super(UneditableJavaPackageDeclaration.class, UneditableJavaPackageDeclaration::builder);
 	}
 	
 	@Test

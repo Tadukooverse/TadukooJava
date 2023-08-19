@@ -53,7 +53,7 @@ public class RegularJavaFieldTest extends DefaultJavaFieldTest<RegularJavaFieldT
 	}
 	
 	public RegularJavaFieldTest(){
-		super(TestJavaField::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
+		super(TestJavaField.class, TestJavaField::builder, UneditableJavadoc::builder, UneditableJavaAnnotation::builder);
 	}
 	
 	@Test

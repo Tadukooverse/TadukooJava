@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	
+	private final Class<MethodType> clazz;
 	private final ThrowingSupplier<JavaMethodBuilder<MethodType>, NoException> builder;
 	private final ThrowingSupplier<JavadocBuilder<?>, NoException> javadocBuilder;
 	private final ThrowingSupplier<JavaAnnotationBuilder<?>, NoException> javaAnnotationBuilder;
@@ -33,9 +35,11 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	protected String returnType;
 	
 	protected DefaultJavaMethodTest(
+			Class<MethodType> clazz,
 			ThrowingSupplier<JavaMethodBuilder<MethodType>, NoException> builder,
 			ThrowingSupplier<JavadocBuilder<?>, NoException> javadocBuilder,
 			ThrowingSupplier<JavaAnnotationBuilder<?>, NoException> javaAnnotationBuilder){
+		this.clazz = clazz;
 		this.builder = builder;
 		this.javadocBuilder = javadocBuilder;
 		this.javaAnnotationBuilder = javaAnnotationBuilder;
@@ -655,5 +659,258 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testEqualsDifferentTypes(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(method, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		method = builder.get()
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithJavadoc(){
+		Javadoc javadoc = javadocBuilder.get()
+				.build();
+		method = builder.get()
+				.javadoc(javadoc)
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.javadoc(" +
+				javadoc.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneAnnotation(){
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		method = builder.get()
+				.annotation(annotation)
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.annotation(" +
+				annotation.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoAnnotations(){
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		JavaAnnotation annotation2 = javaAnnotationBuilder.get()
+				.name("Derp")
+				.build();
+		method = builder.get()
+				.annotation(annotation)
+				.annotation(annotation2)
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.annotation(" +
+				annotation.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.annotation(" +
+				annotation2.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithVisibility(){
+		method = builder.get()
+				.visibility(Visibility.PUBLIC)
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.visibility(Visibility.PUBLIC)\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithAbstract(){
+		method = builder.get()
+				.isAbstract()
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isAbstract()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithStatic(){
+		method = builder.get()
+				.isStatic()
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isStatic()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithFinal(){
+		method = builder.get()
+				.isFinal()
+				.returnType(returnType)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.isFinal()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithName(){
+		method = builder.get()
+				.returnType(returnType).name("something")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.name(\"something\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneParameter(){
+		method = builder.get()
+				.returnType(returnType)
+				.parameter("int", "something")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.parameter(\"int\", \"something\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoParameters(){
+		method = builder.get()
+				.returnType(returnType)
+				.parameter("int", "something")
+				.parameter("String", "version")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.parameter(\"int\", \"something\")\n" +
+				"\t\t.parameter(\"String\", \"version\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneThrowType(){
+		method = builder.get()
+				.returnType(returnType)
+				.throwType("Exception")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.throwType(\"Exception\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoThrowTypes(){
+		method = builder.get()
+				.returnType(returnType)
+				.throwType("Exception")
+				.throwType("Throwable")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.throwType(\"Exception\")\n" +
+				"\t\t.throwType(\"Throwable\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithOneLine(){
+		method = builder.get()
+				.returnType(returnType)
+				.line("this.thing = thing;")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.line(\"this.thing = thing;\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithTwoLines(){
+		method = builder.get()
+				.returnType(returnType)
+				.line("this.thing = thing;")
+				.line("return this;")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.line(\"this.thing = thing;\")\n" +
+				"\t\t.line(\"return this;\")\n" +
+				"\t\t.build()", method.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeWithEverything(){
+		Javadoc javadoc = javadocBuilder.get()
+				.build();
+		JavaAnnotation annotation = javaAnnotationBuilder.get()
+				.name("Test")
+				.build();
+		JavaAnnotation annotation2 = javaAnnotationBuilder.get()
+				.name("Derp")
+				.build();
+		method = builder.get()
+				.javadoc(javadoc)
+				.annotation(annotation)
+				.annotation(annotation2)
+				.visibility(Visibility.PUBLIC)
+				.isStatic().isFinal()
+				.returnType(returnType)
+				.name("something")
+				.parameter("int", "something")
+				.parameter("String", "version")
+				.throwType("Exception")
+				.throwType("Throwable")
+				.line("this.thing = thing;")
+				.line("return this;")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.javadoc(" +
+				javadoc.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.annotation(" +
+				annotation.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.annotation(" +
+				annotation2.toBuilderCode().replace(JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) +
+				")\n" +
+				"\t\t.visibility(Visibility.PUBLIC)\n" +
+				"\t\t.isStatic()\n" +
+				"\t\t.isFinal()\n" +
+				"\t\t.returnType(\"" + returnType + "\")\n" +
+				"\t\t.name(\"something\")\n" +
+				"\t\t.parameter(\"int\", \"something\")\n" +
+				"\t\t.parameter(\"String\", \"version\")\n" +
+				"\t\t.throwType(\"Exception\")\n" +
+				"\t\t.throwType(\"Throwable\")\n" +
+				"\t\t.line(\"this.thing = thing;\")\n" +
+				"\t\t.line(\"return this;\")\n" +
+				"\t\t.build()", method.toBuilderCode());
 	}
 }

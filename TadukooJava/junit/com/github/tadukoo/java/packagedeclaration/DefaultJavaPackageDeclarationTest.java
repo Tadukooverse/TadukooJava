@@ -13,12 +13,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class DefaultJavaPackageDeclarationTest<PackageDeclarationType extends JavaPackageDeclaration>{
 	
+	private final Class<PackageDeclarationType> clazz;
 	private final ThrowingSupplier<JavaPackageDeclarationBuilder<PackageDeclarationType>, NoException> builder;
 	protected String packageName;
 	protected PackageDeclarationType packageDeclaration;
 	
 	protected DefaultJavaPackageDeclarationTest(
+			Class<PackageDeclarationType> clazz,
 			ThrowingSupplier<JavaPackageDeclarationBuilder<PackageDeclarationType>, NoException> builder){
+		this.clazz = clazz;
 		this.builder = builder;
 	}
 	
@@ -87,5 +90,15 @@ public abstract class DefaultJavaPackageDeclarationTest<PackageDeclarationType e
 	public void testEqualsDifferentType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(packageDeclaration, "testing");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		packageDeclaration = builder.get()
+				.packageName(packageName)
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.packageName(\"" + packageName + "\")\n" +
+				"\t\t.build()", packageDeclaration.toBuilderCode());
 	}
 }

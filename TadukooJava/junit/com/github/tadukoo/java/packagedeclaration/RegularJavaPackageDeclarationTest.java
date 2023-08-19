@@ -33,7 +33,7 @@ public class RegularJavaPackageDeclarationTest extends DefaultJavaPackageDeclara
 	}
 	
 	public RegularJavaPackageDeclarationTest(){
-		super(TestJavaPackageDeclaration::builder);
+		super(TestJavaPackageDeclaration.class, TestJavaPackageDeclaration::builder);
 	}
 	
 	@Test

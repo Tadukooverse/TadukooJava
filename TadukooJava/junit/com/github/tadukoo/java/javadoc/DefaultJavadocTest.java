@@ -19,10 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	
+	protected final Class<JavadocType> clazz;
 	protected final ThrowingSupplier<JavadocBuilder<JavadocType>, NoException> builder;
 	protected JavadocType doc;
 	
-	protected DefaultJavadocTest(ThrowingSupplier<JavadocBuilder<JavadocType>, NoException> builder){
+	protected DefaultJavadocTest(
+			Class<JavadocType> clazz, ThrowingSupplier<JavadocBuilder<JavadocType>, NoException> builder){
+		this.clazz = clazz;
 		this.builder = builder;
 	}
 	
@@ -525,5 +528,133 @@ public abstract class DefaultJavadocTest<JavadocType extends Javadoc>{
 	public void testEqualsDifferentType(){
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(doc, "test");
+	}
+	
+	@Test
+	public void testToBuilderCode(){
+		doc = builder.get()
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeCondensed(){
+		doc = builder.get()
+				.condensed()
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.condensed()\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeOneContent(){
+		doc = builder.get()
+				.content("something useful")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.content(\"something useful\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeTwoContent(){
+		doc = builder.get()
+				.content("something useful")
+				.content("something else")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.content(\"something useful\")\n" +
+				"\t\t.content(\"something else\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeAuthor(){
+		doc = builder.get()
+				.author("Logan Ferree (Tadukoo)")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.author(\"Logan Ferree (Tadukoo)\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeVersion(){
+		doc = builder.get()
+				.version("Alpha v.0.1")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.version(\"Alpha v.0.1\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeSince(){
+		doc = builder.get()
+				.since("Pre-Alpha")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.since(\"Pre-Alpha\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeOneParam(){
+		doc = builder.get()
+				.param("something", "does something")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.param(\"something\", \"does something\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeTwoParam(){
+		doc = builder.get()
+				.param("something", "does something")
+				.param("somethingElse", "does something else")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.param(\"something\", \"does something\")\n" +
+				"\t\t.param(\"somethingElse\", \"does something else\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeReturns(){
+		doc = builder.get()
+				.returnVal("this, to continue building")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.returnVal(\"this, to continue building\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
+	}
+	
+	@Test
+	public void testToBuilderCodeEverything(){
+		doc = builder.get()
+				.condensed()
+				.content("something useful")
+				.content("something else")
+				.author("Logan Ferree (Tadukoo)")
+				.version("Alpha v.0.1")
+				.since("Pre-Alpha")
+				.param("something", "does something")
+				.param("somethingElse", "does something else")
+				.returnVal("this, to continue building")
+				.build();
+		assertEquals(clazz.getSimpleName() + ".builder()\n" +
+				"\t\t.condensed()\n" +
+				"\t\t.content(\"something useful\")\n" +
+				"\t\t.content(\"something else\")\n" +
+				"\t\t.author(\"Logan Ferree (Tadukoo)\")\n" +
+				"\t\t.version(\"Alpha v.0.1\")\n" +
+				"\t\t.since(\"Pre-Alpha\")\n" +
+				"\t\t.param(\"something\", \"does something\")\n" +
+				"\t\t.param(\"somethingElse\", \"does something else\")\n" +
+				"\t\t.returnVal(\"this, to continue building\")\n" +
+				"\t\t.build()", doc.toBuilderCode());
 	}
 }

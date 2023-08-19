@@ -35,7 +35,7 @@ public class RegularJavaMultiLineCommentTest extends DefaultJavaMultiLineComment
 	}
 	
 	public RegularJavaMultiLineCommentTest(){
-		super(TestJavaMultiLineComment::builder);
+		super(TestJavaMultiLineComment.class, TestJavaMultiLineComment::builder);
 	}
 	
 	@Test

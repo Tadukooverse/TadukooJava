@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EditableJavaPackageDeclarationTest extends DefaultJavaPackageDeclarationTest<EditableJavaPackageDeclaration>{
 	
 	protected EditableJavaPackageDeclarationTest(){
-		super(EditableJavaPackageDeclaration::builder);
+		super(EditableJavaPackageDeclaration.class, EditableJavaPackageDeclaration::builder);
 	}
 	
 	@Test

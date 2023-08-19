@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EditableJavaAnnotationTest extends DefaultJavaAnnotationTest<EditableJavaAnnotation>{
 	
 	public EditableJavaAnnotationTest(){
-		super(EditableJavaAnnotation::builder);
+		super(EditableJavaAnnotation.class, EditableJavaAnnotation::builder);
 	}
 	
 	@Test

@@ -313,4 +313,82 @@ public abstract class JavaMethod implements JavaCodeType{
 			return false;
 		}
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start the building
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add javadoc if we have it
+		if(javadoc != null){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".javadoc(")
+					.append(javadoc.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+					.append(')');
+		}
+		
+		// Add annotations if we have them
+		if(ListUtil.isNotBlank(annotations)){
+			for(JavaAnnotation annotation: annotations){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".annotation(")
+						.append(annotation.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+						.append(')');
+			}
+		}
+		
+		// Add visibility
+		if(visibility != Visibility.NONE){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".visibility(Visibility.").append(visibility).append(')');
+		}
+		
+		// Add abstract if we have it
+		if(isAbstract){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isAbstract()");
+		}
+		
+		// Add static if we have it
+		if(isStatic){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isStatic()");
+		}
+		
+		// Add final if we have it
+		if(isFinal){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".isFinal()");
+		}
+		
+		// Add return type
+		codeString.append(NEWLINE_WITH_2_TABS).append(".returnType(\"").append(returnType).append("\")");
+		
+		// Add name if we have it
+		if(StringUtil.isNotBlank(name)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".name(\"").append(name).append("\")");
+		}
+		
+		// Add parameters if we have them
+		if(ListUtil.isNotBlank(parameters)){
+			for(Pair<String, String> parameter: parameters){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".parameter(\"")
+						.append(parameter.getLeft()).append("\", \"")
+						.append(parameter.getRight()).append("\")");
+			}
+		}
+		
+		// Add throw types if we have them
+		if(ListUtil.isNotBlank(throwTypes)){
+			for(String throwType: throwTypes){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".throwType(\"").append(throwType).append("\")");
+			}
+		}
+		
+		// Add lines if we have them
+		if(ListUtil.isNotBlank(lines)){
+			for(String line: lines){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".line(\"").append(escapeQuotes(line)).append("\")");
+			}
+		}
+		
+		// Finish the building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
+	}
 }

@@ -35,7 +35,7 @@ public class RegularJavaAnnotationTest extends DefaultJavaAnnotationTest<Regular
 	}
 	
 	public RegularJavaAnnotationTest(){
-		super(TestJavaAnnotation::builder);
+		super(TestJavaAnnotation.class, TestJavaAnnotation::builder);
 	}
 	
 	@Test

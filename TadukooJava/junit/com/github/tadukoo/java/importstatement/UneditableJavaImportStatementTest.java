@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class UneditableJavaImportStatementTest extends DefaultJavaImportStatementTest<UneditableJavaImportStatement>{
 	
 	protected UneditableJavaImportStatementTest(){
-		super(UneditableJavaImportStatement::builder);
+		super(UneditableJavaImportStatement.class, UneditableJavaImportStatement::builder);
 	}
 	
 	@Test

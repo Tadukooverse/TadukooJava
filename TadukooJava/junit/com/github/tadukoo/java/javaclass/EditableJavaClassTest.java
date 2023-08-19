@@ -41,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class EditableJavaClassTest extends DefaultJavaClassTest<EditableJavaClass>{
 	
 	public EditableJavaClassTest(){
-		super(EditableJavaClass::builder, EditableJavaPackageDeclaration::builder, EditableJavaImportStatement::builder,
+		super(EditableJavaClass.class, EditableJavaClass::builder,
+				EditableJavaPackageDeclaration::builder, EditableJavaImportStatement::builder,
 				EditableJavaAnnotation::builder, EditableJavadoc::builder,
 				EditableJavaSingleLineComment::builder, EditableJavaMultiLineComment::builder,
 				EditableJavaField::builder, EditableJavaMethod::builder);
