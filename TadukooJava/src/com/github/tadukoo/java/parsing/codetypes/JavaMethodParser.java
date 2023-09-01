@@ -84,7 +84,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 			"\\s*" + MODIFIERS_REGEX +
 					"([^\\s(]*)(\\s*[^\\s(]*)?\\s*" +
 					"\\(\\s*([^)]*)\\s*\\)(?:\\s*throws ([^{]*))?" +
-					"\\s*\\{\\s*(.*)\\s*}",
+					"\\s*(?:\\{\\s*(.*)\\s*}|;\\s*)",
 			Pattern.DOTALL);
 	
 	/** Not allowed to instantiate {@link JavaMethodParser} */
@@ -210,9 +210,11 @@ public class JavaMethodParser extends AbstractJavaParser{
 				parametersDone = true;
 			}
 			
-			// If parameters are done, check for block open
+			// If parameters are done, check for block open or semicolon
 			if(parametersDone && token.contains(BLOCK_OPEN_TOKEN)){
 				insideMethod = true;
+			}else if(parametersDone && !insideMethod && token.endsWith(SEMICOLON)){
+				methodDone = true;
 			}
 			
 			// If inside the method, update the number of open blocks

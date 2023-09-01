@@ -382,19 +382,35 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testBuilderAbstractAndLines(){
+		try{
+			method = builder.get()
+					.isAbstract()
+					.returnType("String")
+					.line("return this")
+					.build();
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("Can't be abstract and have lines!", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testBuilderAllAbstractErrors(){
 		try{
 			method = builder.get()
 					.visibility(Visibility.PRIVATE)
 					.isAbstract().isStatic().isFinal()
 					.returnType("String")
+					.line("return this")
 					.build();
 			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("""
 					Can't be abstract and private!
 					Can't be abstract and static!
-					Can't be abstract and final!""", e.getMessage());
+					Can't be abstract and final!
+					Can't be abstract and have lines!""", e.getMessage());
 		}
 	}
 	
@@ -509,7 +525,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.isAbstract()
 				.build();
 		String javaString = """
-				abstract int(){ }""";
+				abstract int();""";
 		assertEquals(javaString, method.toString());
 	}
 	

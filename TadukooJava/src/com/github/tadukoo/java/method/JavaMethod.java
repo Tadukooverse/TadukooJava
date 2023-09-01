@@ -277,28 +277,35 @@ public abstract class JavaMethod implements JavaCodeType{
 			}
 			// Remove the final comma and space
 			declaration.delete(declaration.length() - 2, declaration.length());
-			// Add the opening brace
-			declaration.append(BLOCK_OPEN_TOKEN);
 		}else{
-			// If no throw types, just end the declaration
-			declaration.append(PARAMETER_CLOSE_TOKEN).append(BLOCK_OPEN_TOKEN);
+			// If no throw types, just end the parameters
+			declaration.append(PARAMETER_CLOSE_TOKEN);
 		}
 		
-		if(ListUtil.isNotBlank(lines)){
-			// Add the declaration to the content
+		if(isAbstract){
+			// If abstract, end with a semicolon
+			declaration.append(SEMICOLON);
 			content.add(declaration.toString());
-			
-			// Add the lines to the method
-			for(String line: lines){
-				content.add("\t" + line);
-			}
-			
-			// Closing brace of the method
-			content.add(BLOCK_CLOSE_TOKEN);
 		}else{
-			// When method has no content, open and close on the same line
-			declaration.append(' ').append(BLOCK_CLOSE_TOKEN);
-			content.add(declaration.toString());
+			// open the method
+			declaration.append(BLOCK_OPEN_TOKEN);
+			
+			if(ListUtil.isNotBlank(lines)){
+				// Add the declaration to the content
+				content.add(declaration.toString());
+				
+				// Add the lines to the method
+				for(String line: lines){
+					content.add("\t" + line);
+				}
+				
+				// Closing brace of the method
+				content.add(BLOCK_CLOSE_TOKEN);
+			}else{
+				// When method has no content, open and close on the same line
+				declaration.append(' ').append(BLOCK_CLOSE_TOKEN);
+				content.add(declaration.toString());
+			}
 		}
 		
 		return StringUtil.buildStringWithNewLines(content);

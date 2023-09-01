@@ -3,6 +3,7 @@ package com.github.tadukoo.java.method;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.tuple.Pair;
 
@@ -334,6 +335,11 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 			// Can't be abstract + final
 			if(isFinal){
 				errors.add("Can't be abstract and final!");
+			}
+			
+			// Can't be abstract + have content
+			if(ListUtil.isNotBlank(lines)){
+				errors.add("Can't be abstract and have lines!");
 			}
 		}
 		

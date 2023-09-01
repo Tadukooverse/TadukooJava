@@ -103,7 +103,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 	@Test
 	public void testMethodWithAbstract() throws JavaParsingException{
 		JavaMethod method = parseMethod.apply("""
-				abstract Test(){}""");
+				abstract Test();""");
 		assertEquals(
 				EditableJavaMethod.builder()
 						.isAbstract()
@@ -111,7 +111,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.build(),
 				method);
 		assertEquals("""
-				abstract Test(){ }""", method.toString());
+				abstract Test();""", method.toString());
 	}
 	
 	@Test
