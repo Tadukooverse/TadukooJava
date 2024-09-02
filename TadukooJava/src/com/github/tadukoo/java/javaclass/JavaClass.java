@@ -429,6 +429,7 @@ public abstract class JavaClass implements JavaClassType{
 					}
 					case MULTI_LINE_COMMENT -> {
 						content.add(StringUtil.indentAllLines(multiLineComments.get(multiLineCommentIndex).toString()));
+						content.add("\t");
 						multiLineCommentIndex++;
 					}
 					case CLASS -> content.add(StringUtil.indentAllLines(

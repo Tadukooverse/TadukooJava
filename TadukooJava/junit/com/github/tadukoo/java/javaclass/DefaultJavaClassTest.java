@@ -2210,6 +2210,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					 * some comment
 					 * more content
 					 */
+				\t
 					class BClassName{
 					\t
 					}
@@ -2323,6 +2324,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 					 * some comment
 					 * more content
 					 */
+				\t
 					class CClassName{
 					\t
 					}
