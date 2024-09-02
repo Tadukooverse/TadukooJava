@@ -635,4 +635,40 @@ public abstract class BaseJavadocParserTest extends BaseJavaParserTest{
 					e.getMessage());
 		}
 	}
+	
+	/*
+	 * Issue Cases
+	 */
+	
+	/*
+	 * This exists because when running the parser code in @UltimatePower, the Javadoc was considered condensed.
+	 * It has to do with Windows' /r/n usage for newlines, which the \r was treated as a character before the newline,
+	 * meaning the Javadoc content started with it
+	 */
+	@Test
+	public void testLabelFormFieldIssue() throws JavaParsingException{
+		Javadoc doc = parseMethod.apply("""
+				/**\r
+				 * Represents a {@link FormField} for a Label
+				 *\s
+				 * @author Logan Ferree (Tadukoo)
+				 * @version Alpha v.0.4
+				 */
+				""");
+		assertEquals(
+				EditableJavadoc.builder()
+						.content("Represents a {@link FormField} for a Label")
+						.author("Logan Ferree (Tadukoo)")
+						.version("Alpha v.0.4")
+						.build(),
+				doc);
+		assertEquals("""
+				/**
+				 * Represents a {@link FormField} for a Label
+				 *\s
+				 * @author Logan Ferree (Tadukoo)
+				 * @version Alpha v.0.4
+				 */""",
+				doc.toString());
+	}
 }

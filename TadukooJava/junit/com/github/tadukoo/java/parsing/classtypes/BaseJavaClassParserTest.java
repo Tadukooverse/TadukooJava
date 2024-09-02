@@ -14,6 +14,7 @@ import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.parsing.BaseJavaParserTest;
 import com.github.tadukoo.java.parsing.JavaParsingException;
+import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.ThrowingFunction;
 import org.junit.jupiter.api.Test;
 
@@ -1856,5 +1857,147 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 								.build())
 						.build(),
 				clazz);
+	}
+	
+	/*
+	 * Weird Issues
+	 */
+	
+	/*
+	 * This exists because when running the parser code in @UltimatePower, the Javadoc was considered condensed.
+	 * It has to do with Windows' /r/n usage for newlines, which the \r was treated as a character before the newline,
+	 * meaning the Javadoc content started with it
+	 */
+	@Test
+	public void testLabelFormFieldIssue() throws JavaParsingException{
+		JavaClass clazz = parseMethod.apply("""
+				package com.github.tadukoo.view.form.field.string;
+				
+				import com.github.tadukoo.view.components.TadukooLabel;
+				import com.github.tadukoo.view.form.field.FormField;
+				import com.github.tadukoo.view.form.field.annotation.FormFieldBuilder;
+				
+				import javax.swing.JComponent;
+				import javax.swing.JLabel;
+				
+				/**\r
+				 * Represents a {@link FormField} for a Label
+				 *\s
+				 * @author Logan Ferree (Tadukoo)
+				 * @version Alpha v.0.4
+				 */
+				@FormFieldBuilder(type = String.class, defaultDefaultValue = "\\"\\"")
+				public class BetterLabelFormField extends FormField<String>{
+				\t
+					/** {@inheritDoc} */
+					@Override
+					public JComponent getJustComponent() throws Throwable{
+						return TadukooLabel.builder()
+								.text(getDefaultValue())
+								.foregroundPaint(getLabelForegroundPaint()).backgroundPaint(getLabelBackgroundPaint())
+								.font(getLabelFontFamily(), getLabelFontStyle(), getLabelFontSize())
+								.shapeInfo(getLabelShape()).border(getLabelBorder())
+								.fontResourceLoader(getFontResourceLoader())
+								.build();
+					}
+				\t
+					/** {@inheritDoc} */
+					@Override
+					public String getValueFromJustComponent(JComponent component){
+						if(component instanceof JLabel label){
+							return label.getText();
+						}
+						return null;
+					}
+				}
+				""");
+		assertEquals(
+				EditableJavaClass.builder()
+						.packageName("com.github.tadukoo.view.form.field.string")
+						.importNames(ListUtil.createList(
+								"com.github.tadukoo.view.components.TadukooLabel",
+								"com.github.tadukoo.view.form.field.FormField",
+								"com.github.tadukoo.view.form.field.annotation.FormFieldBuilder",
+								"javax.swing.JComponent",
+								"javax.swing.JLabel"
+						), false)
+						.javadoc(EditableJavadoc.builder()
+										.content("Represents a {@link FormField} for a Label")
+										.author("Logan Ferree (Tadukoo)")
+										.version("Alpha v.0.4")
+										.build())
+						.annotation(EditableJavaAnnotation.builder()
+								.name("FormFieldBuilder")
+								.parameter("type", "String.class")
+								.parameter("defaultDefaultValue", "\"\\\"\\\"\"")
+								.build())
+						.visibility(Visibility.PUBLIC).className("BetterLabelFormField").superClassName("FormField<String>")
+						.method(EditableJavaMethod.builder()
+								.javadoc(EditableJavadoc.builder().condensed().content("{@inheritDoc}").build())
+								.annotation(EditableJavaAnnotation.builder().name("Override").build())
+								.visibility(Visibility.PUBLIC).returnType("JComponent").name("getJustComponent")
+								.throwType("Throwable")
+								.line("return TadukooLabel.builder()")
+								.line("\t\t.text(getDefaultValue())")
+								.line("\t\t.foregroundPaint(getLabelForegroundPaint()).backgroundPaint(getLabelBackgroundPaint())")
+								.line("\t\t.font(getLabelFontFamily(), getLabelFontStyle(), getLabelFontSize())")
+								.line("\t\t.shapeInfo(getLabelShape()).border(getLabelBorder())")
+								.line("\t\t.fontResourceLoader(getFontResourceLoader())")
+								.line("\t\t.build();")
+								.build())
+						.method(EditableJavaMethod.builder()
+								.javadoc(EditableJavadoc.builder().condensed().content("{@inheritDoc}").build())
+								.annotation(EditableJavaAnnotation.builder().name("Override").build())
+								.visibility(Visibility.PUBLIC).returnType("String").name("getValueFromJustComponent")
+								.parameter("JComponent", "component")
+								.line("if(component instanceof JLabel label){")
+								.line("\treturn label.getText();")
+								.line("}")
+								.line("return null;")
+								.build())
+						.build(),
+				clazz);
+		assertEquals("""
+				package com.github.tadukoo.view.form.field.string;
+				
+				import com.github.tadukoo.view.components.TadukooLabel;
+				import com.github.tadukoo.view.form.field.FormField;
+				import com.github.tadukoo.view.form.field.annotation.FormFieldBuilder;
+				
+				import javax.swing.JComponent;
+				import javax.swing.JLabel;
+				
+				/**
+				 * Represents a {@link FormField} for a Label
+				 *\s
+				 * @author Logan Ferree (Tadukoo)
+				 * @version Alpha v.0.4
+				 */
+				@FormFieldBuilder(type = String.class, defaultDefaultValue = "\\"\\"")
+				public class BetterLabelFormField extends FormField<String>{
+				\t
+					/** {@inheritDoc} */
+					@Override
+					public JComponent getJustComponent() throws Throwable{
+						return TadukooLabel.builder()
+								.text(getDefaultValue())
+								.foregroundPaint(getLabelForegroundPaint()).backgroundPaint(getLabelBackgroundPaint())
+								.font(getLabelFontFamily(), getLabelFontStyle(), getLabelFontSize())
+								.shapeInfo(getLabelShape()).border(getLabelBorder())
+								.fontResourceLoader(getFontResourceLoader())
+								.build();
+					}
+				\t
+					/** {@inheritDoc} */
+					@Override
+					public String getValueFromJustComponent(JComponent component){
+						if(component instanceof JLabel label){
+							return label.getText();
+						}
+						return null;
+					}
+				}
+				""",
+				clazz.toString());
 	}
 }

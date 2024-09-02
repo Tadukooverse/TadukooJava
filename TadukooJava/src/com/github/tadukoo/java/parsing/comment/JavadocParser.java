@@ -65,8 +65,18 @@ public class JavadocParser extends AbstractJavaParser{
 		}
 		
 		// Determine condensed
-		boolean condensed = StringUtil.notEquals(tokens.get(startToken), JAVADOC_START_TOKEN) ||
-				StringUtil.notEquals(tokens.get(startToken+1), "\n");
+		boolean condensed = StringUtil.notEquals(tokens.get(startToken), JAVADOC_START_TOKEN);
+		// Check for non-whitespace before the newline if not already condensed
+		if(!condensed){
+			int newlineCheckToken = startToken + 1;
+			while(StringUtil.notEquals(tokens.get(newlineCheckToken), "\n")){
+				if(!WHITESPACE_MATCHER.reset(tokens.get(newlineCheckToken)).matches()){
+					condensed = true;
+					break;
+				}
+				newlineCheckToken++;
+			}
+		}
 		
 		// Parsing in-progress content
 		String annotation = null;
