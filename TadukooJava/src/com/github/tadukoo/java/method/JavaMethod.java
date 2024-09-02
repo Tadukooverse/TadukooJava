@@ -260,8 +260,26 @@ public abstract class JavaMethod implements JavaCodeType{
 		declaration.append(PARAMETER_OPEN_TOKEN);
 		
 		// Add parameters to the declaration
+		boolean multiline = false;
 		if(ListUtil.isNotBlank(parameters)){
 			for(Pair<String, String> parameter: parameters){
+				int parameterLength = parameter.getLeft().length() + parameter.getRight().length() + 1;
+				if(declaration.length() + parameterLength > 110){
+					if(!multiline){
+						int cutoff = declaration.indexOf(PARAMETER_OPEN_TOKEN) + 1;
+						content.add(declaration.substring(0, cutoff));
+						declaration.delete(0, cutoff);
+						declaration.insert(0, "\t\t");
+						if(declaration.length() > 2 && declaration.length() + parameterLength > 110){
+							content.add(declaration.toString());
+							declaration = new StringBuilder("\t\t");
+						}
+						multiline = true;
+					}else{
+						content.add(declaration.toString());
+						declaration = new StringBuilder("\t\t");
+					}
+				}
 				declaration.append(parameter.getLeft()).append(' ').append(parameter.getRight())
 						.append(LIST_SEPARATOR_TOKEN).append(' ');
 			}

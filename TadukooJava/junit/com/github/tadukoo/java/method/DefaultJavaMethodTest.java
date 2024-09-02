@@ -575,6 +575,70 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	}
 	
 	@Test
+	public void testToStringWithLongParameters(){
+		method = builder.get().returnType(returnType)
+				.parameter("String", "text")
+				.parameter("Testy", "testy")
+				.parameter("Test", "test1")
+				.parameter("Test", "test2")
+				.parameter("Test", "test3")
+				.parameter("Test", "test4")
+				.parameter("Test", "test5")
+				.parameter("Test", "test6")
+				.parameter("Test", "test7")
+				.build();
+		String javaString = """
+				int(
+						String text, Testy testy, Test test1, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7){ }""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
+	public void testToStringWithLongParameters2Lines(){
+		method = builder.get().returnType(returnType)
+				.parameter("String", "text")
+				.parameter("Testy", "testy")
+				.parameter("Test", "test1")
+				.parameter("Test", "test2")
+				.parameter("Test", "test3")
+				.parameter("Test", "test4")
+				.parameter("Test", "test5")
+				.parameter("Test", "test6")
+				.parameter("Test", "test7")
+				.parameter("Test", "test8")
+				.build();
+		String javaString = """
+				int(
+						String text, Testy testy, Test test1, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7,\s
+						Test test8){ }""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
+	public void testToStringWithLongSingleParameter(){
+		method = builder.get().returnType(returnType)
+				.parameter("String" , "aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
+				.build();
+		String javaString = """
+				int(
+						String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah){ }""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
+	public void testToStringWith2LongSingleParameters(){
+		method = builder.get().returnType(returnType)
+				.parameter("String" , "aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
+				.parameter("String" , "aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah2")
+				.build();
+		String javaString = """
+				int(
+						String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah,\s
+						String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah2){ }""";
+		assertEquals(javaString, method.toString());
+	}
+	
+	@Test
 	public void testToStringWithSingleThrowType(){
 		method = builder.get().returnType(returnType).throwType("Throwable").build();
 		String javaString = """
