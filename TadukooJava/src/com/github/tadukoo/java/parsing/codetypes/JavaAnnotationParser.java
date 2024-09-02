@@ -143,6 +143,7 @@ public class JavaAnnotationParser extends AbstractJavaParser{
 	 *
 	 * @param content The text to be parsed into a {@link JavaAnnotation annotation}
 	 * @return The {@link JavaAnnotation annotation} parsed from the text, or {@code null} if it can't be parsed
+	 * @throws JavaParsingException If anything goes wrong during parsing
 	 */
 	public static JavaAnnotation parseAnnotation(String content) throws JavaParsingException{
 		Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(content);
