@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.github.tadukoo.java</groupId>
+		<artifactId>TadukooJavaParent</artifactId>
+		<version>0.5-Beta</version>
+	</parent>
+	<artifactId>AdvancedTadukooJavaTesting</artifactId>
+	<dependencies>
+		<!-- Tadukoo Java -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>TadukooJava</artifactId>
+		</dependency>
+		<!-- JUnit -->
+		<dependency>
+			<groupId>${junit.jupiter.groupID}</groupId>
+			<artifactId>${junit.jupiter.artifactID}</artifactId>
+			<!-- Need this different due to creating JUnit testing functions -->
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>${junit.platform.groupID}</groupId>
+			<artifactId>${junit.platform.artifactID}</artifactId>
+		</dependency>
+		<!-- Tadukoo JUnit -->
+		<dependency>
+			<groupId>${tadukoo.util.groupID}</groupId>
+			<artifactId>${tadukoo.util.junit.artifactID}</artifactId>
+			<!-- Need this different due to creating JUnit testing functions -->
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>

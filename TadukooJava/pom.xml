@@ -6,19 +6,14 @@
 	<parent>
 		<groupId>com.github.tadukoo.java</groupId>
 		<artifactId>TadukooJavaParent</artifactId>
-		<version>0.4-Alpha</version>
+		<version>0.5-Beta</version>
 	</parent>
 	<artifactId>TadukooJava</artifactId>
 	<dependencies>
-		<!-- Tadukoo Lang -->
+		<!-- Tadukoo Util -->
 		<dependency>
 			<groupId>${tadukoo.util.groupID}</groupId>
-			<artifactId>${tadukoo.util.lang.artifactID}</artifactId>
-		</dependency>
-		<!-- Tadukoo Functions -->
-		<dependency>
-			<groupId>${tadukoo.util.groupID}</groupId>
-			<artifactId>${tadukoo.util.functions.artifactID}</artifactId>
+			<artifactId>${tadukoo.util.util.artifactID}</artifactId>
 		</dependency>
 		<!-- JUnit Stuff -->
 		<dependency>
@@ -30,8 +25,4 @@
 			<artifactId>${junit.platform.artifactID}</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<sourceDirectory>${directory.source}</sourceDirectory>
-		<testSourceDirectory>${directory.test}</testSourceDirectory>
-	</build>
 </project>
