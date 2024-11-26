@@ -8,21 +8,30 @@
 		<artifactId>TadukooJavaParent</artifactId>
 		<version>0.5-Beta-SNAPSHOT</version>
 	</parent>
-	<artifactId>TadukooJava</artifactId>
+	<artifactId>AdvancedTadukooJavaTesting</artifactId>
 	<dependencies>
-		<!-- Tadukoo Util -->
+		<!-- Tadukoo Java -->
 		<dependency>
-			<groupId>${tadukoo.util.groupID}</groupId>
-			<artifactId>${tadukoo.util.util.artifactID}</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>TadukooJava</artifactId>
 		</dependency>
-		<!-- JUnit Stuff -->
+		<!-- JUnit -->
 		<dependency>
 			<groupId>${junit.jupiter.groupID}</groupId>
 			<artifactId>${junit.jupiter.artifactID}</artifactId>
+			<!-- Need this different due to creating JUnit testing functions -->
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>${junit.platform.groupID}</groupId>
 			<artifactId>${junit.platform.artifactID}</artifactId>
+		</dependency>
+		<!-- Tadukoo JUnit -->
+		<dependency>
+			<groupId>${tadukoo.util.groupID}</groupId>
+			<artifactId>${tadukoo.util.junit.artifactID}</artifactId>
+			<!-- Need this different due to creating JUnit testing functions -->
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

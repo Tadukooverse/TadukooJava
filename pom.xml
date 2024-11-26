@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.tadukoo.maven</groupId>
-		<artifactId>TadukooMavenLibraryPOM</artifactId>
-		<version>0.4.2-Alpha-SNAPSHOT</version>
+		<artifactId>TadukooUtilPOM</artifactId>
+		<version>0.5-Beta</version>
 	</parent>
 	<groupId>com.github.tadukoo.java</groupId>
 	<artifactId>TadukooJavaParent</artifactId>
@@ -15,10 +15,21 @@
 	<description>Libraries for dealing with Java code</description>
 	<modules>
 		<module>TadukooJava</module>
+		<module>AdvancedTadukooJavaTesting</module>
 	</modules>
 	<properties>
 		<!-- Info -->
 		<shortName>TadukooJava</shortName>
-		<tadukoo.util.version>0.6-Beta-SNAPSHOT</tadukoo.util.version>
+		<tadukoo.util.version>0.6.1-Beta</tadukoo.util.version>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<!-- Tadukoo Java -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>TadukooJava</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
