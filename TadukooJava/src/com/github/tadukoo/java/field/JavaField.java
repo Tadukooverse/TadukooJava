@@ -2,6 +2,7 @@ package com.github.tadukoo.java.field;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaCodeUtil;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -239,7 +240,7 @@ public abstract class JavaField implements JavaCodeType{
 		
 		// Add value if we have it
 		if(StringUtil.isNotBlank(value)){
-			codeString.append(NEWLINE_WITH_2_TABS).append(".value(\"").append(value).append("\")");
+			codeString.append(NEWLINE_WITH_2_TABS).append(".value(\"").append(JavaCodeUtil.escapeString(value)).append("\")");
 		}
 		
 		// Finish building

@@ -31,4 +31,10 @@ public class JavaCodeUtilTest{
 				.build();
 		assertEquals(annotation.toString(), JavaCodeUtil.convertToJavaString(annotation));
 	}
+	
+	@Test
+	public void testEscapeString(){
+		String theString = "test something \t\n \r\n \t\t\t";
+		assertEquals("test something \\t\\n \\r\\n \\t\\t\\t", JavaCodeUtil.escapeString(theString));
+	}
 }

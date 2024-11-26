@@ -38,4 +38,16 @@ public class JavaCodeUtil{
 		// Otherwise just use String.valueOf
 		return String.valueOf(obj);
 	}
+	
+	/**
+	 * Escapes characters in the string for use in e.g. builderCode so that you have \n instead of a newline
+	 *
+	 * @param theString The string to have characters escaped
+	 * @return The given String, but with the characters escaped
+	 */
+	public static String escapeString(String theString){
+		return theString.replaceAll("\n", "\\\\n")
+				.replaceAll("\r", "\\\\r")
+				.replaceAll("\t", "\\\\t");
+	}
 }

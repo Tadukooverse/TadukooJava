@@ -525,6 +525,31 @@ public abstract class BaseJavaFieldParserTest extends BaseJavaParserTest{
 	}
 	
 	@Test
+	public void testWhitespaceInValue() throws JavaParsingException{
+		JavaField field = parseMethod.apply("""
+				/** An array containing 0-9 and then A-F, used for converting to hex */\r
+				\t\t\t\t\tpublic static final char[] hexChars = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',\r
+				\t\t\t\t\t\t\t\t\t\t\t\t\t'A', 'B', 'C', 'D', 'E', 'F'};""");
+		assertNotNull(field);
+		assertEquals(
+				EditableJavaField.builder()
+						.javadoc(EditableJavadoc.builder()
+								.condensed()
+								.content("An array containing 0-9 and then A-F, used for converting to hex")
+								.build())
+						.visibility(Visibility.PUBLIC).isStatic().isFinal()
+						.type("char[]").name("hexChars")
+						.value("new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',\n" +
+								"\t\t\t\t\t\t\t\t\t\t\t\t'A', 'B', 'C', 'D', 'E', 'F'}")
+						.build(),
+				field);
+		assertEquals("""
+				/** An array containing 0-9 and then A-F, used for converting to hex */
+				public static final char[] hexChars = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+				\t\t\t\t\t\t\t\t\t\t\t\t'A', 'B', 'C', 'D', 'E', 'F'};""", field.toString());
+	}
+	
+	@Test
 	public void testInsaneWhitespaceSimpleField() throws JavaParsingException{
 		JavaField field = parseMethod.apply("""
 				\t     \t  \t

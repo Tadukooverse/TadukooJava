@@ -70,7 +70,7 @@ public class QueueTest extends JavaClassParsingTest{
 					public E dequeue() throws InterruptedException{
 						synchronized(lock){
 							// Wait until there's something in the queue to take out
-							while(data.size() == 0){
+							while(data.isEmpty()){
 								lock.wait();
 							}
 							// Grab an item off the queue, release the lock, and return the grabbed item
@@ -164,7 +164,7 @@ public class QueueTest extends JavaClassParsingTest{
 						.throwType("InterruptedException")
 						.line("synchronized(lock){")
 						.line("\t// Wait until there's something in the queue to take out")
-						.line("\twhile(data.size() == 0){")
+						.line("\twhile(data.isEmpty()){")
 						.line("\t\tlock.wait();")
 						.line("\t}")
 						.line("\t// Grab an item off the queue, release the lock, and return the grabbed item")

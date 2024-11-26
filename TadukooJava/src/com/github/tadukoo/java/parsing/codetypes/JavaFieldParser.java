@@ -172,11 +172,6 @@ public class JavaFieldParser extends AbstractJavaParser{
 		for(; currentToken < tokens.size() && !foundSemicolon; currentToken++){
 			String token = tokens.get(currentToken);
 			
-			// Skip newline
-			if(StringUtil.equals(token, "\n")){
-				continue;
-			}
-			
 			field.append(token);
 			
 			// Check if we got the semicolon
@@ -240,6 +235,11 @@ public class JavaFieldParser extends AbstractJavaParser{
 			}
 			String type = StringUtil.trim(matcher.group(4));
 			String name = StringUtil.trim(matcher.group(5));
+			
+			if(value != null){
+				value = value.replaceAll("\n\t", "\n")
+						.replaceAll(System.lineSeparator(), "\n");
+			}
 			
 			return EditableJavaField.builder()
 					.visibility(visibility)

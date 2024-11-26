@@ -42,6 +42,7 @@ public class StackUtilTest extends JavaClassParsingTest{
 					 * StackUtilTest's method)
 					 *\s
 					 * @return The calling class
+					 * @throws ClassNotFoundException If the class is not found
 					 */
 					public static Class<?> getCallingClass() throws ClassNotFoundException{
 						StackTraceElement[] elements = Thread.currentThread().getStackTrace();
@@ -101,6 +102,7 @@ public class StackUtilTest extends JavaClassParsingTest{
 								.content("(so e.g. if StackUtilTest.testGetCallingClassName calls this method, it'll return whatever called")
 								.content("StackUtilTest's method)")
 								.returnVal("The calling class")
+								.throwsInfo("ClassNotFoundException", "If the class is not found")
 								.build())
 						.visibility(Visibility.PUBLIC)
 						.isStatic()
