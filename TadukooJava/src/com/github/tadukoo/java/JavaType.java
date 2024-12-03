@@ -1,5 +1,6 @@
 package com.github.tadukoo.java;
 
+import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.6
  */
-public class JavaType{
+public class JavaType implements JavaTokens{
 	
 	/**
 	 * A builder used to build a {@link JavaType}. It takes the following parameters:
@@ -155,5 +156,36 @@ public class JavaType{
 	 */
 	public void setCanonicalName(String canonicalName){
 		this.canonicalName = canonicalName;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object otherType){
+		if(otherType instanceof JavaType type){
+			return StringUtil.equals(this.toString(), type.toString()) &&
+					StringUtil.equals(this.getCanonicalName(), type.getCanonicalName());
+		}else{
+			return false;
+		}
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toString(){
+		// Start with baseType
+		StringBuilder typeText = new StringBuilder(baseType);
+		
+		// Add type parameters if we have them
+		if(ListUtil.isNotBlank(typeParameters)){
+			typeText.append(TYPE_PARAMETER_OPEN_TOKEN);
+			for(JavaTypeParameter typeParam: typeParameters){
+				typeText.append(typeParam).append(LIST_SEPARATOR_TOKEN).append(" ");
+			}
+			// Remove the last comma and space
+			typeText.delete(typeText.length()-2, typeText.length());
+			typeText.append(TYPE_PARAMETER_CLOSE_TOKEN);
+		}
+		
+		return typeText.toString();
 	}
 }

@@ -111,6 +111,21 @@ public class JavaTokensTest{
 		assertEquals("=", ASSIGNMENT_OPERATOR_TOKEN);
 	}
 	
+	@Test
+	public void testTYPE_PARAMETER_OPEN_TOKEN(){
+		assertEquals("<", TYPE_PARAMETER_OPEN_TOKEN);
+	}
+	
+	@Test
+	public void testTYPE_PARAMETER_CLOSE_TOKEN(){
+		assertEquals(">", TYPE_PARAMETER_CLOSE_TOKEN);
+	}
+	
+	@Test
+	public void testVARARGS_TOKEN(){
+		assertEquals("...", VARARGS_TOKEN);
+	}
+	
 	/*
 	 * Javadoc "Tokens"
 	 */

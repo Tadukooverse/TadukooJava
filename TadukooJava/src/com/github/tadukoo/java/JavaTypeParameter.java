@@ -1,5 +1,6 @@
 package com.github.tadukoo.java;
 
+import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.util.StringUtil;
 
 /**
@@ -157,5 +158,30 @@ public class JavaTypeParameter{
 	 */
 	public void setCanonicalName(String canonicalName){
 		this.canonicalName = canonicalName;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object otherTypeParam){
+		if(otherTypeParam instanceof JavaTypeParameter typeParam){
+			return StringUtil.equals(this.toString(), typeParam.toString()) &&
+					StringUtil.equals(this.getCanonicalName(), typeParam.getCanonicalName());
+		}else{
+			return false;
+		}
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toString(){
+		// Start with baseType
+		StringBuilder text = new StringBuilder(baseType);
+		
+		// Add extendsType if we have it
+		if(StringUtil.isNotBlank(extendsType)){
+			text.append(" extends ").append(extendsType);
+		}
+		
+		return text.toString();
 	}
 }

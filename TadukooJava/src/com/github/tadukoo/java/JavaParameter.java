@@ -11,7 +11,7 @@ import java.util.List;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.6
  */
-public class JavaParameter{
+public class JavaParameter implements JavaTokens{
 	
 	/**
 	 * A builder used to build a {@link JavaParameter}. It takes the following parameters:
@@ -83,6 +83,15 @@ public class JavaParameter{
 		}
 		
 		/**
+		 * @param vararg Whether the parameter is a variable argument or not
+		 * @return this, to continue building
+		 */
+		public JavaParameterBuilder vararg(boolean vararg){
+			this.vararg = vararg;
+			return this;
+		}
+		
+		/**
 		 * @return A newly built {@link JavaParameter} using the given parameters
 		 */
 		public JavaParameter build(){
@@ -146,5 +155,32 @@ public class JavaParameter{
 	 */
 	public boolean isVararg(){
 		return vararg;
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object otherParameter){
+		if(otherParameter instanceof JavaParameter parameter){
+			return StringUtil.equals(this.toString(), parameter.toString());
+		}else{
+			return false;
+		}
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toString(){
+		// Start with the type
+		StringBuilder parameterText = new StringBuilder(type.toString());
+		
+		// Add varargs if we have it
+		if(vararg){
+			parameterText.append(" ").append(VARARGS_TOKEN);
+		}
+		
+		// Finish with the name
+		parameterText.append(" ").append(name);
+		
+		return parameterText.toString();
 	}
 }
