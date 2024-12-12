@@ -4,7 +4,9 @@ import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
@@ -437,7 +439,24 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @return this, to continue building
 	 */
 	public JavaClassBuilder<ClassType> singleLineComment(JavaSingleLineComment singleLineComment){
-		this.singleLineComments.add(singleLineComment);
+		singleLineComments.add(singleLineComment);
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null));
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaSingleLineCommentBuilder} to use to build a {@link JavaSingleLineComment}
+	 */
+	protected abstract JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder();
+	
+	/**
+	 * @param singleLineComment A {@link JavaSingleLineComment single-line comment} as a String inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> singleLineComment(String singleLineComment){
+		singleLineComments.add(getSingleLineCommentBuilder()
+				.content(singleLineComment)
+				.build());
 		innerElementsOrder.add(Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null));
 		return this;
 	}
@@ -459,7 +478,24 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @return this, to continue building
 	 */
 	public JavaClassBuilder<ClassType> multiLineComment(JavaMultiLineComment multiLineComment){
-		this.multiLineComments.add(multiLineComment);
+		multiLineComments.add(multiLineComment);
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null));
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaMultiLineCommentBuilder} to use to build a {@link JavaMultiLineComment}
+	 */
+	protected abstract JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder();
+	
+	/**
+	 * @param multiLineComment A {@link JavaMultiLineComment multi-line comment} as Strings inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> multiLineComment(String... multiLineComment){
+		multiLineComments.add(getMultiLineCommentBuilder()
+				.content(ListUtil.createList(multiLineComment))
+				.build());
 		innerElementsOrder.add(Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null));
 		return this;
 	}

@@ -5,7 +5,9 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
 import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -72,6 +74,16 @@ public class RegularJavaClassTest extends DefaultJavaClassTest<RegularJavaClassT
 		@Override
 		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
 			return UneditableJavaImportStatement.builder();
+		}
+		
+		@Override
+		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
+			return UneditableJavaSingleLineComment.builder();
+		}
+		
+		@Override
+		protected JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder(){
+			return UneditableJavaMultiLineComment.builder();
 		}
 		
 		@Override

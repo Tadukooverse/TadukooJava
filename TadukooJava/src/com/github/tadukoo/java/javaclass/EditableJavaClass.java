@@ -2,8 +2,12 @@ package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -53,6 +57,18 @@ public class EditableJavaClass extends JavaClass{
 		@Override
 		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
 			return EditableJavaImportStatement.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
+			return EditableJavaSingleLineComment.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder(){
+			return EditableJavaMultiLineComment.builder();
 		}
 		
 		/** {@inheritDoc} */

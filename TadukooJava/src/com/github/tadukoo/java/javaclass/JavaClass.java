@@ -610,16 +610,24 @@ public abstract class JavaClass implements JavaClassType{
 				switch(innerElementInfo.getLeft()){
 					case SINGLE_LINE_COMMENT -> {
 						codeString.append(NEWLINE_WITH_2_TABS).append(".singleLineComment(")
-								.append(singleLineComments.get(singleLineCommentIndex).toBuilderCode()
-										.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+								.append(singleLineComments.get(singleLineCommentIndex).getContent())
 								.append(')');
 						singleLineCommentIndex++;
 					}
 					case MULTI_LINE_COMMENT -> {
-						codeString.append(NEWLINE_WITH_2_TABS).append(".multiLineComment(")
-								.append(multiLineComments.get(multiLineCommentIndex).toBuilderCode()
-										.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
-								.append(')');
+						codeString.append(NEWLINE_WITH_2_TABS).append(".multiLineComment(");
+						List<String> lines = multiLineComments.get(multiLineCommentIndex).getContent();
+						for(int lineNum = 0; lineNum < lines.size(); lineNum++){
+							String line = lines.get(lineNum);
+							if(lineNum == 0){
+								codeString.append(line).append(", ");
+							}else{
+								codeString.append(NEWLINE_WITH_4_TABS).append(line).append(", ");
+							}
+						}
+						// Remove the last comma
+						codeString.delete(codeString.length()-2, codeString.length());
+						codeString.append(')');
 						multiLineCommentIndex++;
 					}
 					case CLASS -> codeString.append(NEWLINE_WITH_2_TABS).append(".innerClass(")

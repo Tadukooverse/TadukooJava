@@ -3,7 +3,11 @@ package com.github.tadukoo.java.javaclass;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
+import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
@@ -51,6 +55,18 @@ public class UneditableJavaClass extends JavaClass{
 		/** {@inheritDoc} */
 		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
 			return UneditableJavaImportStatement.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
+			return UneditableJavaSingleLineComment.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder(){
+			return UneditableJavaMultiLineComment.builder();
 		}
 		
 		/** {@inheritDoc} */

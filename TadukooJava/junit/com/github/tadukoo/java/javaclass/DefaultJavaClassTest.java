@@ -622,6 +622,20 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 	}
 	
 	@Test
+	public void testSet1SingleLineCommentByString(){
+		JavaSingleLineComment comment = singleLineCommentBuilder.get()
+				.content("some comment")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.singleLineComment("some comment")
+				.build();
+		List<JavaSingleLineComment> comments = clazz.getSingleLineComments();
+		assertEquals(1, comments.size());
+		assertEquals(comment, comments.get(0));
+	}
+	
+	@Test
 	public void testSetMultiLineComments(){
 		List<JavaMultiLineComment> comments = ListUtil.createList(
 				multiLineCommentBuilder.get()
@@ -647,6 +661,22 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		clazz = builder.get()
 				.className(className)
 				.multiLineComment(comment)
+				.build();
+		List<JavaMultiLineComment> comments = clazz.getMultiLineComments();
+		assertEquals(1, comments.size());
+		assertEquals(comment, comments.get(0));
+	}
+	
+	@Test
+	public void testSet1MultiLineCommentByStrings(){
+		JavaMultiLineComment comment = multiLineCommentBuilder.get()
+				.content("some comment")
+				.content("more content")
+				.build();
+		clazz = builder.get()
+				.className(className)
+				.multiLineComment("some comment",
+						"more content")
 				.build();
 		List<JavaMultiLineComment> comments = clazz.getMultiLineComments();
 		assertEquals(1, comments.size());
@@ -2775,8 +2805,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
 				"\t\t.className(\"" + className + "\")\n" +
 				"\t\t.singleLineComment(" +
-				singleLineComment.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				singleLineComment.getContent() + ")\n" +
 				"\t\t.build()", clazz.toBuilderCode());
 	}
 	
@@ -2796,11 +2825,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
 				"\t\t.className(\"" + className + "\")\n" +
 				"\t\t.singleLineComment(" +
-				singleLineComment.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				singleLineComment.getContent() + ")\n" +
 				"\t\t.singleLineComment(" +
-				singleLineComment2.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				singleLineComment2.getContent() + ")\n" +
 				"\t\t.build()", clazz.toBuilderCode());
 	}
 	
@@ -2816,8 +2843,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
 				"\t\t.className(\"" + className + "\")\n" +
 				"\t\t.multiLineComment(" +
-				multiLineComment.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				multiLineComment.getContent().get(0) + ")\n" +
 				"\t\t.build()", clazz.toBuilderCode());
 	}
 	
@@ -2837,11 +2863,9 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
 				"\t\t.className(\"" + className + "\")\n" +
 				"\t\t.multiLineComment(" +
-				multiLineComment.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				multiLineComment.getContent().get(0) + ")\n" +
 				"\t\t.multiLineComment(" +
-				multiLineComment2.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				multiLineComment2.getContent().get(0) + ")\n" +
 				"\t\t.build()", clazz.toBuilderCode());
 	}
 	
@@ -2983,6 +3007,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.content("something useful")
 				.build();
 		JavaMultiLineComment multiLineComment2 = multiLineCommentBuilder.get()
+				.content("something useful")
 				.content("something else useful")
 				.build();
 		JavaClass innerClass = builder.get()
@@ -3021,8 +3046,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 		assertEquals(theClazz.getSimpleName() + ".builder()\n" +
 				"\t\t.className(\"" + className + "\")\n" +
 				"\t\t.multiLineComment(" +
-				multiLineComment2.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				multiLineComment2.getContent().get(0) + ", \n\t\t\t\t" + multiLineComment2.getContent().get(1) + ")\n" +
 				"\t\t.method(" +
 				method2.toBuilderCode().replace(
 						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
@@ -3030,8 +3054,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				field.toBuilderCode().replace(
 						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
 				"\t\t.singleLineComment(" +
-				singleLineComment2.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				singleLineComment2.getContent() + ")\n" +
 				"\t\t.method(" +
 				method.toBuilderCode().replace(
 						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
@@ -3039,14 +3062,12 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				innerClass2.toBuilderCode().replace(
 						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
 				"\t\t.multiLineComment(" +
-				multiLineComment.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				multiLineComment.getContent().get(0) + ")\n" +
 				"\t\t.field(" +
 				field2.toBuilderCode().replace(
 						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
 				"\t\t.singleLineComment(" +
-				singleLineComment.toBuilderCode().replace(
-						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
+				singleLineComment.getContent() + ")\n" +
 				"\t\t.innerClass(" +
 				innerClass.toBuilderCode().replace(
 						JavaCodeType.NEWLINE_WITH_2_TABS, JavaCodeType.NEWLINE_WITH_4_TABS) + ")\n" +
