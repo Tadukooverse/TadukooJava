@@ -1,9 +1,13 @@
 package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.JavaTokens;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.util.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +16,8 @@ import java.util.regex.Pattern;
  * A base parser for Java parsing that contains any shared logic
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public abstract class AbstractJavaParser implements JavaTokens{
 	
@@ -23,9 +28,23 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	protected static final String MODIFIERS_REGEX = SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX;
 	
 	/** A regular expression used for tokens to match on when splitting tokens from a content String */
-	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|=|[^\\S\n]+|[^\\s(){}=]+";
+	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|<|>|=|[^\\S\n]+|[^\\s(){}=]+";
 	/** A matcher to use to find whitespace (usually to skip it) */
 	protected static final Matcher WHITESPACE_MATCHER = Pattern.compile("\\s+").matcher("");
+	
+	/** A regular expression for a {@link JavaTypeParameter} */
+	protected static final String TYPE_PARAMETER_REGEX = "\\s*(\\S+)(?:\\s*extends\\s*(\\S*))?\\s*";
+	/** A {@link Pattern} to use for parsing {@link JavaTypeParameter type parameters} */
+	protected static final Pattern TYPE_PARAMETER_PATTERN = Pattern.compile(TYPE_PARAMETER_REGEX);
+	/** A regular expression for a {@link JavaType} */
+	protected static final String TYPE_REGEX = "\\s*([^<.\\s]+)(?:\\s*<((?:" +
+			TYPE_PARAMETER_REGEX + ",)*" + TYPE_PARAMETER_PATTERN + ")>)?\\s*";
+	/** A {@link Pattern} to use for parsing a {@link JavaType} */
+	protected static final Pattern TYPE_PATTERN = Pattern.compile(TYPE_REGEX);
+	/** A regular expression for a {@link JavaParameter} */
+	protected static final String PARAMETER_REGEX = "(" + TYPE_REGEX + ")(?:\\s+|\\s*(\\.\\.\\.)\\s*)(\\S*)\\s*";
+	/** A {@link Pattern} to use for parsing a {@link JavaParameter} */
+	protected static final Pattern PARAMETER_PATTERN = Pattern.compile(PARAMETER_REGEX);
 	
 	/** Not allowed to instantiate {@link AbstractJavaParser} */
 	protected AbstractJavaParser(){ }
@@ -110,12 +129,10 @@ public abstract class AbstractJavaParser implements JavaTokens{
 			return JavaCodeTypes.FIELD;
 		}
 		
-		// Move to next token
-		thisToken++;
-		// Skip whitespace again
-		while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
+		// Move to next token and skip whitespace again
+		do{
 			thisToken++;
-		}
+		}while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches());
 		// Check we're not at the end of tokens
 		if(thisToken >= tokens.size()){
 			return JavaCodeTypes.UNKNOWN;
@@ -131,5 +148,88 @@ public abstract class AbstractJavaParser implements JavaTokens{
 			// If we haven't hit parameter open or assignment operator at this point, it's not a field or method
 			return JavaCodeTypes.UNKNOWN;
 		}
+	}
+	
+	/**
+	 * Parses a {@link JavaParameter} from the given String
+	 *
+	 * @param parameterContent The String to parse
+	 * @return The {@link JavaParameter} that was parsed
+	 */
+	protected static JavaParameter parseJavaParameter(String parameterContent){
+		// Use a pattern to ensure we have a parameter and to get the relevant info for it
+		Matcher paramMatch = PARAMETER_PATTERN.matcher(parameterContent);
+		if(paramMatch.matches()){
+			// Actually create the parameter with the parts of the pattern
+			String typeContent = paramMatch.group(1);
+			JavaType type = parseJavaType(typeContent);
+			boolean vararg = StringUtil.isNotBlank(StringUtil.trim(paramMatch.group(8)));
+			String name = paramMatch.group(9);
+			return JavaParameter.builder()
+					.type(type)
+					.name(name)
+					.vararg(vararg)
+					.build();
+		}else{
+			throw new IllegalArgumentException("'" + parameterContent + "' is not a valid parameter");
+		}
+	}
+	
+	/**
+	 * Parses a {@link JavaType} from the given String
+	 *
+	 * @param typeContent The String to parse
+	 * @return The {@link JavaType} that was parsed
+	 */
+	protected static JavaType parseJavaType(String typeContent){
+		// Use a pattern to ensure we have a type and to get the relevant info for it
+		Matcher typeMatch = TYPE_PATTERN.matcher(typeContent);
+		if(typeMatch.matches()){
+			// Actually create the type with the parts of the pattern
+			String baseType = typeMatch.group(1);
+			String typeParamsContent = typeMatch.group(2);
+			List<JavaTypeParameter> typeParams = parseJavaTypeParameters(typeParamsContent);
+			return JavaType.builder()
+					.baseType(baseType)
+					.typeParameters(typeParams)
+					.build();
+		}else{
+			throw new IllegalArgumentException("'" + typeContent + "' is not a valid type");
+		}
+	}
+	
+	/**
+	 * Parses the given String into a List of {@link JavaTypeParameter Java Type Parameters}
+	 *
+	 * @param typeParametersContent The String to be parsed
+	 * @return The List of {@link JavaTypeParameter Java Type Parameters} that were parsed from the String
+	 */
+	protected static List<JavaTypeParameter> parseJavaTypeParameters(String typeParametersContent){
+		List<JavaTypeParameter> typeParams = new ArrayList<>();
+		
+		// Check for an empty string / only whitespace
+		if(StringUtil.isBlank(StringUtil.trim(typeParametersContent))){
+			return typeParams;
+		}
+		
+		// Split type parameters on comma
+		for(String paramContent: typeParametersContent.split(",")){
+			// Use a pattern to ensure we have a type parameter and to get the relevant info for it
+			Matcher typeParamMatch = TYPE_PARAMETER_PATTERN.matcher(paramContent);
+			if(typeParamMatch.matches()){
+				// Actually create the type parameter with the parts of the pattern
+				String baseType = typeParamMatch.group(1);
+				String extendsType = typeParamMatch.group(2);
+				typeParams.add(JavaTypeParameter.builder()
+						.baseType(baseType)
+						.extendsType(extendsType)
+						.build());
+			}else{
+				throw new IllegalArgumentException("'" + paramContent + "' is not a valid type parameter");
+			}
+		}
+		
+		// Return all the type parameters we parsed
+		return typeParams;
 	}
 }
