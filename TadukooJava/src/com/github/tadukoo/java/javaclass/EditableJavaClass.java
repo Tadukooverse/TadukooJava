@@ -27,7 +27,7 @@ import java.util.List;
  * Represents a class in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.4
  */
 public class EditableJavaClass extends JavaClass{
@@ -36,7 +36,7 @@ public class EditableJavaClass extends JavaClass{
 	 * A builder used to make an {@link EditableJavaClass}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaClassBuilder
 	 */

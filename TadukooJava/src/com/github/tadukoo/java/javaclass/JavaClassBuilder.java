@@ -127,7 +127,7 @@ import java.util.Set;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (in JavaClass), Alpha v.0.4 (as a separate class)
  */
 public abstract class JavaClassBuilder<ClassType extends JavaClass>{

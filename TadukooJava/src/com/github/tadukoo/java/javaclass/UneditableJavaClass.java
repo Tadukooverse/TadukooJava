@@ -27,7 +27,7 @@ import java.util.List;
  * Represents a class in Java that is not modifiable
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as JavaClass), Alpha v.0.4 (as UneditableJavaClass)
  */
 public class UneditableJavaClass extends JavaClass{
@@ -36,7 +36,7 @@ public class UneditableJavaClass extends JavaClass{
 	 * A builder used to make an {@link UneditableJavaClass}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaClassBuilder
 	 */

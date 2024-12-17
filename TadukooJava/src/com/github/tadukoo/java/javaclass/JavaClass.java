@@ -26,7 +26,7 @@ import java.util.Map;
  * Java Class is used to represent a class in Java.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaClass), Alpha v.0.4 (as newer version)
  */
 public abstract class JavaClass implements JavaClassType{
