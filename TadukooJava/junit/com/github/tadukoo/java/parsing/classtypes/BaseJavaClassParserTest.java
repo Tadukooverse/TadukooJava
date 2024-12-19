@@ -476,7 +476,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				class Test{
 					class Derp{
 					}
-					
+				\t
 					class Yep{
 					}
 				}
@@ -593,20 +593,20 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				@Test(true)
 				@Yep(type=String.class)
 				public static final class Test extends Derp implements Blah, Foo{
-					
+				\t
 					// some comment
 					/*
 					 * some comment
 					 */
 					class Derp{
 					}
-					
+				\t
 					class Yep{
 					}
-					
+				\t
 					String name;
 					int derp;
-					
+				\t
 					String type(){}
 					int getVersion(){}
 				}
@@ -705,7 +705,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				@Test(true)
 				@Yep(type=String.class)
 				public final class Test extends Derp implements Blah, Foo{
-					
+				\t
 					// some comment
 					/*
 					 * some comment
@@ -729,18 +729,18 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 						/** It's something alright */
 						@Blah
 						protected int something;
-						
+					\t
 						/**
 						 * @return the Version
 						 */
 						@Blah
 						private int getVersion(){return version;}
-						
+					\t
 						@Test
 						@Derp(type=String.class)
 						private static String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}
 					}
-					
+				\t
 					/**
 					 * Something here
 					 *\s
@@ -757,27 +757,27 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 						public static final String someName = "Test";
 						/** This is something else */
 						private int somethingElse;
-						
+					\t
 						/**
 						 * @return the Version
 						 */
 						@Blah
 						private int getVersion(){return version;}
-						
+					\t
 						@Test
 						@Derp(type=String.class)
 						private static String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}
 					}
-					
+				\t
 					@Test
 					@Derp(type = String.class)
 					private static final String name = "Test";
 					@Blah
 					public int version;
-					
+				\t
 					@Blah
 					private int getVersion(){return version;}
-					
+				\t
 					@Test
 					@Derp(type=String.class)
 					private static String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}
@@ -898,8 +898,8 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.returnType("String").name("test")
-								.parameter("String", "type")
-								.parameter("int", "derp")
+								.parameter("String type")
+								.parameter("int derp")
 								.throwType("Exception")
 								.throwType("Throwable")
 								.line("doSomething();")
@@ -966,8 +966,8 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.returnType("String").name("test")
-								.parameter("String", "type")
-								.parameter("int", "derp")
+								.parameter("String type")
+								.parameter("int derp")
 								.throwType("Exception")
 								.throwType("Throwable")
 								.line("doSomething();")
@@ -1013,8 +1013,8 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PRIVATE)
 						.isStatic()
 						.returnType("String").name("test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.throwType("Exception")
 						.throwType("Throwable")
 						.line("doSomething();")
@@ -1274,7 +1274,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				\t  \t
 				\t class \t \t
 				  \t \tTest{\t   \t
-						
+						\s
 				\t
 				}\t    \t
 				\t
@@ -1540,7 +1540,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				\t  import    \t
 				 \t     static   \t
 				 \t     com     \t
-					
+					\s
 				\t    .\t       \s
 				\t      example     \t
 				
@@ -1695,8 +1695,8 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.returnType("String").name("test")
-								.parameter("String", "type")
-								.parameter("int", "derp")
+								.parameter("String type")
+								.parameter("int derp")
 								.throwType("Exception")
 								.throwType("Throwable")
 								.line("doSomething();")
@@ -1725,7 +1725,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				\t  import    \t
 				 \t        \t
 				 \t     com     \t
-					
+					\s
 				\t    .\t       \s
 				\t      example     \t
 				   .Something   \t
@@ -1736,7 +1736,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				\t  import    \t
 				 \t     static   \t
 				 \t     com     \t
-					
+					\s
 				\t    .\t       \s
 				\t      example     \t
 								.SomethingStatic     \t
@@ -1751,7 +1751,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 				\t final\t  \t
 				\t    class \t \t
 				  \t \tTest{\t   \t
-						
+						\s
 				\t  \t @ \t  \tTest\t  (\t \ttype \t = \t
 				\t  \t  String.class\t  , \t  \t defaultValue \t = \t  \t""  \t )    \t\t     \t
 				  \t
@@ -1848,8 +1848,8 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.returnType("String").name("test")
-								.parameter("String", "type")
-								.parameter("int", "derp")
+								.parameter("String type")
+								.parameter("int derp")
 								.throwType("Exception")
 								.throwType("Throwable")
 								.line("doSomething();")
@@ -1949,7 +1949,7 @@ public abstract class BaseJavaClassParserTest extends BaseJavaParserTest{
 								.javadoc(EditableJavadoc.builder().condensed().content("{@inheritDoc}").build())
 								.annotation(EditableJavaAnnotation.builder().name("Override").build())
 								.visibility(Visibility.PUBLIC).returnType("String").name("getValueFromJustComponent")
-								.parameter("JComponent", "component")
+								.parameter("JComponent component")
 								.line("if(component instanceof JLabel label){")
 								.line("\treturn label.getText();")
 								.line("}")

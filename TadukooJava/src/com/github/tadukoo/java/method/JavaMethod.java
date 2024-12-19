@@ -2,12 +2,12 @@ package com.github.tadukoo.java.method;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * Java Method represents a method in a Java class or interface, etc.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaMethod), Alpha v.0.4 (as newer version)
  */
 public abstract class JavaMethod implements JavaCodeType{
@@ -39,8 +39,8 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected String returnType;
 	/** The name of the method */
 	protected String name;
-	/** The parameters used in the method - pairs of type, then name */
-	protected List<Pair<String, String>> parameters;
+	/** The {@link JavaParameter parameters} used in the method */
+	protected List<JavaParameter> parameters;
 	/** The types that can be thrown by the method */
 	protected List<String> throwTypes;
 	/** The actual lines of code in the method */
@@ -58,7 +58,7 @@ public abstract class JavaMethod implements JavaCodeType{
 	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
 	 * @param name The name of the method
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @param throwTypes The types that can be thrown by the method
 	 * @param lines The actual lines of code in the method
 	 */
@@ -66,7 +66,7 @@ public abstract class JavaMethod implements JavaCodeType{
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
 			String returnType, String name,
-			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
+			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
@@ -170,8 +170,8 @@ public abstract class JavaMethod implements JavaCodeType{
 		
 		// Add any parameters
 		if(ListUtil.isNotBlank(parameters)){
-			for(Pair<String, String> parameter: parameters){
-				fullName.append(parameter.getLeft()).append(' ').append(parameter.getRight()).append(", ");
+			for(JavaParameter parameter: parameters){
+				fullName.append(parameter).append(", ");
 			}
 			// Remove the extra comma and space
 			fullName.delete(fullName.length() - 2, fullName.length());
@@ -184,9 +184,9 @@ public abstract class JavaMethod implements JavaCodeType{
 	}
 	
 	/**
-	 * @return The parameters used in the method - pairs of type, then name
+	 * @return The {@link JavaParameter parameters} used in the method
 	 */
-	public List<Pair<String, String>> getParameters(){
+	public List<JavaParameter> getParameters(){
 		return parameters;
 	}
 	
@@ -262,8 +262,8 @@ public abstract class JavaMethod implements JavaCodeType{
 		// Add parameters to the declaration
 		boolean multiline = false;
 		if(ListUtil.isNotBlank(parameters)){
-			for(Pair<String, String> parameter: parameters){
-				int parameterLength = parameter.getLeft().length() + parameter.getRight().length() + 1;
+			for(JavaParameter parameter: parameters){
+				int parameterLength = parameter.toString().length() + 1;
 				if(declaration.length() + parameterLength > 110){
 					if(!multiline){
 						int cutoff = declaration.indexOf(PARAMETER_OPEN_TOKEN) + 1;
@@ -280,8 +280,7 @@ public abstract class JavaMethod implements JavaCodeType{
 						declaration = new StringBuilder("\t\t");
 					}
 				}
-				declaration.append(parameter.getLeft()).append(' ').append(parameter.getRight())
-						.append(LIST_SEPARATOR_TOKEN).append(' ');
+				declaration.append(parameter).append(LIST_SEPARATOR_TOKEN).append(' ');
 			}
 			// Remove final comma + space
 			declaration.setLength(declaration.length()-2);
@@ -391,10 +390,9 @@ public abstract class JavaMethod implements JavaCodeType{
 		
 		// Add parameters if we have them
 		if(ListUtil.isNotBlank(parameters)){
-			for(Pair<String, String> parameter: parameters){
+			for(JavaParameter parameter: parameters){
 				codeString.append(NEWLINE_WITH_2_TABS).append(".parameter(\"")
-						.append(parameter.getLeft()).append("\", \"")
-						.append(parameter.getRight()).append("\")");
+						.append(parameter.toString()).append("\")");
 			}
 		}
 		

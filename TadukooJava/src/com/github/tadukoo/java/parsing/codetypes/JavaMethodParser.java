@@ -2,6 +2,7 @@ package com.github.tadukoo.java.parsing.codetypes;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -14,7 +15,6 @@ import com.github.tadukoo.java.parsing.comment.JavadocParser;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.functional.function.ThrowingFunction2;
-import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,8 @@ import java.util.regex.Pattern;
  * A parser used for parsing {@link JavaMethod methods in Java}
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public class JavaMethodParser extends AbstractJavaParser{
 	
@@ -83,7 +84,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 	private static final Pattern METHOD_PATTERN = Pattern.compile(
 			"\\s*" + MODIFIERS_REGEX +
 					"([^\\s(]*)(\\s*[^\\s(]*)?\\s*" +
-					"\\(\\s*([^)]*)\\s*\\)(?:\\s*throws ([^{]*))?" +
+					"\\(\\s*((" + PARAMETER_REGEX + ",?)*)\\s*\\)(?:\\s*throws ([^{]*))?" +
 					"\\s*(?:\\{\\s*(.*)\\s*}|;\\s*)",
 			Pattern.DOTALL);
 	
@@ -283,25 +284,28 @@ public class JavaMethodParser extends AbstractJavaParser{
 			String returnType = StringUtil.trim(matcher.group(4));
 			String name = StringUtil.trim(matcher.group(5));
 			String parameterString = StringUtil.trim(matcher.group(6));
-			String throwsString = StringUtil.trim(matcher.group(7));
-			String contentString = StringUtil.trim(matcher.group(8));
+			String throwsString = StringUtil.trim(matcher.group(17));
+			String contentString = StringUtil.trim(matcher.group(18));
 			
 			// Parse parameters
-			List<Pair<String, String>> parameters = new ArrayList<>();
+			List<JavaParameter> parameters = new ArrayList<>();
 			if(StringUtil.isNotBlank(parameterString)){
 				if(parameterString.contains(LIST_SEPARATOR_TOKEN)){
 					String[] parameterList = parameterString.split(LIST_SEPARATOR_TOKEN);
-					for(String aParameter: parameterList){
-						String[] parameterSplit = StringUtil.trim(aParameter).split("\\s+");
-						String parameterType = StringUtil.trim(parameterSplit[0]);
-						String parameterName = StringUtil.trim(parameterSplit[1]);
-						parameters.add(Pair.of(parameterType, parameterName));
+					String aParameter = null;
+					for(String parameterPiece: parameterList){
+						if(StringUtil.isBlank(aParameter)){
+							aParameter = parameterPiece;
+						}else{
+							aParameter += "," + parameterPiece;
+						}
+						if(PARAMETER_PATTERN.matcher(aParameter).matches()){
+							parameters.add(parseJavaParameter(aParameter));
+							aParameter = null;
+						}
 					}
 				}else{
-					String[] parameterSplit = parameterString.split("\\s+");
-					String parameterType = StringUtil.trim(parameterSplit[0]);
-					String parameterName = StringUtil.trim(parameterSplit[1]);
-					parameters.add(Pair.of(parameterType, parameterName));
+					parameters.add(parseJavaParameter(parameterString));
 				}
 			}
 			

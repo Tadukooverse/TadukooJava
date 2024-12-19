@@ -1,11 +1,11 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
-import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class RegularJavaMethodTest extends DefaultJavaMethodTest<RegularJavaMeth
 				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
 				String returnType, String name,
-				List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
+				List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 			super(editable, javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,
 					returnType, name,

@@ -33,16 +33,16 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	protected static final Matcher WHITESPACE_MATCHER = Pattern.compile("\\s+").matcher("");
 	
 	/** A regular expression for a {@link JavaTypeParameter} */
-	protected static final String TYPE_PARAMETER_REGEX = "\\s*(\\S+)(?:\\s*extends\\s*(\\S*))?\\s*";
+	protected static final String TYPE_PARAMETER_REGEX = "\\s*([^\\s)]+)(?:\\s*extends\\s*([^\\s)]*))?\\s*";
 	/** A {@link Pattern} to use for parsing {@link JavaTypeParameter type parameters} */
 	protected static final Pattern TYPE_PARAMETER_PATTERN = Pattern.compile(TYPE_PARAMETER_REGEX);
 	/** A regular expression for a {@link JavaType} */
-	protected static final String TYPE_REGEX = "\\s*([^<.\\s]+)(?:\\s*<((?:" +
+	protected static final String TYPE_REGEX = "\\s*([^<.\\s)]+)(?:\\s*<((?:" +
 			TYPE_PARAMETER_REGEX + ",)*" + TYPE_PARAMETER_PATTERN + ")>)?\\s*";
 	/** A {@link Pattern} to use for parsing a {@link JavaType} */
 	protected static final Pattern TYPE_PATTERN = Pattern.compile(TYPE_REGEX);
 	/** A regular expression for a {@link JavaParameter} */
-	protected static final String PARAMETER_REGEX = "(" + TYPE_REGEX + ")(?:\\s+|\\s*(\\.\\.\\.)\\s*)(\\S*)\\s*";
+	protected static final String PARAMETER_REGEX = "(" + TYPE_REGEX + ")(?:\\s+|\\s*(\\.\\.\\.)\\s*)([^\\s)]*)\\s*";
 	/** A {@link Pattern} to use for parsing a {@link JavaParameter} */
 	protected static final Pattern PARAMETER_PATTERN = Pattern.compile(PARAMETER_REGEX);
 	
@@ -156,7 +156,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @param parameterContent The String to parse
 	 * @return The {@link JavaParameter} that was parsed
 	 */
-	protected static JavaParameter parseJavaParameter(String parameterContent){
+	public static JavaParameter parseJavaParameter(String parameterContent){
 		// Use a pattern to ensure we have a parameter and to get the relevant info for it
 		Matcher paramMatch = PARAMETER_PATTERN.matcher(parameterContent);
 		if(paramMatch.matches()){
@@ -181,7 +181,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @param typeContent The String to parse
 	 * @return The {@link JavaType} that was parsed
 	 */
-	protected static JavaType parseJavaType(String typeContent){
+	public static JavaType parseJavaType(String typeContent){
 		// Use a pattern to ensure we have a type and to get the relevant info for it
 		Matcher typeMatch = TYPE_PATTERN.matcher(typeContent);
 		if(typeMatch.matches()){
@@ -204,7 +204,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @param typeParametersContent The String to be parsed
 	 * @return The List of {@link JavaTypeParameter Java Type Parameters} that were parsed from the String
 	 */
-	protected static List<JavaTypeParameter> parseJavaTypeParameters(String typeParametersContent){
+	public static List<JavaTypeParameter> parseJavaTypeParameters(String typeParametersContent){
 		List<JavaTypeParameter> typeParams = new ArrayList<>();
 		
 		// Check for an empty string / only whitespace

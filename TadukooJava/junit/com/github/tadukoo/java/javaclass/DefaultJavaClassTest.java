@@ -282,7 +282,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.build();
 		JavaMethod method2 = javaMethodBuilder.get()
 				.returnType("int").name("getVersion")
-				.parameter("String", "type")
+				.parameter("String type")
 				.build();
 		clazz = builder.get()
 				.className(className)
@@ -1974,7 +1974,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.className(className)
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.build();
 		String javaString = """
 				class AClassName{
@@ -1995,7 +1995,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.className(className)
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.innerElementsOrder(ListUtil.createList(
 						Pair.of(JavaCodeTypes.METHOD, "getSomething(int test)"),
 						Pair.of(JavaCodeTypes.METHOD, "init()")
@@ -2020,7 +2020,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.className(className)
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.innerElementsOrder(new ArrayList<>())
 				.build();
 		String javaString = """
@@ -2112,7 +2112,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.innerElementsOrder(new ArrayList<>())
 				.build();
 		String javaString = """
@@ -2212,7 +2212,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.build();
 		String javaString = """
 				package some.package;
@@ -2317,7 +2317,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.innerElementsOrder(ListUtil.createList(
 						Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null),
 						Pair.of(JavaCodeTypes.CLASS, "CClassName"),
@@ -2435,7 +2435,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.build();
 		String javaString = """
 				/**
@@ -2510,7 +2510,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.build();
 		JavaClass otherClass = builder.get()
 				.packageDeclaration(javaPackageDeclarationBuilder.get()
@@ -2555,7 +2555,7 @@ public abstract class DefaultJavaClassTest<ClassType extends JavaClass>{
 				.field(javaFieldBuilder.get().type("String").name("derp").build())
 				.method(javaMethodBuilder.get().returnType(className).build())
 				.method(javaMethodBuilder.get().returnType("String").name("getSomething")
-						.parameter("int", "test").line("return doSomething();").build())
+						.parameter("int test").line("return doSomething();").build())
 				.build();
 		assertEquals(clazz, otherClass);
 	}

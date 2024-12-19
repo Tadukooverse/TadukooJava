@@ -2,6 +2,8 @@ package com.github.tadukoo.java.method;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
@@ -10,7 +12,6 @@ import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.NoException;
 import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
-import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,8 +118,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.visibility(Visibility.PRIVATE)
 				.isStatic().isFinal()
 				.returnType(returnType).name("test")
-				.parameter("String", "type")
-				.parameter("int", "derp")
+				.parameter("String type")
+				.parameter("int derp")
 				.throwType("Throwable")
 				.throwType("Exception")
 				.line("doSomething();")
@@ -245,30 +246,48 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	
 	@Test
 	public void testBuilderSetParameters(){
-		List<Pair<String, String>> parameters = ListUtil.createList(Pair.of("int", "someInt"),
-				Pair.of("String", "someText"));
+		List<JavaParameter> parameters = ListUtil.createList(
+				JavaParameter.builder()
+						.type(JavaType.builder()
+								.baseType("int")
+								.build())
+						.name("someInt")
+						.build(),
+				JavaParameter.builder()
+						.type(JavaType.builder()
+								.baseType("String")
+								.build())
+						.name("someText")
+						.build());
 		method = builder.get().returnType(returnType).parameters(parameters).build();
 		assertEquals(parameters, method.getParameters());
 	}
 	
 	@Test
 	public void testBuilderSetParameterPair(){
-		method = builder.get().returnType(returnType).parameter(Pair.of("String", "someText")).build();
-		List<Pair<String, String>> parameters = method.getParameters();
+		JavaParameter parameter = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("someText")
+				.build();
+		method = builder.get().returnType(returnType).parameter(parameter).build();
+		List<JavaParameter> parameters = method.getParameters();
 		assertEquals(1, parameters.size());
-		Pair<String, String> parameter = parameters.get(0);
-		assertEquals("String", parameter.getLeft());
-		assertEquals("someText", parameter.getRight());
+		assertEquals(parameter, parameters.get(0));
 	}
 	
 	@Test
-	public void testBuilderSetParameter(){
-		method = builder.get().returnType(returnType).parameter("String", "someText").build();
-		List<Pair<String, String>> parameters = method.getParameters();
+	public void testBuilderSetParameterText(){
+		method = builder.get().returnType(returnType).parameter("String someText").build();
+		List<JavaParameter> parameters = method.getParameters();
 		assertEquals(1, parameters.size());
-		Pair<String, String> parameter = parameters.get(0);
-		assertEquals("String", parameter.getLeft());
-		assertEquals("someText", parameter.getRight());
+		assertEquals(JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("someText")
+				.build(), parameters.get(0));
 	}
 	
 	@Test
@@ -423,7 +442,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testGetUniqueNameConstructorWithParameter(){
 		method = builder.get()
 				.returnType(returnType)
-				.parameter("String", "name")
+				.parameter("String name")
 				.build();
 		assertEquals("init(String name)", method.getUniqueName());
 	}
@@ -432,8 +451,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testGetUniqueNameConstructorWithMultipleParameters(){
 		method = builder.get()
 				.returnType(returnType)
-				.parameter("String", "name")
-				.parameter("int", "version")
+				.parameter("String name")
+				.parameter("int version")
 				.build();
 		assertEquals("init(String name, int version)", method.getUniqueName());
 	}
@@ -450,7 +469,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testGetUniqueNameWithParameter(){
 		method = builder.get()
 				.returnType(returnType).name("test")
-				.parameter("String", "name")
+				.parameter("String name")
 				.build();
 		assertEquals("test(String name)", method.getUniqueName());
 	}
@@ -459,8 +478,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testGetUniqueNameWithMultipleParameters(){
 		method = builder.get()
 				.returnType(returnType).name("test")
-				.parameter("String", "name")
-				.parameter("int", "version")
+				.parameter("String name")
+				.parameter("int version")
 				.build();
 		assertEquals("test(String name, int version)", method.getUniqueName());
 	}
@@ -559,7 +578,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	
 	@Test
 	public void testToStringWithSingleParameter(){
-		method = builder.get().returnType(returnType).parameter("String", "text").build();
+		method = builder.get().returnType(returnType).parameter("String text").build();
 		String javaString = """
 				int(String text){ }""";
 		assertEquals(javaString, method.toString());
@@ -567,8 +586,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	
 	@Test
 	public void testToStringWithParameters(){
-		method = builder.get().returnType(returnType).parameter("String", "text")
-				.parameter("int", "something").build();
+		method = builder.get().returnType(returnType).parameter("String text")
+				.parameter("int something").build();
 		String javaString = """
 				int(String text, int something){ }""";
 		assertEquals(javaString, method.toString());
@@ -577,39 +596,39 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	@Test
 	public void testToStringWithLongParameters(){
 		method = builder.get().returnType(returnType)
-				.parameter("String", "text")
-				.parameter("Testy", "testy")
-				.parameter("Test", "test1")
-				.parameter("Test", "test2")
-				.parameter("Test", "test3")
-				.parameter("Test", "test4")
-				.parameter("Test", "test5")
-				.parameter("Test", "test6")
-				.parameter("Test", "test7")
+				.parameter("String text")
+				.parameter("Testy testy")
+				.parameter("Test test")
+				.parameter("Test test2")
+				.parameter("Test test3")
+				.parameter("Test test4")
+				.parameter("Test test5")
+				.parameter("Test test6")
+				.parameter("Test test7")
 				.build();
 		String javaString = """
 				int(
-						String text, Testy testy, Test test1, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7){ }""";
+						String text, Testy testy, Test test, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7){ }""";
 		assertEquals(javaString, method.toString());
 	}
 	
 	@Test
 	public void testToStringWithLongParameters2Lines(){
 		method = builder.get().returnType(returnType)
-				.parameter("String", "text")
-				.parameter("Testy", "testy")
-				.parameter("Test", "test1")
-				.parameter("Test", "test2")
-				.parameter("Test", "test3")
-				.parameter("Test", "test4")
-				.parameter("Test", "test5")
-				.parameter("Test", "test6")
-				.parameter("Test", "test7")
-				.parameter("Test", "test8")
+				.parameter("String text")
+				.parameter("Testy testy")
+				.parameter("Test test")
+				.parameter("Test test2")
+				.parameter("Test test3")
+				.parameter("Test test4")
+				.parameter("Test test5")
+				.parameter("Test test6")
+				.parameter("Test test7")
+				.parameter("Test test8")
 				.build();
 		String javaString = """
 				int(
-						String text, Testy testy, Test test1, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7,\s
+						String text, Testy testy, Test test, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7,\s
 						Test test8){ }""";
 		assertEquals(javaString, method.toString());
 	}
@@ -617,7 +636,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	@Test
 	public void testToStringWithLongSingleParameter(){
 		method = builder.get().returnType(returnType)
-				.parameter("String" , "aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
+				.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
 				.build();
 		String javaString = """
 				int(
@@ -628,8 +647,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	@Test
 	public void testToStringWith2LongSingleParameters(){
 		method = builder.get().returnType(returnType)
-				.parameter("String" , "aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
-				.parameter("String" , "aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah2")
+				.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
+				.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah2")
 				.build();
 		String javaString = """
 				int(
@@ -674,7 +693,7 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.annotation(test).annotation(derp).name("someMethod")
 				.visibility(Visibility.PUBLIC)
 				.isStatic().isFinal()
-				.parameter("String", "text").parameter("int", "something")
+				.parameter("String text").parameter("int something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		String javaString = """
@@ -701,14 +720,14 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic().isFinal()
-				.parameter("String", "text").parameter("int", "something")
+				.parameter("String text").parameter("int something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = builder.get().returnType(returnType)
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic().isFinal()
-				.parameter("String", "text").parameter("int", "something")
+				.parameter("String text").parameter("int something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		assertEquals(method, otherMethod);
@@ -722,14 +741,14 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic().isFinal()
-				.parameter("String", "text").parameter("int", "something")
+				.parameter("String text").parameter("int something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 42;").build();
 		JavaMethod otherMethod = builder.get().returnType(returnType)
 				.javadoc(javadocBuilder.get().build())
 				.annotation(test).annotation(derp).name("someMethod")
 				.isStatic().isFinal()
-				.parameter("String", "text").parameter("int", "something")
+				.parameter("String text").parameter("int something")
 				.throwType("Throwable").throwType("Exception")
 				.line("doSomething();").line("return 41;").build();
 		assertNotEquals(method, otherMethod);
@@ -871,11 +890,11 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToBuilderCodeWithOneParameter(){
 		method = builder.get()
 				.returnType(returnType)
-				.parameter("int", "something")
+				.parameter("int something")
 				.build();
 		assertEquals(clazz.getSimpleName() + ".builder()\n" +
 				"\t\t.returnType(\"" + returnType + "\")\n" +
-				"\t\t.parameter(\"int\", \"something\")\n" +
+				"\t\t.parameter(\"int something\")\n" +
 				"\t\t.build()", method.toBuilderCode());
 	}
 	
@@ -883,13 +902,13 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 	public void testToBuilderCodeWithTwoParameters(){
 		method = builder.get()
 				.returnType(returnType)
-				.parameter("int", "something")
-				.parameter("String", "version")
+				.parameter("int something")
+				.parameter("String version")
 				.build();
 		assertEquals(clazz.getSimpleName() + ".builder()\n" +
 				"\t\t.returnType(\"" + returnType + "\")\n" +
-				"\t\t.parameter(\"int\", \"something\")\n" +
-				"\t\t.parameter(\"String\", \"version\")\n" +
+				"\t\t.parameter(\"int something\")\n" +
+				"\t\t.parameter(\"String version\")\n" +
 				"\t\t.build()", method.toBuilderCode());
 	}
 	
@@ -963,8 +982,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				.isStatic().isFinal()
 				.returnType(returnType)
 				.name("something")
-				.parameter("int", "something")
-				.parameter("String", "version")
+				.parameter("int something")
+				.parameter("String version")
 				.throwType("Exception")
 				.throwType("Throwable")
 				.line("this.thing = thing;")
@@ -985,8 +1004,8 @@ public abstract class DefaultJavaMethodTest<MethodType extends JavaMethod>{
 				"\t\t.isFinal()\n" +
 				"\t\t.returnType(\"" + returnType + "\")\n" +
 				"\t\t.name(\"something\")\n" +
-				"\t\t.parameter(\"int\", \"something\")\n" +
-				"\t\t.parameter(\"String\", \"version\")\n" +
+				"\t\t.parameter(\"int something\")\n" +
+				"\t\t.parameter(\"String version\")\n" +
 				"\t\t.throwType(\"Exception\")\n" +
 				"\t\t.throwType(\"Throwable\")\n" +
 				"\t\t.line(\"this.thing = thing;\")\n" +

@@ -167,11 +167,71 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
+						.parameter("String type")
 						.build(),
 				method);
 		assertEquals("""
 				Test(String type){ }""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithParameterWithType() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				Test(List<String> types){}""");
+		assertNotNull(method);
+		assertEquals(
+				EditableJavaMethod.builder()
+						.returnType("Test")
+						.parameter("List<String> types")
+						.build(),
+				method);
+		assertEquals("""
+				Test(List<String> types){ }""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithParameterWithMultipleType() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				Test(Map<String, Object> map){}""");
+		assertNotNull(method);
+		assertEquals(
+				EditableJavaMethod.builder()
+						.returnType("Test")
+						.parameter("Map<String, Object> map")
+						.build(),
+				method);
+		assertEquals("""
+				Test(Map<String, Object> map){ }""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithParameterWithVararg() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				Test(String ... types){}""");
+		assertNotNull(method);
+		assertEquals(
+				EditableJavaMethod.builder()
+						.returnType("Test")
+						.parameter("String ... types")
+						.build(),
+				method);
+		assertEquals("""
+				Test(String ... types){ }""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithParameterWithEverything() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				Test(Map<String, Object> ... maps){}""");
+		assertNotNull(method);
+		assertEquals(
+				EditableJavaMethod.builder()
+						.returnType("Test")
+						.parameter("Map<String, Object> ... maps")
+						.build(),
+				method);
+		assertEquals("""
+				Test(Map<String, Object> ... maps){ }""", method.toString());
 	}
 	
 	@Test
@@ -182,8 +242,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.build(),
 				method);
 		assertEquals("""
@@ -267,8 +327,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PRIVATE)
 						.isStatic().isFinal()
 						.returnType("String").name("test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.throwType("Exception")
 						.throwType("Throwable")
 						.line("doSomething();")
@@ -277,6 +337,31 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 				method);
 		assertEquals("""
 				private static final String test(String type, int derp) throws Exception, Throwable{
+					doSomething();
+					doSomethingElse();
+				}""", method.toString());
+	}
+	
+	@Test
+	public void testMethodWithEverythingAndComplexParameters() throws JavaParsingException{
+		JavaMethod method = parseMethod.apply("""
+				private static final String test(Map<String, Object> map, int ... derps) throws Exception, Throwable{doSomething();doSomethingElse();}""");
+		assertNotNull(method);
+		assertEquals(
+				EditableJavaMethod.builder()
+						.visibility(Visibility.PRIVATE)
+						.isStatic().isFinal()
+						.returnType("String").name("test")
+						.parameter("Map<String, Object> map")
+						.parameter("int ... derps")
+						.throwType("Exception")
+						.throwType("Throwable")
+						.line("doSomething();")
+						.line("doSomethingElse();")
+						.build(),
+				method);
+		assertEquals("""
+				private static final String test(Map<String, Object> map, int ... derps) throws Exception, Throwable{
 					doSomething();
 					doSomethingElse();
 				}""", method.toString());
@@ -366,8 +451,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PRIVATE)
 						.isStatic().isFinal()
 						.returnType("String").name("test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.throwType("Exception")
 						.throwType("Throwable")
 						.line("doSomething();")
@@ -485,7 +570,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PUBLIC)
 						.isStatic()
 						.returnType("String").name("toHex")
-						.parameter("byte[]", "bytes")
+						.parameter("byte[] bytes")
 						.line("StringBuilder hex = new StringBuilder();")
 						.line("for(byte bite: bytes){")
 						.line("\thex.append(toHex(bite));")
@@ -508,15 +593,15 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		JavaMethod method = parseMethod.apply("""
 				public static byte[] fromHex(String hex){
 					int size = hex.length();
-					
+				\t
 					// Check that the size is even
 					if(size % 2 != 0){
 						throw new IllegalArgumentException("hex string must be an even length: " + hex);
 					}
-					
+				\t
 					// Create byte array to store the bytes in
 					byte[] bites = new byte[size/2];
-					
+				\t
 					// Iterate over the string, 2 characters at a time
 					for(int i = 0; i < size; i+=2){
 						int highNibble = hexToInt(hex.charAt(i));
@@ -525,10 +610,10 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						if(highNibble == -1 || lowNibble == -1){
 							throw new IllegalArgumentException("hex string contains an illegal hex character: " + hex);
 						}
-						
+					\t
 						bites[i/2] = (byte) (highNibble*16 + lowNibble);
 					}
-					
+				\t
 					return bites;
 				}""");
 		assertEquals(
@@ -536,7 +621,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PUBLIC)
 						.isStatic()
 						.returnType("byte[]").name("fromHex")
-						.parameter("String", "hex")
+						.parameter("String hex")
 						.line("int size = hex.length();")
 						.line("")
 						.line("// Check that the size is even")
@@ -609,7 +694,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PUBLIC)
 						.isStatic()
 						.returnType("int").name("hexToInt")
-						.parameter("char", "hexChar")
+						.parameter("char hexChar")
 						.line("if('0' <= hexChar && hexChar <= '9'){")
 						.line("\treturn hexChar - '0';")
 						.line("}else if('A' <= hexChar && hexChar <= 'F'){")
@@ -650,7 +735,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 				.visibility(Visibility.PUBLIC)
 				.isStatic()
 				.returnType("List<File>").name("listAllFiles")
-				.parameter("Path", "directoryPath")
+				.parameter("Path directoryPath")
 				.throwType("IOException")
 				.line("try(Stream<Path> pathStream = Files.walk(directoryPath)){")
 				.line("\treturn pathStream")
@@ -698,8 +783,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PRIVATE)
 						.isStatic()
 						.returnType("String").name("test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.throwType("Exception")
 						.throwType("Throwable")
 						.line("doSomething();")
@@ -990,7 +1075,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
+						.parameter("String type")
 						.build(),
 				method);
 		assertEquals("""
@@ -1007,7 +1092,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
+						.parameter("String type")
 						.build(),
 				method);
 		assertEquals("""
@@ -1024,7 +1109,7 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
+						.parameter("String type")
 						.build(),
 				method);
 		assertEquals("""
@@ -1040,8 +1125,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.build(),
 				method);
 		assertEquals("""
@@ -1057,8 +1142,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 		assertEquals(
 				EditableJavaMethod.builder()
 						.returnType("Test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.build(),
 				method);
 		assertEquals("""
@@ -1180,8 +1265,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PRIVATE)
 						.isStatic().isFinal()
 						.returnType("String").name("test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.throwType("Exception")
 						.throwType("Throwable")
 						.line("doSomething();")
@@ -1238,8 +1323,8 @@ public abstract class BaseJavaMethodParserTest extends BaseJavaParserTest{
 						.visibility(Visibility.PRIVATE)
 						.isStatic().isFinal()
 						.returnType("String").name("test")
-						.parameter("String", "type")
-						.parameter("int", "derp")
+						.parameter("String type")
+						.parameter("int derp")
 						.throwType("Exception")
 						.throwType("Throwable")
 						.line("doSomething();")

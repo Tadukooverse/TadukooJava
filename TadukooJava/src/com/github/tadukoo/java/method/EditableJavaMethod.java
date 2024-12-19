@@ -1,9 +1,10 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
-import com.github.tadukoo.util.tuple.Pair;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * Represents a method in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.4
  */
 public class EditableJavaMethod extends JavaMethod{
@@ -21,7 +22,7 @@ public class EditableJavaMethod extends JavaMethod{
 	 * A builder used to make an {@link EditableJavaMethod}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaMethodBuilder
 	 */
@@ -73,7 +74,7 @@ public class EditableJavaMethod extends JavaMethod{
 	 * @param isFinal Whether the method is final or not
 	 * @param returnType The return type of the method
 	 * @param name The name of the method
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @param throwTypes The types that can be thrown by the method
 	 * @param lines The actual lines of code in the method
 	 */
@@ -81,7 +82,7 @@ public class EditableJavaMethod extends JavaMethod{
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
 			String returnType, String name,
-			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
+			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		super(true, javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal,
 				returnType, name,
@@ -182,31 +183,30 @@ public class EditableJavaMethod extends JavaMethod{
 	}
 	
 	/**
-	 * @param type The type of the parameter used in the method to be added
-	 * @param name The name of the parameter used in the method to be added
+	 * @param parameterText The text of the {@link JavaParameter parameter}, to be parsed and added
 	 */
-	public void addParameter(String type, String name){
-		parameters.add(Pair.of(type, name));
+	public void addParameter(String parameterText){
+		parameters.add(FullJavaParser.parseJavaParameter(parameterText));
 	}
 	
 	/**
-	 * @param parameter A parameter used in the method to be added - a pair of type, then name
+	 * @param parameter A {@link JavaParameter parameter} used in the method to be added
 	 */
-	public void addParameter(Pair<String, String> parameter){
+	public void addParameter(JavaParameter parameter){
 		parameters.add(parameter);
 	}
 	
 	/**
-	 * @param parameters Parameters used in the method to be added - pairs of type, then name
+	 * @param parameters {@link JavaParameter Parameters} used in the method to be added
 	 */
-	public void addParameters(List<Pair<String, String>> parameters){
+	public void addParameters(List<JavaParameter> parameters){
 		this.parameters.addAll(parameters);
 	}
 	
 	/**
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 */
-	public void setParameters(List<Pair<String, String>> parameters){
+	public void setParameters(List<JavaParameter> parameters){
 		this.parameters = parameters;
 	}
 	

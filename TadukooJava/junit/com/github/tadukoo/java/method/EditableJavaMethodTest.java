@@ -1,5 +1,7 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.Visibility;
@@ -7,7 +9,6 @@ import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.javadoc.EditableJavadoc;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -212,46 +213,112 @@ public class EditableJavaMethodTest extends DefaultJavaMethodTest<EditableJavaMe
 	}
 	
 	@Test
-	public void testAddParameterPieces(){
+	public void testAddParameterText(){
+		JavaParameter parameter1 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("test")
+				.build();
+		JavaParameter parameter2 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("int")
+						.build())
+				.name("something")
+				.build();
 		assertEquals(new ArrayList<>(), method.getParameters());
-		method.addParameter("String", "test");
-		assertEquals(ListUtil.createList(Pair.of("String", "test")), method.getParameters());
-		method.addParameter("int", "something");
-		assertEquals(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something")),
+		method.addParameter("String test");
+		assertEquals(ListUtil.createList(parameter1), method.getParameters());
+		method.addParameter("int something");
+		assertEquals(ListUtil.createList(parameter1, parameter2),
 				method.getParameters());
 	}
 	
 	@Test
 	public void testAddParameter(){
+		JavaParameter parameter1 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("test")
+				.build();
+		JavaParameter parameter2 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("int")
+						.build())
+				.name("something")
+				.build();
 		assertEquals(new ArrayList<>(), method.getParameters());
-		method.addParameter(Pair.of("String", "test"));
-		assertEquals(ListUtil.createList(Pair.of("String", "test")), method.getParameters());
-		method.addParameter(Pair.of("int", "something"));
-		assertEquals(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something")),
-				method.getParameters());
+		method.addParameter(parameter1);
+		assertEquals(ListUtil.createList(parameter1), method.getParameters());
+		method.addParameter(parameter2);
+		assertEquals(ListUtil.createList(parameter1, parameter2), method.getParameters());
 	}
 	
 	@Test
 	public void testAddParameters(){
+		JavaParameter parameter1 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("test")
+				.build();
+		JavaParameter parameter2 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("int")
+						.build())
+				.name("something")
+				.build();
+		JavaParameter parameter3 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("derp")
+				.build();
+		JavaParameter parameter4 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("double")
+						.build())
+				.name("blah")
+				.build();
 		assertEquals(new ArrayList<>(), method.getParameters());
-		method.addParameters(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something")));
-		assertEquals(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something")),
-				method.getParameters());
-		method.addParameters(ListUtil.createList(Pair.of("String", "derp"), Pair.of("double", "blah")));
-		assertEquals(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something"),
-						Pair.of("String", "derp"), Pair.of("double", "blah")),
-				method.getParameters());
+		method.addParameters(ListUtil.createList(parameter1, parameter2));
+		assertEquals(ListUtil.createList(parameter1, parameter2), method.getParameters());
+		method.addParameters(ListUtil.createList(parameter3, parameter4));
+		assertEquals(ListUtil.createList(parameter1, parameter2, parameter3, parameter4), method.getParameters());
 	}
 	
 	@Test
 	public void testSetParameters(){
+		JavaParameter parameter1 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("test")
+				.build();
+		JavaParameter parameter2 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("int")
+						.build())
+				.name("something")
+				.build();
+		JavaParameter parameter3 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("derp")
+				.build();
+		JavaParameter parameter4 = JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("double")
+						.build())
+				.name("blah")
+				.build();
 		assertEquals(new ArrayList<>(), method.getParameters());
-		method.setParameters(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something")));
-		assertEquals(ListUtil.createList(Pair.of("String", "test"), Pair.of("int", "something")),
-				method.getParameters());
-		method.setParameters(ListUtil.createList(Pair.of("String", "derp"), Pair.of("double", "blah")));
-		assertEquals(ListUtil.createList(Pair.of("String", "derp"), Pair.of("double", "blah")),
-				method.getParameters());
+		method.setParameters(ListUtil.createList(parameter1, parameter2));
+		assertEquals(ListUtil.createList(parameter1, parameter2), method.getParameters());
+		method.setParameters(ListUtil.createList(parameter3, parameter4));
+		assertEquals(ListUtil.createList(parameter3, parameter4), method.getParameters());
 	}
 	
 	@Test
