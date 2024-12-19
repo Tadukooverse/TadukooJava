@@ -20,7 +20,7 @@ import static com.github.tadukoo.util.junit.AssertionFailedErrors.buildTwoPartEr
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaCodeTypeTestJavaParameterTest{
+public class JavaCodeTypeTestParameterTest{
 	
 	@ParameterizedTest
 	@MethodSource("getParameterDifferences")
@@ -64,6 +64,34 @@ public class JavaCodeTypeTestJavaParameterTest{
 								.name("text")
 								.build(),
 						new ArrayList<>()
+				),
+				// Both null
+				Arguments.of(
+						null,
+						null,
+						new ArrayList<>()
+				),
+				// First null
+				Arguments.of(
+						null,
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build(),
+						ListUtil.createList("One of the parameters is null, and the other isn't!")
+				),
+				// Second null
+				Arguments.of(
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build(),
+						null,
+						ListUtil.createList("One of the parameters is null, and the other isn't!")
 				),
 				// Type Different
 				Arguments.of(
