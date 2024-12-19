@@ -1,6 +1,5 @@
 package com.github.tadukoo.java;
 
-import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.util.StringUtil;
 
 /**
@@ -9,7 +8,7 @@ import com.github.tadukoo.util.StringUtil;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.6
  */
-public class JavaTypeParameter{
+public class JavaTypeParameter implements JavaCodeType{
 	
 	/**
 	 * A Builder used to make a {@link JavaTypeParameter}. It takes the following parameters:
@@ -128,6 +127,12 @@ public class JavaTypeParameter{
 		return new JavaTypeParameterBuilder();
 	}
 	
+	/** {@inheritDoc} */
+	@Override
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.TYPE_PARAMETER;
+	}
+	
 	/**
 	 * @return The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
 	 * {@code String} in {@code List<String>})
@@ -183,5 +188,29 @@ public class JavaTypeParameter{
 		}
 		
 		return text.toString();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start the building
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add baseType
+		codeString.append(NEWLINE_WITH_2_TABS).append(".baseType(\"").append(baseType).append("\")");
+		
+		// Add extends type if we have it
+		if(StringUtil.isNotBlank(extendsType)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".extendsType(\"").append(extendsType).append("\")");
+		}
+		
+		// Add canonical name if we have it
+		if(StringUtil.isNotBlank(canonicalName)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".canonicalName(\"").append(canonicalName).append("\")");
+		}
+		
+		// Finish the building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
 	}
 }

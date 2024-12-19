@@ -13,7 +13,7 @@ import java.util.List;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.6
  */
-public class JavaType implements JavaTokens{
+public class JavaType implements JavaCodeType{
 	
 	/**
 	 * A builder used to build a {@link JavaType}. It takes the following parameters:
@@ -31,14 +31,14 @@ public class JavaType implements JavaTokens{
 	 *         <td>Required</td>
 	 *     </tr>
 	 *     <tr>
-	 *         <td>typeParameters</td>
-	 *         <td>The type parameters of the Java Type (e.g. {@code String} in {@code List<String>})</td>
-	 *         <td>Defaults to an empty List</td>
-	 *     </tr>
-	 *     <tr>
 	 *         <td>canonicalName</td>
 	 *         <td>The canonical name (package.name.ClassName) of the base type</td>
 	 *         <td>Defaults to null</td>
+	 *     </tr>
+	 *     <tr>
+	 *         <td>typeParameters</td>
+	 *         <td>The type parameters of the Java Type (e.g. {@code String} in {@code List<String>})</td>
+	 *         <td>Defaults to an empty List</td>
 	 *     </tr>
 	 * </table>
 	 *
@@ -48,10 +48,10 @@ public class JavaType implements JavaTokens{
 	public static class JavaTypeBuilder{
 		/** The base type of the Java Type (e.g. {@code List} in {@code List<String>}) */
 		private String baseType = null;
-		/** The type parameters of the Java Type (e.g. {@code String} in {@code List<String>}) */
-		private List<JavaTypeParameter> typeParameters = new ArrayList<>();
 		/** The canonical name (package.name.ClassName) of the base type */
 		private String canonicalName = null;
+		/** The type parameters of the Java Type (e.g. {@code String} in {@code List<String>}) */
+		private List<JavaTypeParameter> typeParameters = new ArrayList<>();
 		
 		/** Not allowed to instantiate outside of {@link JavaType} */
 		private JavaTypeBuilder(){ }
@@ -62,6 +62,15 @@ public class JavaType implements JavaTokens{
 		 */
 		public JavaTypeBuilder baseType(String baseType){
 			this.baseType = baseType;
+			return this;
+		}
+		
+		/**
+		 * @param canonicalName The canonical name (package.name.ClassName) of the base type
+		 * @return this, to continue building
+		 */
+		public JavaTypeBuilder canonicalName(String canonicalName){
+			this.canonicalName = canonicalName;
 			return this;
 		}
 		
@@ -84,43 +93,34 @@ public class JavaType implements JavaTokens{
 		}
 		
 		/**
-		 * @param canonicalName The canonical name (package.name.ClassName) of the base type
-		 * @return this, to continue building
-		 */
-		public JavaTypeBuilder canonicalName(String canonicalName){
-			this.canonicalName = canonicalName;
-			return this;
-		}
-		
-		/**
 		 * @return A newly built {@link JavaType} using the given parameters
 		 */
 		public JavaType build(){
 			if(StringUtil.isBlank(baseType)){
 				throw new IllegalArgumentException("baseType can't be empty!");
 			}
-			return new JavaType(baseType, typeParameters, canonicalName);
+			return new JavaType(baseType, canonicalName, typeParameters);
 		}
 	}
 	
 	/** The base type of the Java Type (e.g. {@code List} in {@code List<String>}) */
 	private final String baseType;
-	/** The type parameters of the Java Type (e.g. {@code String} in {@code List<String>}) */
-	private final List<JavaTypeParameter> typeParameters;
 	/** The canonical name (package.name.ClassName) of the base type */
 	private String canonicalName;
+	/** The type parameters of the Java Type (e.g. {@code String} in {@code List<String>}) */
+	private final List<JavaTypeParameter> typeParameters;
 	
 	/**
 	 * Constructs a new {@link JavaType} using the given parameters
 	 *
 	 * @param baseType The base type of the Java Type (e.g. {@code List} in {@code List<String>})
-	 * @param typeParameters The type parameters of the Java Type (e.g. {@code String} in {@code List<String>})
 	 * @param canonicalName The canonical name (package.name.ClassName) of the base type
+	 * @param typeParameters The type parameters of the Java Type (e.g. {@code String} in {@code List<String>})
 	 */
-	private JavaType(String baseType, List<JavaTypeParameter> typeParameters, String canonicalName){
+	private JavaType(String baseType, String canonicalName, List<JavaTypeParameter> typeParameters){
 		this.baseType = baseType;
-		this.typeParameters = typeParameters;
 		this.canonicalName = canonicalName;
+		this.typeParameters = typeParameters;
 	}
 	
 	/**
@@ -130,18 +130,17 @@ public class JavaType implements JavaTokens{
 		return new JavaTypeBuilder();
 	}
 	
+	/** {@inheritDoc} */
+	@Override
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.TYPE;
+	}
+	
 	/**
 	 * @return The base type of the Java Type (e.g. {@code List} in {@code List<String>})
 	 */
 	public String getBaseType(){
 		return baseType;
-	}
-	
-	/**
-	 * @return The type parameters of the Java Type (e.g. {@code String} in {@code List<String>}), may be null/empty List
-	 */
-	public List<JavaTypeParameter> getTypeParameters(){
-		return typeParameters;
 	}
 	
 	/**
@@ -156,6 +155,13 @@ public class JavaType implements JavaTokens{
 	 */
 	public void setCanonicalName(String canonicalName){
 		this.canonicalName = canonicalName;
+	}
+	
+	/**
+	 * @return The type parameters of the Java Type (e.g. {@code String} in {@code List<String>}), may be null/empty List
+	 */
+	public List<JavaTypeParameter> getTypeParameters(){
+		return typeParameters;
 	}
 	
 	/** {@inheritDoc} */
@@ -187,5 +193,33 @@ public class JavaType implements JavaTokens{
 		}
 		
 		return typeText.toString();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start the building
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add baseType
+		codeString.append(NEWLINE_WITH_2_TABS).append(".baseType(\"").append(baseType).append("\")");
+		
+		// Add canonical name if we have it
+		if(StringUtil.isNotBlank(canonicalName)){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".canonicalName(\"").append(canonicalName).append("\")");
+		}
+		
+		// Add type parameters if we have them
+		if(ListUtil.isNotBlank(typeParameters)){
+			for(JavaTypeParameter typeParameter: typeParameters){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".typeParameter(")
+						.append(typeParameter.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+						.append(')');
+			}
+		}
+		
+		// Finish the building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
 	}
 }

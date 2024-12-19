@@ -62,7 +62,7 @@ public class AbstractOrderedMappedPojoTest extends JavaClassParsingTest{
 								.build())
 						.visibility(Visibility.PROTECTED)
 						.returnType("AbstractOrderedMappedPojo")
-						.parameter("MappedPojo", "pojo")
+						.parameter("MappedPojo pojo")
 						.line("super(pojo);")
 						.build())
 				.build());

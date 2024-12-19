@@ -73,7 +73,7 @@ public class CollectionUtilTest extends JavaClassParsingTest{
 						.isStatic()
 						.returnType("boolean")
 						.name("isBlank")
-						.parameter("Collection<?>", "collection")
+						.parameter("Collection<?> collection")
 						.line("return collection == null || collection.isEmpty();")
 						.build())
 				.method(EditableJavaMethod.builder()
@@ -86,7 +86,7 @@ public class CollectionUtilTest extends JavaClassParsingTest{
 						.isStatic()
 						.returnType("boolean")
 						.name("isNotBlank")
-						.parameter("Collection<?>", "collection")
+						.parameter("Collection<?> collection")
 						.line("return !isBlank(collection);")
 						.build())
 				.build());

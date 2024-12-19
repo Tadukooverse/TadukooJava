@@ -2,6 +2,9 @@ package com.github.tadukoo.java.testing;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
@@ -214,6 +217,133 @@ public class JavaCodeTypeTest{
 			throw new AssertionFailedError(buildTwoPartError(StringUtil.buildStringWithNewLines(differences),
 					buildAssertError(expectedObject, actualObject)));
 		}
+	}
+	
+	/**
+	 * Finds any differences between the two given {@link JavaTypeParameter type parameters}
+	 *
+	 * @param expectedTypeParameter The "expected" {@link JavaTypeParameter type parameter}
+	 * @param actualTypeParameter The "actual" {@link JavaTypeParameter type parameter}
+	 * @return The List of differences between the {@link JavaTypeParameter type parameters}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findTypeParameterDifferences(
+			JavaTypeParameter expectedTypeParameter, JavaTypeParameter actualTypeParameter){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedTypeParameter == null && actualTypeParameter == null){
+			return differences;
+		}else if(expectedTypeParameter == null || actualTypeParameter == null){
+			differences.add("One of the type parameters is null, and the other isn't!");
+			return differences;
+		}
+		
+		// Base Type, Extends Type, and Canonical Name
+		checkString(expectedTypeParameter, actualTypeParameter, differences,
+				"Base Type", JavaTypeParameter::getBaseType);
+		checkString(expectedTypeParameter, actualTypeParameter, differences,
+				"Extends Type", JavaTypeParameter::getExtendsType);
+		checkString(expectedTypeParameter, actualTypeParameter, differences,
+				"Canonical Name", JavaTypeParameter::getCanonicalName);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaTypeParameter type parameters} are equivalent. It uses
+	 * {@link #findTypeParameterDifferences(JavaTypeParameter, JavaTypeParameter)} to find any
+	 * differences between the two {@link JavaTypeParameter type parameters} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedTypeParameter The "expected" {@link JavaTypeParameter type parameter}
+	 * @param actualTypeParameter The "actual" {@link JavaTypeParameter type parameter}
+	 */
+	public static void assertTypeParameterEquals(
+			JavaTypeParameter expectedTypeParameter, JavaTypeParameter actualTypeParameter){
+		baseAssertEquals(expectedTypeParameter, actualTypeParameter, JavaCodeTypeTest::findTypeParameterDifferences);
+	}
+	
+	/**
+	 * Finds any differences between the two given {@link JavaType types}
+	 *
+	 * @param expectedType The "expected" {@link JavaType type}
+	 * @param actualType The "actual" {@link JavaType type}
+	 * @return The List of differences between the {@link JavaType type}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findTypeDifferences(JavaType expectedType, JavaType actualType){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedType == null && actualType == null){
+			return differences;
+		}else if(expectedType == null || actualType == null){
+			differences.add("One of the types is null, and the other isn't!");
+			return differences;
+		}
+		
+		// baseType, type parameters, and canonical name
+		checkString(expectedType, actualType, differences, "Base Type", JavaType::getBaseType);
+		checkListSubtype(expectedType, actualType, differences, "Type Parameters",
+				JavaType::getTypeParameters, JavaCodeTypeTest::findTypeParameterDifferences);
+		checkString(expectedType, actualType, differences, "Canonical Name", JavaType::getCanonicalName);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaType types} are equivalent. It uses
+	 * {@link #findTypeDifferences(JavaType, JavaType)} to find any
+	 * differences between the two {@link JavaType types} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedType The "expected" {@link JavaType type}
+	 * @param actualType The "actual" {@link JavaType type}
+	 */
+	public static void assertTypeEquals(JavaType expectedType, JavaType actualType){
+		baseAssertEquals(expectedType, actualType, JavaCodeTypeTest::findTypeDifferences);
+	}
+	
+	/**
+	 * Finds any differences between the two given {@link JavaParameter parameters}
+	 *
+	 * @param expectedParameter The "expected" {@link JavaParameter parameter}
+	 * @param actualParameter The "actual" {@link JavaParameter parameter}
+	 * @return The List of differences between the {@link JavaParameter parameters}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findParameterDifferences(JavaParameter expectedParameter, JavaParameter actualParameter){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedParameter == null && actualParameter == null){
+			return differences;
+		}else if(expectedParameter == null || actualParameter == null){
+			differences.add("One of the parameters is null, and the other isn't!");
+			return differences;
+		}
+		
+		// Type, Vararg, and Name
+		checkSingleSubtype(expectedParameter, actualParameter, differences, "Type",
+				JavaParameter::getType, JavaCodeTypeTest::findTypeDifferences);
+		checkBoolean(expectedParameter, actualParameter, differences, "Vararg", JavaParameter::isVararg);
+		checkString(expectedParameter, actualParameter, differences, "Name", JavaParameter::getName);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaParameter parameters} are equivalent. It uses
+	 * {@link #findParameterDifferences(JavaParameter, JavaParameter)} to find any
+	 * differences between the two {@link JavaParameter parameters} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedParameter The "expected" {@link JavaParameter parameter}
+	 * @param actualParameter The "actual" {@link JavaParameter parameter}
+	 */
+	public static void assertParameterEquals(JavaParameter expectedParameter, JavaParameter actualParameter){
+		baseAssertEquals(expectedParameter, actualParameter, JavaCodeTypeTest::findParameterDifferences);
 	}
 	
 	/**
@@ -565,7 +695,8 @@ public class JavaCodeTypeTest{
 		checkString(expectedMethod, actualMethod, differences, "Name", JavaMethod::getName);
 		
 		// Parameters, Throw Types, and Content
-		checkList(expectedMethod, actualMethod, differences, "Parameters", JavaMethod::getParameters, Pair::equals);
+		checkListSubtype(expectedMethod, actualMethod, differences, "Parameters",
+				JavaMethod::getParameters, JavaCodeTypeTest::findParameterDifferences);
 		checkList(expectedMethod, actualMethod, differences, "Throw Types", JavaMethod::getThrowTypes, StringUtil::equals);
 		checkList(expectedMethod, actualMethod, differences, "Content", JavaMethod::getLines, StringUtil::equals);
 		

@@ -11,7 +11,7 @@ import java.util.List;
  * @author Logan Ferree (Tadukoo)
  * @version Beta v.0.6
  */
-public class JavaParameter implements JavaTokens{
+public class JavaParameter implements JavaCodeType{
 	
 	/**
 	 * A builder used to build a {@link JavaParameter}. It takes the following parameters:
@@ -136,6 +136,12 @@ public class JavaParameter implements JavaTokens{
 		return new JavaParameterBuilder();
 	}
 	
+	/** {@inheritDoc} */
+	@Override
+	public JavaCodeTypes getJavaCodeType(){
+		return JavaCodeTypes.PARAMETER;
+	}
+	
 	/**
 	 * @return The {@link JavaType} of the parameter
 	 */
@@ -182,5 +188,29 @@ public class JavaParameter implements JavaTokens{
 		parameterText.append(" ").append(name);
 		
 		return parameterText.toString();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public String toBuilderCode(){
+		// Start the building
+		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
+		
+		// Add type
+		codeString.append(NEWLINE_WITH_2_TABS).append(".type(")
+				.append(type.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+				.append(')');
+		
+		// Add vararg if we have it
+		if(vararg){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".vararg()");
+		}
+		
+		// Add name
+		codeString.append(NEWLINE_WITH_2_TABS).append(".name(\"").append(name).append("\")");
+		
+		// Finish the building
+		codeString.append(NEWLINE_WITH_2_TABS).append(".build()");
+		return codeString.toString();
 	}
 }

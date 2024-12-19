@@ -1,6 +1,11 @@
 package com.github.tadukoo.java;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,6 +13,17 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JavaParameterTest{
+	
+	@Test
+	public void testGetCodeType(){
+		assertEquals(JavaCodeTypes.PARAMETER, JavaParameter.builder()
+				.type(JavaType.builder()
+						.baseType("String")
+						.build())
+				.name("text")
+				.build()
+				.getJavaCodeType());
+	}
 	
 	@Test
 	public void testType(){
@@ -107,6 +123,63 @@ public class JavaParameterTest{
 		}
 	}
 	
+	@ParameterizedTest
+	@MethodSource("getNotEqualsData")
+	public void testNotEquals(JavaParameter parameter, JavaParameter otherParameter){
+		assertNotEquals(parameter, otherParameter);
+	}
+	
+	public static Stream<Arguments> getNotEqualsData(){
+		return Stream.of(
+				// Different type
+				Arguments.of(
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build(),
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("Integer")
+										.build())
+								.name("text")
+								.build()
+				),
+				// Different varargs
+				Arguments.of(
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.vararg()
+								.name("text")
+								.build(),
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build()
+				),
+				// Different name
+				Arguments.of(
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build(),
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("something")
+								.build()
+				)
+		);
+	}
+	
 	@Test
 	public void testEqualsDifferentClassType(){
 		//noinspection AssertBetweenInconvertibleTypes
@@ -116,58 +189,6 @@ public class JavaParameterTest{
 						.build())
 				.name("text")
 				.build(), "testing");
-	}
-	
-	@Test
-	public void testEqualsDifferentType(){
-		assertNotEquals(
-				JavaParameter.builder()
-						.type(JavaType.builder()
-								.baseType("String")
-								.build())
-						.name("text")
-						.build(),
-				JavaParameter.builder()
-						.type(JavaType.builder()
-								.baseType("Integer")
-								.build())
-						.name("text")
-						.build());
-	}
-	
-	@Test
-	public void testEqualsDifferentVarargs(){
-		assertNotEquals(
-				JavaParameter.builder()
-						.type(JavaType.builder()
-								.baseType("String")
-								.build())
-						.vararg()
-						.name("text")
-						.build(),
-				JavaParameter.builder()
-						.type(JavaType.builder()
-								.baseType("String")
-								.build())
-						.name("text")
-						.build());
-	}
-	
-	@Test
-	public void testEqualsDifferentName(){
-		assertNotEquals(
-				JavaParameter.builder()
-						.type(JavaType.builder()
-								.baseType("String")
-								.build())
-						.name("text")
-						.build(),
-				JavaParameter.builder()
-						.type(JavaType.builder()
-								.baseType("String")
-								.build())
-						.name("something")
-						.build());
 	}
 	
 	@Test
@@ -187,26 +208,56 @@ public class JavaParameterTest{
 						.build());
 	}
 	
-	@Test
-	public void testToStringNotVararg(){
-		JavaParameter parameter = JavaParameter.builder()
-				.type(JavaType.builder()
-						.baseType("String")
-						.build())
-				.name("text")
-				.build();
-		assertEquals("String text", parameter.toString());
+	@ParameterizedTest
+	@MethodSource("getStringData")
+	public void testToString(JavaParameter parameter, String text, String ignored){
+		assertEquals(text, parameter.toString());
 	}
 	
-	@Test
-	public void testToStringVararg(){
-		JavaParameter parameter = JavaParameter.builder()
-				.type(JavaType.builder()
-						.baseType("String")
-						.build())
-				.vararg()
-				.name("text")
-				.build();
-		assertEquals("String ... text", parameter.toString());
+	@ParameterizedTest
+	@MethodSource("getStringData")
+	public void testToBuilderCode(JavaParameter parameter, String ignored, String builderCode){
+		assertEquals(builderCode, parameter.toBuilderCode());
+	}
+	
+	public static Stream<Arguments> getStringData(){
+		return Stream.of(
+				// No vararg
+				Arguments.of(
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build(),
+						"String text",
+						"""
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build()"""
+				),
+				// Vararg
+				Arguments.of(
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.vararg()
+								.name("text")
+								.build(),
+						"String ... text",
+						"""
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.vararg()
+								.name("text")
+								.build()"""
+				)
+		);
 	}
 }

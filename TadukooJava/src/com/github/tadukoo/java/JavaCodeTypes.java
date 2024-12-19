@@ -28,6 +28,33 @@ public enum JavaCodeTypes{
 	UNKNOWN("unknown"),
 	
 	/**
+	 * Represents a type parameter in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaTypeParameter}
+	 * <br>
+	 * Standard Name: type parameter
+	 */
+	TYPE_PARAMETER(JavaTypeParameter.class, "type parameter"),
+	
+	/**
+	 * Represents a type in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaType}
+	 * <br>
+	 * Standard Name: type
+	 */
+	TYPE(JavaType.class, "type"),
+	
+	/**
+	 * Represents a parameter in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaParameter}
+	 * <br>
+	 * Standard Name: parameter
+	 */
+	PARAMETER(JavaParameter.class, "parameter"),
+	
+	/**
 	 * Represents a package declaration in Java
 	 * <br>
 	 * Main {@link JavaCodeType} class: {@link JavaPackageDeclaration}
