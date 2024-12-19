@@ -20,9 +20,5 @@
 			<groupId>${junit.jupiter.groupID}</groupId>
 			<artifactId>${junit.jupiter.artifactID}</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${junit.platform.groupID}</groupId>
-			<artifactId>${junit.platform.artifactID}</artifactId>
-		</dependency>
 	</dependencies>
 </project>
