@@ -20,7 +20,7 @@
 	<properties>
 		<!-- Info -->
 		<shortName>TadukooJava</shortName>
-		<tadukoo.util.version>0.6.1-Beta</tadukoo.util.version>
+		<tadukoo.util.version>0.7-Beta-SNAPSHOT</tadukoo.util.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>

@@ -94,17 +94,22 @@ public class JavaCodeTypeTestTypeTest{
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.build(),
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("int")
+										.baseType(JavaType.builder()
+												.baseType("int")
+												.build())
 										.build())
 								.build(),
 						ListUtil.createList("""
 								Type Parameters differs on #1:
+									Base Type differs:
 									Base Type is different!""")
 				),
 				// Type Parameters Different Length
@@ -112,16 +117,22 @@ public class JavaCodeTypeTestTypeTest{
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.build(),
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("int")
+										.baseType(JavaType.builder()
+												.baseType("int")
+												.build())
 										.build())
 								.build(),
 						ListUtil.createList("Type Parameters length is different!")
@@ -143,23 +154,30 @@ public class JavaCodeTypeTestTypeTest{
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.canonicalName(String.class.getCanonicalName())
 								.build(),
 						JavaType.builder()
 								.baseType("String")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("int")
+										.baseType(JavaType.builder()
+												.baseType("int")
+												.build())
 										.build())
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.build(),
 						ListUtil.createList("Base Type is different!",
 								"Type Parameters length is different!",
 								"""
 								Type Parameters differs on #1:
+									Base Type differs:
 									Base Type is different!""",
 								"Canonical Name is different!")
 				)

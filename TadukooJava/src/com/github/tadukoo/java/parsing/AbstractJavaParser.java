@@ -213,13 +213,33 @@ public abstract class AbstractJavaParser implements JavaTokens{
 		}
 		
 		// Split type parameters on comma
-		for(String paramContent: typeParametersContent.split(",")){
+		String[] paramSplit = typeParametersContent.split(",");
+		String paramContent = "";
+		for(String paramPiece: paramSplit){
+			// Logic to make sure we have the full type with < and >'s
+			if(StringUtil.isNotBlank(paramContent)){
+				paramContent += ",";
+			}
+			paramContent += StringUtil.trim(paramPiece);
+			int startTokenCount = StringUtil.countSubstringInstances(paramContent, TYPE_PARAMETER_OPEN_TOKEN);
+			int endTokenCount = StringUtil.countSubstringInstances(paramContent, TYPE_PARAMETER_CLOSE_TOKEN);
+			if(startTokenCount != endTokenCount){
+				continue;
+			}
+			
 			// Use a pattern to ensure we have a type parameter and to get the relevant info for it
 			Matcher typeParamMatch = TYPE_PARAMETER_PATTERN.matcher(paramContent);
 			if(typeParamMatch.matches()){
 				// Actually create the type parameter with the parts of the pattern
-				String baseType = typeParamMatch.group(1);
-				String extendsType = typeParamMatch.group(2);
+				JavaType baseType = null, extendsType = null;
+				String baseTypeStr = typeParamMatch.group(1);
+				if(StringUtil.isNotBlank(baseTypeStr)){
+					baseType = parseJavaType(baseTypeStr);
+				}
+				String extendsTypeStr = typeParamMatch.group(2);
+				if(StringUtil.isNotBlank(extendsTypeStr)){
+					extendsType = parseJavaType(extendsTypeStr);
+				}
 				typeParams.add(JavaTypeParameter.builder()
 						.baseType(baseType)
 						.extendsType(extendsType)
@@ -227,6 +247,13 @@ public abstract class AbstractJavaParser implements JavaTokens{
 			}else{
 				throw new IllegalArgumentException("'" + paramContent + "' is not a valid type parameter");
 			}
+			// Reset param content
+			paramContent = "";
+		}
+		
+		// Check if we didn't parse some param content
+		if(StringUtil.isNotBlank(paramContent)){
+			throw new IllegalArgumentException("Failed to parse remaining type parameter content: '" + paramContent + "'");
 		}
 		
 		// Return all the type parameters we parsed

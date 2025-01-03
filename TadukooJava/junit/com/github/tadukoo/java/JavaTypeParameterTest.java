@@ -16,34 +16,37 @@ public class JavaTypeParameterTest{
 	@Test
 	public void testGetJavaCodeType(){
 		assertEquals(JavaCodeTypes.TYPE_PARAMETER, JavaTypeParameter.builder()
-				.baseType("String")
+				.baseType(JavaType.builder()
+						.baseType("String")
+						.build())
 				.build().getJavaCodeType());
 	}
 	
 	@Test
 	public void testBaseType(){
 		JavaTypeParameter typeParameter = JavaTypeParameter.builder()
-				.baseType("String")
+				.baseType(JavaType.builder()
+						.baseType("String")
+						.build())
 				.build();
-		assertEquals("String", typeParameter.getBaseType());
+		assertEquals(JavaType.builder()
+				.baseType("String")
+				.build(), typeParameter.getBaseType());
 	}
 	
 	@Test
 	public void testExtendsType(){
 		JavaTypeParameter typeParameter = JavaTypeParameter.builder()
-				.baseType("?")
-				.extendsType("String")
+				.baseType(JavaType.builder()
+						.baseType("?")
+						.build())
+				.extendsType(JavaType.builder()
+						.baseType("String")
+						.build())
 				.build();
-		assertEquals("String", typeParameter.getExtendsType());
-	}
-	
-	@Test
-	public void testCanonicalName(){
-		JavaTypeParameter typeParameter = JavaTypeParameter.builder()
+		assertEquals(JavaType.builder()
 				.baseType("String")
-				.canonicalName(String.class.getCanonicalName())
-				.build();
-		assertEquals(String.class.getCanonicalName(), typeParameter.getCanonicalName());
+				.build(), typeParameter.getExtendsType());
 	}
 	
 	@Test
@@ -57,17 +60,6 @@ public class JavaTypeParameterTest{
 		}
 	}
 	
-	@Test
-	public void testSetCanonicalName(){
-		JavaTypeParameter typeParameter = JavaTypeParameter.builder()
-				.baseType("String")
-				.canonicalName(String.class.getCanonicalName())
-				.build();
-		assertEquals(String.class.getCanonicalName(), typeParameter.getCanonicalName());
-		typeParameter.setCanonicalName("com.tadukoo.String");
-		assertEquals("com.tadukoo.String", typeParameter.getCanonicalName());
-	}
-	
 	@ParameterizedTest
 	@MethodSource("notEqualsData")
 	public void testNotEquals(JavaTypeParameter typeParam, JavaTypeParameter otherParam){
@@ -79,32 +71,32 @@ public class JavaTypeParameterTest{
 				// different base type
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						JavaTypeParameter.builder()
-								.baseType("Integer")
+								.baseType(JavaType.builder()
+										.baseType("Integer")
+										.build())
 								.build()),
 				// different extends type
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("Integer")
-								.build()),
-				// different canonical name
-				Arguments.of(
-						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
-								.canonicalName(String.class.getCanonicalName())
-								.build(),
-						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
-								.canonicalName("com.tadukoo.String")
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("Integer")
+										.build())
 								.build())
 		);
 	}
@@ -112,7 +104,9 @@ public class JavaTypeParameterTest{
 	@Test
 	public void testEqualsNotTypeParam(){
 		JavaTypeParameter typeParam = JavaTypeParameter.builder()
-				.baseType("String")
+				.baseType(JavaType.builder()
+						.baseType("String")
+						.build())
 				.build();
 		//noinspection AssertBetweenInconvertibleTypes
 		assertNotEquals(typeParam, "testing");
@@ -122,14 +116,20 @@ public class JavaTypeParameterTest{
 	public void testEqualsSame(){
 		assertEquals(
 				JavaTypeParameter.builder()
-						.baseType("?")
-						.extendsType("String")
-						.canonicalName("com.tadukoo.String")
+						.baseType(JavaType.builder()
+								.baseType("?")
+								.build())
+						.extendsType(JavaType.builder()
+								.baseType("String")
+								.build())
 						.build(),
 				JavaTypeParameter.builder()
-						.baseType("?")
-						.extendsType("String")
-						.canonicalName("com.tadukoo.String")
+						.baseType(JavaType.builder()
+								.baseType("?")
+								.build())
+						.extendsType(JavaType.builder()
+								.baseType("String")
+								.build())
 						.build());
 	}
 	
@@ -150,53 +150,58 @@ public class JavaTypeParameterTest{
 				// Simple
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						"String",
 						"""
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build()"""
 				),
 				// With extends type
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						"? extends String",
 						"""
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
-								.build()"""
-				),
-				// With canonical name
-				Arguments.of(
-						JavaTypeParameter.builder()
-								.baseType("String")
-								.canonicalName("com.tadukoo.String")
-								.build(),
-						"String",
-						"""
-						JavaTypeParameter.builder()
-								.baseType("String")
-								.canonicalName("com.tadukoo.String")
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build()"""
 				),
 				// With everything
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("T")
-								.extendsType("String")
-								.canonicalName("com.tadukoo.String")
+								.baseType(JavaType.builder()
+										.baseType("T")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						"T extends String",
 						"""
 						JavaTypeParameter.builder()
-								.baseType("T")
-								.extendsType("String")
-								.canonicalName("com.tadukoo.String")
+								.baseType(JavaType.builder()
+										.baseType("T")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build()"""
 				)
 		);

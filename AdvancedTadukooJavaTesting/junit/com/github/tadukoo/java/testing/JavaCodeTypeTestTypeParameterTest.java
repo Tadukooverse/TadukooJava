@@ -1,5 +1,6 @@
 package com.github.tadukoo.java.testing;
 
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
@@ -51,10 +52,14 @@ public class JavaCodeTypeTestTypeParameterTest{
 				// None
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						new ArrayList<>()
 				),
@@ -68,14 +73,18 @@ public class JavaCodeTypeTestTypeParameterTest{
 				Arguments.of(
 						null,
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						ListUtil.createList("One of the type parameters is null, and the other isn't!")
 				),
 				// Second null
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						null,
 						ListUtil.createList("One of the type parameters is null, and the other isn't!")
@@ -83,50 +92,62 @@ public class JavaCodeTypeTestTypeParameterTest{
 				// Base Type Different
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						JavaTypeParameter.builder()
-								.baseType("int")
+								.baseType(JavaType.builder()
+										.baseType("int")
+										.build())
 								.build(),
-						ListUtil.createList("Base Type is different!")
+						ListUtil.createList("""
+												Base Type differs:
+													Base Type is different!""")
 				),
 				// Extends Type Different
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("Object")
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("Object")
+										.build())
 								.build(),
-						ListUtil.createList("Extends Type is different!")
-				),
-				// Canonical Name Different
-				Arguments.of(
-						JavaTypeParameter.builder()
-								.baseType("String")
-								.canonicalName(String.class.getCanonicalName())
-								.build(),
-						JavaTypeParameter.builder()
-								.baseType("String")
-								.canonicalName("com.tadukoo.String")
-								.build(),
-						ListUtil.createList("Canonical Name is different!")
+						ListUtil.createList("""
+												Extends Type differs:
+													Base Type is different!""")
 				),
 				// All
 				Arguments.of(
 						JavaTypeParameter.builder()
-								.baseType("?")
-								.extendsType("String")
-								.canonicalName(String.class.getCanonicalName())
+								.baseType(JavaType.builder()
+										.baseType("?")
+										.build())
+								.extendsType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
 						JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build(),
-						ListUtil.createList("Base Type is different!",
-								"Extends Type is different!",
-								"Canonical Name is different!")
+						ListUtil.createList("""
+									Base Type differs:
+										Base Type is different!""",
+								"""
+									Extends Type differs:
+										One of the types is null, and the other isn't!""")
 				)
 		);
 	}

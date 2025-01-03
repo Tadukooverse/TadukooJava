@@ -239,13 +239,11 @@ public class JavaCodeTypeTest{
 			return differences;
 		}
 		
-		// Base Type, Extends Type, and Canonical Name
-		checkString(expectedTypeParameter, actualTypeParameter, differences,
-				"Base Type", JavaTypeParameter::getBaseType);
-		checkString(expectedTypeParameter, actualTypeParameter, differences,
-				"Extends Type", JavaTypeParameter::getExtendsType);
-		checkString(expectedTypeParameter, actualTypeParameter, differences,
-				"Canonical Name", JavaTypeParameter::getCanonicalName);
+		// Base Type and Extends Type
+		checkSingleSubtype(expectedTypeParameter, actualTypeParameter, differences,
+				"Base Type", JavaTypeParameter::getBaseType, JavaCodeTypeTest::findTypeDifferences);
+		checkSingleSubtype(expectedTypeParameter, actualTypeParameter, differences,
+				"Extends Type", JavaTypeParameter::getExtendsType, JavaCodeTypeTest::findTypeDifferences);
 		
 		return differences;
 	}

@@ -22,21 +22,18 @@ public class JavaTypeParameter implements JavaCodeType{
 	 *     </tr>
 	 *     <tr>
 	 *         <td>baseType</td>
-	 *         <td>The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
-	 *         {@code String} in {@code List<String>})</td>
+	 *         <td>The base {@link JavaType type} of the type parameter (e.g.
+	 *         {@code ?} in {@code List<? extends String>} or
+	 *         {@code String} in {@code List<String>} or
+	 *         {@code Map<String,Object>} in {@code List<Map<String,Object>})</td>
 	 *         <td>Required</td>
 	 *     </tr>
 	 *     <tr>
 	 *         <td>extendsType</td>
-	 *         <td>The type being extended in the type parameter (e.g. {@code String} in {@code List<? extends String>})</td>
+	 *         <td>The {@link JavaType type} being extended in the type parameter (e.g.
+	 *         {@code String} in {@code List<? extends String>} or
+	 *         {@code List<String>} in {@code List<? extends List<String>})</td>
 	 *         <td>Defaults to null (for no type being extended)</td>
-	 *     </tr>
-	 *     <tr>
-	 *         <td>canonicalName</td>
-	 *         <td>The canonical name (package.name.ClassName) of the type in the type parameter (e.g. {@code String}
-	 *         in {@code List<String>} or in {@code List<? extends String>})</td>
-	 *         <td>Defaults to null (to not specify it, can be specified in some cases for clarity,
-	 *         but is not necessary in others)</td>
 	 *     </tr>
 	 * </table>
 	 *
@@ -44,44 +41,39 @@ public class JavaTypeParameter implements JavaCodeType{
 	 * @version Beta v.0.6
 	 */
 	public static class JavaTypeParameterBuilder{
-		/** The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
-		 * {@code String} in {@code List<String>}) */
-		private String baseType = null;
-		/** The type being extended in the type parameter (e.g. {@code String} in {@code List<? extends String>}) */
-		private String extendsType = null;
-		/** The canonical name (package.name.ClassName) of the type in the type parameter (e.g. {@code String})
-		 * in {@code List<String>} or in {@code List<? extends String>} */
-		private String canonicalName = null;
+		/** The base {@link JavaType type} of the type parameter (e.g.
+		 * {@code ?} in {@code List<? extends String>} or
+		 * {@code String} in {@code List<String>} or
+		 * {@code Map<String,Object>} in {@code List<Map<String,Object>}) */
+		private JavaType baseType = null;
+		/** The {@link JavaType type} being extended in the type parameter (e.g.
+		 * {@code String} in {@code List<? extends String>} or
+		 * {@code List<String>} in {@code List<? extends List<String>}) */
+		private JavaType extendsType = null;
 		
 		/** Not allowed to instantiate outside of {@link JavaTypeParameter} */
 		private JavaTypeParameterBuilder(){ }
 		
 		/**
-		 * @param baseType The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
-		 * {@code String} in {@code List<String>})
+		 * @param baseType The base {@link JavaType type} of the type parameter (e.g.
+		 * {@code ?} in {@code List<? extends String>} or
+		 * {@code String} in {@code List<String>} or
+		 * {@code Map<String,Object>} in {@code List<Map<String,Object>})
 		 * @return this, to continue building
 		 */
-		public JavaTypeParameterBuilder baseType(String baseType){
+		public JavaTypeParameterBuilder baseType(JavaType baseType){
 			this.baseType = baseType;
 			return this;
 		}
 		
 		/**
-		 * @param extendsType The type being extended in the type parameter (e.g. {@code String} in {@code List<? extends String>})
+		 * @param extendsType The {@link JavaType type} being extended in the type parameter (e.g.
+		 * {@code String} in {@code List<? extends String>} or
+		 * {@code List<String>} in {@code List<? extends List<String>})
 		 * @return this, to continue building
 		 */
-		public JavaTypeParameterBuilder extendsType(String extendsType){
+		public JavaTypeParameterBuilder extendsType(JavaType extendsType){
 			this.extendsType = extendsType;
-			return this;
-		}
-		
-		/**
-		 * @param canonicalName The canonical name (package.name.ClassName) of the type in the type parameter
-		 * (e.g. {@code String} in {@code List<String>} or in {@code List<? extends String>})
-		 * @return this, to continue building
-		 */
-		public JavaTypeParameterBuilder canonicalName(String canonicalName){
-			this.canonicalName = canonicalName;
 			return this;
 		}
 		
@@ -89,35 +81,37 @@ public class JavaTypeParameter implements JavaCodeType{
 		 * @return A newly built {@link JavaTypeParameter} using the given parameters
 		 */
 		public JavaTypeParameter build(){
-			if(StringUtil.isBlank(baseType)){
+			if(baseType == null){
 				throw new IllegalArgumentException("baseType can't be empty!");
 			}
-			return new JavaTypeParameter(baseType, extendsType, canonicalName);
+			return new JavaTypeParameter(baseType, extendsType);
 		}
 	}
 	
-	/** The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
-	 * {@code String} in {@code List<String>}) */
-	private final String baseType;
-	/** The type being extended in the type parameter (e.g. {@code String} in {@code List<? extends String>}) */
-	private final String extendsType;
-	/** The canonical name (package.name.ClassName) of the type in the type parameter (e.g. {@code String}
-	 * in {@code List<String>} or in {@code List<? extends String>}) */
-	private String canonicalName;
+	/** The base {@link JavaType type} of the type parameter (e.g.
+	 * {@code ?} in {@code List<? extends String>} or
+	 * {@code String} in {@code List<String>} or
+	 * {@code Map<String,Object>} in {@code List<Map<String,Object>}) */
+	private final JavaType baseType;
+	/** The {@link JavaType type} being extended in the type parameter (e.g.
+	 * {@code String} in {@code List<? extends String>} or
+	 * {@code List<String>} in {@code List<? extends List<String>}) */
+	private final JavaType extendsType;
 	
 	/**
 	 * Constructs a new {@link JavaTypeParameter} with the given parameters
 	 *
-	 * @param baseType The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
-	 * @code String} in {@code List<String>})
-	 * @param extendsType The type being extended in the type parameter (e.g. {@code String} in {@code List<? extends String>})
-	 * @param canonicalName The canonical name (package.name.ClassName) of the type in the type parameter (e.g. {@code String}
-	 * in {@code List<String>} or in {@code List<? extends String>})
+	 * @param baseType The base {@link JavaType type} of the type parameter (e.g.
+	 * {@code ?} in {@code List<? extends String>} or
+	 * {@code String} in {@code List<String>} or
+	 * {@code Map<String,Object>} in {@code List<Map<String,Object>})
+	 * @param extendsType The {@link JavaType type} being extended in the type parameter (e.g.
+	 * {@code String} in {@code List<? extends String>} or
+	 * {@code List<String>} in {@code List<? extends List<String>})
 	 */
-	private JavaTypeParameter(String baseType, String extendsType, String canonicalName){
+	private JavaTypeParameter(JavaType baseType, JavaType extendsType){
 		this.baseType = baseType;
 		this.extendsType = extendsType;
-		this.canonicalName = canonicalName;
 	}
 	
 	/**
@@ -134,43 +128,29 @@ public class JavaTypeParameter implements JavaCodeType{
 	}
 	
 	/**
-	 * @return The base type of the type parameter (e.g. {@code ?} in {@code List<? extends String>} or
-	 * {@code String} in {@code List<String>})
+	 * @return The base {@link JavaType type} of the type parameter (e.g.
+	 * {@code ?} in {@code List<? extends String>} or
+	 * {@code String} in {@code List<String>} or
+	 * {@code Map<String,Object>} in {@code List<Map<String,Object>})
 	 */
-	public String getBaseType(){
+	public JavaType getBaseType(){
 		return baseType;
 	}
 	
 	/**
-	 * @return The type being extended in the type parameter (e.g. {@code String} in {@code List<? extends String>}),
-	 * may be null
+	 * @return The {@link JavaType type} being extended in the type parameter (e.g.
+	 * {@code String} in {@code List<? extends String>} or
+	 * {@code List<String>} in {@code List<? extends List<String>})
 	 */
-	public String getExtendsType(){
+	public JavaType getExtendsType(){
 		return extendsType;
-	}
-	
-	/**
-	 * @return The canonical name (package.name.ClassName) of the type in the type parameter (e.g. {@code String}
-	 * in {@code List<String>} or in {@code List<? extends String>}), may be null
-	 */
-	public String getCanonicalName(){
-		return canonicalName;
-	}
-	
-	/**
-	 * @param canonicalName The canonical name (package.name.ClassName) of the type in the type parameter
-	 * (e.g. {@code String} in {@code List<String>} or in {@code List<? extends String>})
-	 */
-	public void setCanonicalName(String canonicalName){
-		this.canonicalName = canonicalName;
 	}
 	
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object otherTypeParam){
 		if(otherTypeParam instanceof JavaTypeParameter typeParam){
-			return StringUtil.equals(this.toString(), typeParam.toString()) &&
-					StringUtil.equals(this.getCanonicalName(), typeParam.getCanonicalName());
+			return StringUtil.equals(this.toString(), typeParam.toString());
 		}else{
 			return false;
 		}
@@ -180,10 +160,10 @@ public class JavaTypeParameter implements JavaCodeType{
 	@Override
 	public String toString(){
 		// Start with baseType
-		StringBuilder text = new StringBuilder(baseType);
+		StringBuilder text = new StringBuilder(baseType.toString());
 		
 		// Add extendsType if we have it
-		if(StringUtil.isNotBlank(extendsType)){
+		if(extendsType != null){
 			text.append(" extends ").append(extendsType);
 		}
 		
@@ -197,16 +177,15 @@ public class JavaTypeParameter implements JavaCodeType{
 		StringBuilder codeString = new StringBuilder(this.getClass().getSimpleName()).append(".builder()");
 		
 		// Add baseType
-		codeString.append(NEWLINE_WITH_2_TABS).append(".baseType(\"").append(baseType).append("\")");
+		codeString.append(NEWLINE_WITH_2_TABS).append(".baseType(")
+				.append(baseType.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+				.append(')');
 		
 		// Add extends type if we have it
-		if(StringUtil.isNotBlank(extendsType)){
-			codeString.append(NEWLINE_WITH_2_TABS).append(".extendsType(\"").append(extendsType).append("\")");
-		}
-		
-		// Add canonical name if we have it
-		if(StringUtil.isNotBlank(canonicalName)){
-			codeString.append(NEWLINE_WITH_2_TABS).append(".canonicalName(\"").append(canonicalName).append("\")");
+		if(extendsType != null){
+			codeString.append(NEWLINE_WITH_2_TABS).append(".extendsType(")
+					.append(extendsType.toBuilderCode().replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
+					.append(')');
 		}
 		
 		// Finish the building

@@ -34,10 +34,14 @@ public class JavaTypeTest{
 	public void testTypeParameters(){
 		List<JavaTypeParameter> typeParams = ListUtil.createList(
 				JavaTypeParameter.builder()
-						.baseType("String")
+						.baseType(JavaType.builder()
+								.baseType("String")
+								.build())
 						.build(),
 				JavaTypeParameter.builder()
-						.baseType("Object")
+						.baseType(JavaType.builder()
+								.baseType("Object")
+								.build())
 						.build());
 		JavaType type = JavaType.builder()
 				.baseType("Map")
@@ -49,10 +53,14 @@ public class JavaTypeTest{
 	@Test
 	public void testTypeParameter(){
 		JavaTypeParameter stringTypeParam = JavaTypeParameter.builder()
-				.baseType("String")
+				.baseType(JavaType.builder()
+						.baseType("String")
+						.build())
 				.build();
 		JavaTypeParameter objectTypeParam = JavaTypeParameter.builder()
-				.baseType("Object")
+				.baseType(JavaType.builder()
+						.baseType("Object")
+						.build())
 				.build();
 		JavaType type = JavaType.builder()
 				.baseType("Map")
@@ -115,13 +123,17 @@ public class JavaTypeTest{
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.build(),
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("Integer")
+										.baseType(JavaType.builder()
+												.baseType("Integer")
+												.build())
 										.build())
 								.build()
 				),
@@ -153,14 +165,18 @@ public class JavaTypeTest{
 				JavaType.builder()
 						.baseType("List")
 						.typeParameter(JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build())
 						.canonicalName(String.class.getCanonicalName())
 						.build(),
 				JavaType.builder()
 						.baseType("List")
 						.typeParameter(JavaTypeParameter.builder()
-								.baseType("String")
+								.baseType(JavaType.builder()
+										.baseType("String")
+										.build())
 								.build())
 						.canonicalName(String.class.getCanonicalName())
 						.build());
@@ -196,7 +212,9 @@ public class JavaTypeTest{
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.build(),
 						"List<String>",
@@ -204,7 +222,9 @@ public class JavaTypeTest{
 						JavaType.builder()
 								.baseType("List")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.build()"""
 				),
@@ -213,10 +233,14 @@ public class JavaTypeTest{
 						JavaType.builder()
 								.baseType("Map")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("Object")
+										.baseType(JavaType.builder()
+												.baseType("Object")
+												.build())
 										.build())
 								.build(),
 						"Map<String, Object>",
@@ -224,10 +248,14 @@ public class JavaTypeTest{
 						JavaType.builder()
 								.baseType("Map")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("Object")
+										.baseType(JavaType.builder()
+												.baseType("Object")
+												.build())
 										.build())
 								.build()"""
 				),
@@ -250,10 +278,14 @@ public class JavaTypeTest{
 								.baseType("Map")
 								.canonicalName("com.tadukoo.Map")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("Object")
+										.baseType(JavaType.builder()
+												.baseType("Object")
+												.build())
 										.build())
 								.build(),
 						"Map<String, Object>",
@@ -262,10 +294,14 @@ public class JavaTypeTest{
 								.baseType("Map")
 								.canonicalName("com.tadukoo.Map")
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("String")
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
 										.build())
 								.typeParameter(JavaTypeParameter.builder()
-										.baseType("Object")
+										.baseType(JavaType.builder()
+												.baseType("Object")
+												.build())
 										.build())
 								.build()"""
 				)
