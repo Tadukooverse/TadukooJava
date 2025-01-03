@@ -540,10 +540,45 @@ public abstract class JavaClass implements JavaClassType{
 		
 		// Add Import Statements if present
 		if(ListUtil.isNotBlank(importStatements)){
-			for(JavaImportStatement importStatement: importStatements){
-				codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
-						.append(importStatement.getImportName()).append("\", ")
-						.append(importStatement.isStatic()).append(')');
+			// Separate into regular and static imports
+			List<JavaImportStatement> regularImports = new ArrayList<>();
+			List<JavaImportStatement> staticImports = new ArrayList<>();
+			importStatements.forEach(stmt -> {
+				if(stmt.isStatic()){
+					staticImports.add(stmt);
+				}else{
+					regularImports.add(stmt);
+				}
+			});
+			
+			// Handle regular imports if we have them
+			if(ListUtil.isNotBlank(regularImports)){
+				MultiMap<String, JavaImportStatement> sortedImports = sortImports(regularImports);
+				List<String> alphabetizedKeys = sortedImports.keySet().stream().sorted().toList();
+				for(String key: alphabetizedKeys){
+					List<String> alphabetizedImports = sortedImports.get(key).stream()
+							.map(JavaImportStatement::getImportName)
+							.sorted().toList();
+					for(String importName: alphabetizedImports){
+						codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
+								.append(importName).append("\", false)");
+					}
+				}
+			}
+			
+			// Handle static imports if we have them
+			if(ListUtil.isNotBlank(staticImports)){
+				MultiMap<String, JavaImportStatement> sortedImports = sortImports(staticImports);
+				List<String> alphabetizedKeys = sortedImports.keySet().stream().sorted().toList();
+				for(String key: alphabetizedKeys){
+					List<String> alphabetizedImports = sortedImports.get(key).stream()
+							.map(JavaImportStatement::getImportName)
+							.sorted().toList();
+					for(String importName: alphabetizedImports){
+						codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
+								.append(importName).append("\", true)");
+					}
+				}
 			}
 		}
 		
@@ -609,9 +644,9 @@ public abstract class JavaClass implements JavaClassType{
 			for(Pair<JavaCodeTypes, String> innerElementInfo: innerElementsOrder){
 				switch(innerElementInfo.getLeft()){
 					case SINGLE_LINE_COMMENT -> {
-						codeString.append(NEWLINE_WITH_2_TABS).append(".singleLineComment(")
+						codeString.append(NEWLINE_WITH_2_TABS).append(".singleLineComment(\"")
 								.append(singleLineComments.get(singleLineCommentIndex).getContent())
-								.append(')');
+								.append("\")");
 						singleLineCommentIndex++;
 					}
 					case MULTI_LINE_COMMENT -> {
@@ -620,9 +655,9 @@ public abstract class JavaClass implements JavaClassType{
 						for(int lineNum = 0; lineNum < lines.size(); lineNum++){
 							String line = lines.get(lineNum);
 							if(lineNum == 0){
-								codeString.append(line).append(", ");
+								codeString.append('"').append(line).append("\", ");
 							}else{
-								codeString.append(NEWLINE_WITH_4_TABS).append(line).append(", ");
+								codeString.append(NEWLINE_WITH_4_TABS).append('"').append(line).append("\", ");
 							}
 						}
 						// Remove the last comma

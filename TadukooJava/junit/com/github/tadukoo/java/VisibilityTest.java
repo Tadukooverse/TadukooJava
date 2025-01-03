@@ -1,50 +1,42 @@
 package com.github.tadukoo.java;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class VisibilityTest{
 	
-	@Test
-	public void testPublicText(){
-		assertEquals("public", Visibility.PUBLIC.getToken());
+	@ParameterizedTest
+	@MethodSource("getVisibilityData")
+	public void testVisibilityToken(String token, Visibility visibility, String ignored){
+		assertEquals(token, visibility.getToken());
 	}
 	
-	@Test
-	public void testProtectedText(){
-		assertEquals("protected", Visibility.PROTECTED.getToken());
+	@ParameterizedTest
+	@MethodSource("getVisibilityData")
+	public void testVisibilityFromTextToken(String token, Visibility visibility, String ignored){
+		assertEquals(visibility, Visibility.fromToken(token));
 	}
 	
-	@Test
-	public void testPrivateText(){
-		assertEquals("private", Visibility.PRIVATE.getToken());
+	@ParameterizedTest
+	@MethodSource("getVisibilityData")
+	public void testVisibilityFromTextCaseInsensitive(String ignored, Visibility visibility, String testString){
+		assertEquals(visibility, Visibility.fromToken(testString));
 	}
 	
-	@Test
-	public void testNoneText(){
-		assertEquals("", Visibility.NONE.getToken());
-	}
-	
-	@Test
-	public void testFromTextPublic(){
-		assertEquals(Visibility.PUBLIC, Visibility.fromToken("pUBlIc"));
-	}
-	
-	@Test
-	public void testFromTextProtected(){
-		assertEquals(Visibility.PROTECTED, Visibility.fromToken("PROtecTeD"));
-	}
-	
-	@Test
-	public void testFromTextPrivate(){
-		assertEquals(Visibility.PRIVATE, Visibility.fromToken("PRiVAtE"));
-	}
-	
-	@Test
-	public void testFromTextNone(){
-		assertEquals(Visibility.NONE, Visibility.fromToken(""));
+	public static Stream<Arguments> getVisibilityData(){
+		return Stream.of(
+				Arguments.of("public", Visibility.PUBLIC, "pUBlIc"),
+				Arguments.of("protected", Visibility.PROTECTED, "PROtecTeD"),
+				Arguments.of("private", Visibility.PRIVATE, "PRiVAtE"),
+				Arguments.of("", Visibility.NONE, "")
+		);
 	}
 	
 	@Test

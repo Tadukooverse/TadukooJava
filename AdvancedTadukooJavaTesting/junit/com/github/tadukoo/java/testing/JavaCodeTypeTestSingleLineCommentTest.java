@@ -4,10 +4,15 @@ import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.util.ListUtil;
-import org.junit.jupiter.api.Test;
+import com.github.tadukoo.util.StringUtil;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.opentest4j.AssertionFailedError;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static com.github.tadukoo.java.testing.JavaCodeTypeTest.assertSingleLineCommentEquals;
 import static com.github.tadukoo.java.testing.JavaCodeTypeTest.findSingleLineCommentDifferences;
@@ -18,179 +23,97 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class JavaCodeTypeTestSingleLineCommentTest{
 	
-	@Test
-	public void testFindSingleLineCommentDifferencesNone(){
-		assertEquals(new ArrayList<>(), findSingleLineCommentDifferences(
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build(),
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build()
-		));
+	@ParameterizedTest
+	@MethodSource("getCommentDifferences")
+	public void testFindSingleLineCommentDifferences(
+			JavaSingleLineComment expectedComment, JavaSingleLineComment actualComment,
+			List<String> differences){
+		assertEquals(differences, findSingleLineCommentDifferences(expectedComment, actualComment));
 	}
 	
-	@Test
-	public void testFindSingleLineCommentDifferencesBothNull(){
-		assertEquals(new ArrayList<>(), findSingleLineCommentDifferences(
-				null, null
-		));
+	@ParameterizedTest
+	@MethodSource("getCommentDifferences")
+	public void testAssertSingleLineCommentEquals(
+			JavaSingleLineComment expectedComment, JavaSingleLineComment actualComment,
+			List<String> differences){
+		try{
+			assertSingleLineCommentEquals(expectedComment, actualComment);
+			if(ListUtil.isNotBlank(differences)){
+				fail();
+			}
+		}catch(AssertionFailedError e){
+			if(ListUtil.isBlank(differences)){
+				throw e;
+			}
+			assertEquals(buildTwoPartError(StringUtil.buildStringWithNewLines(differences),
+					buildAssertError(expectedComment, actualComment)), e.getMessage());
+		}
 	}
 	
-	@Test
-	public void testFindSingleLineCommentDifferencesComment1NullComment2Not(){
-		assertEquals(ListUtil.createList("One of the single-line comments is null, and the other isn't!"),
-				findSingleLineCommentDifferences(
-				null,
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build()
-		));
-	}
-	
-	@Test
-	public void testFindSingleLineCommentDifferencesComment2NullComment1Not(){
-		assertEquals(ListUtil.createList("One of the single-line comments is null, and the other isn't!"),
-				findSingleLineCommentDifferences(
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build(),
-				null
-		));
-	}
-	
-	@Test
-	public void testFindSingleLineCommentDifferencesEditable(){
-		assertEquals(ListUtil.createList("Editable is different!"), findSingleLineCommentDifferences(
-				UneditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build(),
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build()
-		));
-	}
-	
-	@Test
-	public void testFindSingleLineCommentDifferencesContent(){
-		assertEquals(ListUtil.createList("Content is different!"), findSingleLineCommentDifferences(
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build(),
-				EditableJavaSingleLineComment.builder()
-						.content("Something else useful")
-						.build()
-		));
-	}
-	
-	@Test
-	public void testFindSingleLineCommentDifferencesAll(){
-		assertEquals(ListUtil.createList("Editable is different!",
-				"Content is different!"), findSingleLineCommentDifferences(
-				UneditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build(),
-				EditableJavaSingleLineComment.builder()
-						.content("Something else useful")
-						.build()
-		));
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsNone(){
-		assertSingleLineCommentEquals(
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build(),
-				EditableJavaSingleLineComment.builder()
-						.content("Something useful")
-						.build()
+	public static Stream<Arguments> getCommentDifferences(){
+		return Stream.of(
+				// None
+				Arguments.of(
+						EditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						EditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						new ArrayList<>()
+				),
+				// Both Null
+				Arguments.of(
+						null, null,
+						new ArrayList<>()
+				),
+				// 1 Null 2 Not
+				Arguments.of(
+						null,
+						EditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						ListUtil.createList("One of the single-line comments is null, and the other isn't!")
+				),
+				// 2 Null 1 Not
+				Arguments.of(
+						EditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						null,
+						ListUtil.createList("One of the single-line comments is null, and the other isn't!")
+				),
+				// Editable
+				Arguments.of(
+						UneditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						EditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						ListUtil.createList("Editable is different!")
+				),
+				// Content
+				Arguments.of(
+						EditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						EditableJavaSingleLineComment.builder()
+								.content("Something else useful")
+								.build(),
+						ListUtil.createList("Content is different!")
+				),
+				// All
+				Arguments.of(
+						UneditableJavaSingleLineComment.builder()
+								.content("Something useful")
+								.build(),
+						EditableJavaSingleLineComment.builder()
+								.content("Something else useful")
+								.build(),
+						ListUtil.createList("Editable is different!",
+								"Content is different!")
+				)
 		);
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsBothNull(){
-		assertSingleLineCommentEquals(null, null);
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsComment1NullComment2Not(){
-		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
-				.content("Something useful")
-				.build();
-		try{
-			assertSingleLineCommentEquals(null, comment2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("One of the single-line comments is null, and the other isn't!",
-					buildAssertError(null, comment2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsComment2NullComment1Not(){
-		JavaSingleLineComment comment1 = EditableJavaSingleLineComment.builder()
-				.content("Something useful")
-				.build();
-		try{
-			assertSingleLineCommentEquals(comment1, null);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("One of the single-line comments is null, and the other isn't!",
-					buildAssertError(comment1, null)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsEditable(){
-		JavaSingleLineComment comment1 = UneditableJavaSingleLineComment.builder()
-				.content("Something useful")
-				.build();
-		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
-				.content("Something useful")
-				.build();
-		try{
-			assertSingleLineCommentEquals(comment1, comment2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("Editable is different!",
-					buildAssertError(comment1, comment2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsContent(){
-		JavaSingleLineComment comment1 = EditableJavaSingleLineComment.builder()
-				.content("Something useful")
-				.build();
-		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
-				.content("Something else useful")
-				.build();
-		try{
-			assertSingleLineCommentEquals(comment1, comment2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("Content is different!",
-					buildAssertError(comment1, comment2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertSingleLineCommentEqualsAll(){
-		JavaSingleLineComment comment1 = UneditableJavaSingleLineComment.builder()
-				.content("Something useful")
-				.build();
-		JavaSingleLineComment comment2 = EditableJavaSingleLineComment.builder()
-				.content("Something else useful")
-				.build();
-		try{
-			assertSingleLineCommentEquals(comment1, comment2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("""
-							Editable is different!
-							Content is different!""",
-					buildAssertError(comment1, comment2)), e.getMessage());
-		}
 	}
 }

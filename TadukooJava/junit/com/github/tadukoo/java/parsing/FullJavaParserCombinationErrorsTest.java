@@ -1,303 +1,179 @@
 package com.github.tadukoo.java.parsing;
 
 import com.github.tadukoo.java.JavaCodeTypes;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class FullJavaParserCombinationErrorsTest extends BaseJavaParserTest{
 	
-	@Test
-	public void testTwoPackageDeclarations(){
+	private static Stream<Arguments> getParseData(){
+		return Stream.of(
+				// Two Package Declarations
+				Arguments.of(
+						"""
+								package com.example;
+								package com.example.other;""",
+						"Encountered two package declarations!"
+				),
+				// Package Declaration after Class
+				Arguments.of(
+						"""
+								class Test{
+								}
+								package com.example;""",
+						"Encountered package declaration after class!"
+				),
+				// Import Statement after Class
+				Arguments.of(
+						"""
+								class Test{
+								}
+								import com.example;""",
+						"Encountered import statement after class!"
+				),
+				// Two Javadocs
+				Arguments.of(
+						"""
+								/** {@inheritDoc} */
+								/** something */""",
+						"Encountered two Javadocs!"
+				),
+				// Javadoc after Field
+				Arguments.of(
+						"""
+								String type;
+								/** {@inheritDoc} */""",
+						"Encountered a Javadoc after field!"
+				),
+				// Javadoc after Method
+				Arguments.of(
+						"""
+								void test(){}
+								/** {@inheritDoc} */""",
+						"Encountered a Javadoc after method!"
+				),
+				// Javadoc after Class
+				Arguments.of(
+						"""
+								class Test{}
+								/** {@inheritDoc} */""",
+						"Encountered a Javadoc after class!"
+				),
+				// Annotation after Class
+				Arguments.of(
+						"""
+								class Test{
+								}
+								@Test""",
+						"Encountered annotation after class!"
+				),
+				// 2 Fields
+				Arguments.of(
+						"""
+								String type;
+								int derp;""",
+						"Encountered two fields!"
+				),
+				// Class before Field
+				Arguments.of(
+						"""
+								class Test{
+								}
+								String type;""",
+						"Encountered field outside a class!"
+				),
+				// Package Declaration before Field
+				Arguments.of(
+						"""
+								package some.package;
+								String type;""",
+						"Encountered package declaration before field!"
+				),
+				// Import Statement before Field
+				Arguments.of(
+						"""
+								import some.classname;
+								String type;""",
+						"Encountered import statements before field!"
+				),
+				// 2 Methods
+				Arguments.of(
+						"""
+								String something(){}
+								int somethingElse(){}""",
+						"Encountered two methods!"
+				),
+				// Class before Method
+				Arguments.of(
+						"""
+								class Test{
+								}
+								String something(){}""",
+						"Encountered method outside a class!"
+				),
+				// Package Declaration before Method
+				Arguments.of(
+						"""
+								package some.package;
+								String something(){}""",
+						"Encountered package declaration before method!"
+				),
+				// Import Statement Before Method
+				Arguments.of(
+						"""
+								import some.classname;
+								String something(){}""",
+						"Encountered import statements before method!"
+				),
+				// 2 Outer Classes
+				Arguments.of(
+						"""
+								class Test{
+								}
+								class Test2{
+								}""",
+						"Encountered two outer level classes!"
+				),
+				// Field before Class
+				Arguments.of(
+						"""
+								String type;
+								class Test{
+								}""",
+						"Encountered fields outside a class!"
+				),
+				// Method before Class
+				Arguments.of(
+						"""
+								String something(){}
+								class Test{
+								}""",
+						"Encountered methods outside a class!"
+				),
+				// Failed to Determine Field or Method
+				Arguments.of(
+						"""
+								String something""",
+						"Failed to determine type from token 'String'"
+				)
+		);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("getParseData")
+	public void testErrors(String text, String error){
 		try{
-			FullJavaParser.parseType("""
-					package com.example;
-					package com.example.other;""");
+			FullJavaParser.parseType(text);
 			fail();
 		}catch(JavaParsingException e){
 			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered two package declarations!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testPackageDeclarationAfterClass(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{
-					}
-					package com.example;""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered package declaration after class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testImportStatementAfterClass(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{
-					}
-					import com.example;""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered import statement after class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testTwoJavadocs(){
-		try{
-			FullJavaParser.parseType("""
-					/** {@inheritDoc} */
-					/** something */""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(
-					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-							"Encountered two Javadocs!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testJavadocAfterField(){
-		try{
-			FullJavaParser.parseType("""
-					String type;
-					/** {@inheritDoc} */""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(
-					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-							"Encountered a Javadoc after field!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testJavadocAfterMethod(){
-		try{
-			FullJavaParser.parseType("""
-					void test(){}
-					/** {@inheritDoc} */""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(
-					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-							"Encountered a Javadoc after method!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testJavadocAfterClass(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{}
-					/** {@inheritDoc} */""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(
-					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-							"Encountered a Javadoc after class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAnnotationAfterClass(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{
-					}
-					@Test""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered annotation after class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testTwoFields(){
-		try{
-			FullJavaParser.parseType("""
-					String type;
-					int derp;""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered two fields!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testClassBeforeField(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{
-					}
-					String type;""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered field outside a class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testPackageDeclarationBeforeField(){
-		try{
-			FullJavaParser.parseType("""
-					package some.package;
-					String type;""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered package declaration before field!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testImportStatementBeforeField(){
-		try{
-			FullJavaParser.parseType("""
-					import some.classname;
-					String type;""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered import statements before field!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testTwoMethods(){
-		try{
-			FullJavaParser.parseType("""
-					String something(){}
-					int somethingElse(){}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered two methods!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testClassBeforeMethod(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{
-					}
-					String something(){}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered method outside a class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testPackageDeclarationBeforeMethod(){
-		try{
-			FullJavaParser.parseType("""
-					package some.package;
-					String something(){}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered package declaration before method!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testImportStatementBeforeMethod(){
-		try{
-			FullJavaParser.parseType("""
-					import some.classname;
-					String something(){}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered import statements before method!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testTwoOuterClasses(){
-		try{
-			FullJavaParser.parseType("""
-					class Test{
-					}
-					class Test2{
-					}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered two outer level classes!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testFieldBeforeClass(){
-		try{
-			FullJavaParser.parseType("""
-					String type;
-					class Test{
-					}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered fields outside a class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testMethodBeforeClass(){
-		try{
-			FullJavaParser.parseType("""
-					String something(){}
-					class Test{
-					}""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-					"Encountered methods outside a class!"),
-					e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testFailedToDetermineFieldOrMethodAfterWhitespace(){
-		try{
-			FullJavaParser.parseType("""
-					String something""");
-			fail();
-		}catch(JavaParsingException e){
-			assertEquals(
-					buildJavaParsingExceptionMessage(JavaCodeTypes.UNKNOWN,
-							"Failed to determine type from token 'String'"),
-					e.getMessage());
+					error), e.getMessage());
 		}
 	}
 }

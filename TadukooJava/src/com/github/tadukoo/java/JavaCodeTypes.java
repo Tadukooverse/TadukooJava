@@ -14,7 +14,8 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
  * An enum for the various {@link JavaCodeTypes} types of Java classes and elements.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public enum JavaCodeTypes{
 	

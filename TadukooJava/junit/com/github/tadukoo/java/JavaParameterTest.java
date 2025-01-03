@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class JavaParameterTest{
 	
@@ -93,6 +94,7 @@ public class JavaParameterTest{
 			JavaParameter.builder()
 					.name("text")
 					.build();
+			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("type can't be null!", e.getMessage());
 		}
@@ -106,6 +108,7 @@ public class JavaParameterTest{
 							.baseType("String")
 							.build())
 					.build();
+			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("name can't be empty!", e.getMessage());
 		}
@@ -116,6 +119,7 @@ public class JavaParameterTest{
 		try{
 			JavaParameter.builder()
 					.build();
+			fail();
 		}catch(IllegalArgumentException e){
 			assertEquals("""
 					type can't be null!

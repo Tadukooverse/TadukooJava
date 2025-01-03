@@ -2,7 +2,6 @@ package com.github.tadukoo.java.validation;
 
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
-import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.javaclass.EditableJavaClass;
 import com.github.tadukoo.java.javaclass.UneditableJavaClass;
 import org.junit.jupiter.api.BeforeEach;

@@ -20,24 +20,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JavaCodeTypesTest{
 	
 	@ParameterizedTest
-	@MethodSource("provideJavaCodeTypesData")
+	@MethodSource("getJavaCodeTypesData")
 	void testToString(JavaCodeTypes type, String expectedToString, Class<?> ignored, String ignored2e){
 		assertEquals(expectedToString, type.toString());
 	}
 	
 	@ParameterizedTest
-	@MethodSource("provideJavaCodeTypesData")
+	@MethodSource("getJavaCodeTypesData")
 	void testJavaTypeClass(JavaCodeTypes type, String ignored, Class<?> expectedJavaTypeClass, String ignored2){
 		assertEquals(expectedJavaTypeClass, type.getJavaTypeClass());
 	}
 	
 	@ParameterizedTest
-	@MethodSource("provideJavaCodeTypesData")
+	@MethodSource("getJavaCodeTypesData")
 	public void testStandardName(JavaCodeTypes type, String ignored, Class<?> ignored2, String expectedStandardName){
 		assertEquals(expectedStandardName, type.getStandardName());
 	}
 	
-	public static Stream<Arguments> provideJavaCodeTypesData(){
+	public static Stream<Arguments> getJavaCodeTypesData(){
 		return Stream.of(
 				Arguments.of(
 						JavaCodeTypes.UNKNOWN, "UNKNOWN", null, "unknown"),

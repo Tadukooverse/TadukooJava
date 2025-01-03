@@ -1,35 +1,36 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
-import com.github.tadukoo.java.annotation.JavaAnnotation;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class JavaCodeUtilTest{
 	
-	@Test
-	public void testConvertToJavaStringNull(){
-		assertNull(JavaCodeUtil.convertToJavaString(null));
+	@ParameterizedTest
+	@MethodSource("getToJavaStringData")
+	public void testConvertToJavaString(Object obj, String expectedText){
+		assertEquals(expectedText, JavaCodeUtil.convertToJavaString(obj));
 	}
 	
-	@Test
-	public void testConvertToJavaStringString(){
-		assertEquals("testing", JavaCodeUtil.convertToJavaString("testing"));
-	}
-	
-	@Test
-	public void testConvertToJavaStringEnum(){
-		assertEquals("JavaCodeTypes.CLASS", JavaCodeUtil.convertToJavaString(JavaCodeTypes.CLASS));
-	}
-	
-	@Test
-	public void testConvertToJavaStringAssertion(){
-		JavaAnnotation annotation = EditableJavaAnnotation.builder()
-				.name("Test")
-				.build();
-		assertEquals(annotation.toString(), JavaCodeUtil.convertToJavaString(annotation));
+	public static Stream<Arguments> getToJavaStringData(){
+		return Stream.of(
+				// Null
+				Arguments.of(null, null),
+				// String
+				Arguments.of("testing", "testing"),
+				// Enum
+				Arguments.of(JavaCodeTypes.CLASS, "JavaCodeTypes.CLASS"),
+				// Annotation
+				Arguments.of(EditableJavaAnnotation.builder()
+						.name("Test")
+						.build(), "@Test")
+		);
 	}
 	
 	@Test
