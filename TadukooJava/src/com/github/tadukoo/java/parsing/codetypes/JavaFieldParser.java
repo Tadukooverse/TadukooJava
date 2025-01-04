@@ -66,7 +66,7 @@ public class JavaFieldParser extends AbstractJavaParser{
 	 * </table>
 	 */
 	private static final Pattern FIELD_START_PATTERN = Pattern.compile(
-			"\\s*" + MODIFIERS_REGEX + "(\\S*)\\s*(\\S*?)\\s*;?\\s*");
+			"\\s*" + MODIFIERS_REGEX + "(" + TYPE_REGEX + ")\\s*([^\\s;]+)?\\s*;?\\s*");
 	
 	/** Not allowed to instantiate {@link JavaFieldParser} */
 	private JavaFieldParser(){ }
@@ -234,7 +234,7 @@ public class JavaFieldParser extends AbstractJavaParser{
 				}
 			}
 			String type = StringUtil.trim(matcher.group(4));
-			String name = StringUtil.trim(matcher.group(5));
+			String name = StringUtil.trim(matcher.group(11));
 			
 			if(value != null){
 				value = value.replaceAll("\n\t", "\n")

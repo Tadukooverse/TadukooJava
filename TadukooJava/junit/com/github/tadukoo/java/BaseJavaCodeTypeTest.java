@@ -366,7 +366,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		protected TestJavaField(
 				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isStatic, boolean isFinal,
-				String type, String name, String value){
+				JavaType type, String name, String value){
 			super(editable, javadoc, annotations,
 					visibility, isStatic, isFinal,
 					type, name, value);

@@ -218,7 +218,7 @@ public class JavaCodeTypeTestMethodTest{
 						EditableJavaMethod.builder()
 								.returnType("String").name("getTest")
 								.build(),
-						ListUtil.createList("Return Type is different!")
+						ListUtil.createList("Return Type differs:\n\tBase Type is different!")
 				),
 				// Name
 				Arguments.of(
@@ -374,7 +374,7 @@ public class JavaCodeTypeTestMethodTest{
 								"Annotations differs on #2!",
 								"Visibility is different!",
 								"Abstract is different!",
-								"Return Type is different!",
+								"Return Type differs:\n\tBase Type is different!",
 								"Name is different!",
 								"Parameters length is different!",
 								"Parameters differs on #2!",

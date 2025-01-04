@@ -1,8 +1,10 @@
 package com.github.tadukoo.java.field;
 
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.util.StringUtil;
 
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ import java.util.List;
  *     </tr>
  *     <tr>
  *         <td>type</td>
- *         <td>The type of the field</td>
+ *         <td>The {@link JavaType type} of the field</td>
  *         <td>Required</td>
  *     </tr>
  *     <tr>
@@ -61,7 +63,7 @@ import java.util.List;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (within JavaField), Alpha v.0.4 (as separate)
  */
 public abstract class JavaFieldBuilder<FieldType extends JavaField>{
@@ -75,8 +77,8 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	protected boolean isStatic = false;
 	/** Whether the field is final or not */
 	protected boolean isFinal = false;
-	/** The type of the field */
-	protected String type = null;
+	/** The {@link JavaType type} of the field */
+	protected JavaType type = null;
 	/** The name of the field */
 	protected String name = null;
 	/** The value assigned to the field */
@@ -180,11 +182,20 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 	}
 	
 	/**
-	 * @param type The type of the field
+	 * @param type The {@link JavaType type} of the field
 	 * @return this, to continue building
 	 */
-	public JavaFieldBuilder<FieldType> type(String type){
+	public JavaFieldBuilder<FieldType> type(JavaType type){
 		this.type = type;
+		return this;
+	}
+	
+	/**
+	 * @param typeText The text to parse for the {@link JavaType type} of the field
+	 * @return this, to continue building
+	 */
+	public JavaFieldBuilder<FieldType> type(String typeText){
+		this.type = FullJavaParser.parseJavaType(typeText);
 		return this;
 	}
 	
@@ -220,7 +231,7 @@ public abstract class JavaFieldBuilder<FieldType extends JavaField>{
 		}
 		
 		// Must specify type
-		if(StringUtil.isBlank(type)){
+		if(type == null){
 			errors.add("Must specify type!");
 		}
 		

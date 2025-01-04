@@ -210,7 +210,7 @@ public class JavaCodeTypeTestFieldTest{
 						EditableJavaField.builder()
 								.type("String").name("Test")
 								.build(),
-						ListUtil.createList("Type is different!")
+						ListUtil.createList("Type differs:\n\tBase Type is different!")
 				),
 				// Name
 				Arguments.of(
@@ -269,7 +269,7 @@ public class JavaCodeTypeTestFieldTest{
 								"Visibility is different!",
 								"Static is different!",
 								"Final is different!",
-								"Type is different!",
+								"Type differs:\n\tBase Type is different!",
 								"Name is different!",
 								"Value is different!")
 				)

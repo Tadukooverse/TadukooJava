@@ -634,7 +634,8 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedField, actualField, differences, "Static", JavaField::isStatic);
 		checkBoolean(expectedField, actualField, differences, "Final", JavaField::isFinal);
 		// Other Info
-		checkString(expectedField, actualField, differences, "Type", JavaField::getType);
+		checkSingleSubtype(expectedField, actualField, differences, "Type",
+				JavaField::getType, JavaCodeTypeTest::findTypeDifferences);
 		checkString(expectedField, actualField, differences, "Name", JavaField::getName);
 		checkString(expectedField, actualField, differences, "Value", JavaField::getValue);
 		
@@ -689,7 +690,8 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedMethod, actualMethod, differences, "Final", JavaMethod::isFinal);
 		
 		// Type and Name
-		checkString(expectedMethod, actualMethod, differences, "Return Type", JavaMethod::getReturnType);
+		checkSingleSubtype(expectedMethod, actualMethod, differences, "Return Type",
+				JavaMethod::getReturnType, JavaCodeTypeTest::findTypeDifferences);
 		checkString(expectedMethod, actualMethod, differences, "Name", JavaMethod::getName);
 		
 		// Parameters, Throw Types, and Content

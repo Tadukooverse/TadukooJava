@@ -2,6 +2,7 @@ package com.github.tadukoo.java.field;
 
 import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -142,7 +143,21 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Set Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> "int",
+						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+								.baseType("int")
+								.build(),
+						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+								.type(JavaType.builder()
+										.baseType("int")
+										.build()).name("test")
+								.build()
+								.getType()
+				),
+				// Set Type by Text
+				Pair.of(
+						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+								.baseType("int")
+								.build(),
 						(builder, javadocBuilder, annotationBuilder) -> builder.get()
 								.type("int").name("test")
 								.build()
@@ -817,11 +832,39 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 		EditableJavaField field = EditableJavaField.builder()
 				.type("int").name("test")
 				.build();
-		assertEquals("int", field.getType());
+		assertEquals(JavaType.builder()
+				.baseType("int")
+				.build(), field.getType());
+		field.setType(JavaType.builder()
+				.baseType("String")
+				.build());
+		assertEquals(JavaType.builder()
+				.baseType("String")
+				.build(), field.getType());
+		field.setType(JavaType.builder()
+				.baseType("double")
+				.build());
+		assertEquals(JavaType.builder()
+				.baseType("double")
+				.build(), field.getType());
+	}
+	
+	@Test
+	public void testSetTypeByText(){
+		EditableJavaField field = EditableJavaField.builder()
+				.type("int").name("test")
+				.build();
+		assertEquals(JavaType.builder()
+				.baseType("int")
+				.build(), field.getType());
 		field.setType("String");
-		assertEquals("String", field.getType());
+		assertEquals(JavaType.builder()
+				.baseType("String")
+				.build(), field.getType());
 		field.setType("double");
-		assertEquals("double", field.getType());
+		assertEquals(JavaType.builder()
+				.baseType("double")
+				.build(), field.getType());
 	}
 	
 	@Test

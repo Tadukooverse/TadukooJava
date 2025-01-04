@@ -189,6 +189,51 @@ public class JavaFieldParserTest extends BaseJavaParserTest{
 								@Derp(type = String.class)
 								private static final String name = "";"""
 				),
+				// Type has type parameter
+				Triple.of(
+						"""
+								List<String> type;""",
+						EditableJavaField.builder()
+								.type("List<String>").name("type")
+								.build(),
+						"List<String> type;"
+				),
+				// Type has multiple type parameters
+				Triple.of(
+						"""
+								Map<String, Object> type;""",
+						EditableJavaField.builder()
+								.type("Map<String, Object>").name("type")
+								.build(),
+						"Map<String, Object> type;"
+				),
+				// Type is complex
+				Triple.of(
+						"""
+								List<Map<String, Object>> type;""",
+						EditableJavaField.builder()
+								.type("List<Map<String, Object>>").name("type")
+								.build(),
+						"List<Map<String, Object>> type;"
+				),
+				// Type is complex 2
+				Triple.of(
+						"""
+								Map<Character, Map<Character, ?>> type;""",
+						EditableJavaField.builder()
+								.type("Map<Character, Map<Character, ?>>").name("type")
+								.build(),
+						"Map<Character, Map<Character, ?>> type;"
+				),
+				// Type is complex 3
+				Triple.of(
+						"""
+								Map<? extends List<String>, Object> type;""",
+						EditableJavaField.builder()
+								.type("Map<? extends List<String>, Object>").name("type")
+								.build(),
+						"Map<? extends List<String>, Object> type;"
+				),
 				// Whitespace before Type
 				Triple.of(
 						"""
