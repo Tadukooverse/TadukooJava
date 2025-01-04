@@ -3,6 +3,7 @@ package com.github.tadukoo.java.method;
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -35,8 +36,8 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected boolean isStatic;
 	/** Whether the method is final or not */
 	protected boolean isFinal;
-	/** The return type of the method */
-	protected String returnType;
+	/** The return {@link JavaType type} of the method */
+	protected JavaType returnType;
 	/** The name of the method */
 	protected String name;
 	/** The {@link JavaParameter parameters} used in the method */
@@ -56,7 +57,7 @@ public abstract class JavaMethod implements JavaCodeType{
 	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
-	 * @param returnType The return type of the method
+	 * @param returnType The return {@link JavaType type} of the method
 	 * @param name The name of the method
 	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @param throwTypes The types that can be thrown by the method
@@ -65,7 +66,7 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected JavaMethod(
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			String returnType, String name,
+			JavaType returnType, String name,
 			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
 		this.javadoc = javadoc;
@@ -137,9 +138,9 @@ public abstract class JavaMethod implements JavaCodeType{
 	}
 	
 	/**
-	 * @return The return type of the method
+	 * @return The return {@link JavaType type} of the method
 	 */
-	public String getReturnType(){
+	public JavaType getReturnType(){
 		return returnType;
 	}
 	

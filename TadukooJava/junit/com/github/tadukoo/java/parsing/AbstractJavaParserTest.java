@@ -237,6 +237,13 @@ public class AbstractJavaParserTest{
 								AbstractJavaParser::parseJavaTypeParameters,
 						"'Something extends Something extends Yes' is not a valid type parameter"
 				),
+				// Failed to parse remaining type parameter content
+				Arguments.of(
+						"Map<String,Object",
+						(ThrowingFunction<String, ?, NoException>)
+								AbstractJavaParser::parseJavaTypeParameters,
+						"Failed to parse remaining type parameter content: 'Map<String,Object'"
+				),
 				// Not a type
 				Arguments.of(
 						"Something>Truly Garbage<",

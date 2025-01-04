@@ -420,7 +420,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		private TestJavaMethod(
 				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-				String returnType, String name,
+				JavaType returnType, String name,
 				List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 			super(editable, javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,

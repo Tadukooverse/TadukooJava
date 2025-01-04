@@ -346,6 +346,46 @@ public class JavaMethodParserTest extends BaseJavaParserTest{
 									doSomethingElse();
 								}"""
 				),
+				// With Name and type has type parameters
+				Triple.of(
+						"List<String> test(){}",
+						EditableJavaMethod.builder()
+								.returnType("List<String>").name("test")
+								.build(),
+						"List<String> test(){ }"
+				),
+				// With Name and type has multiple type parameters
+				Triple.of(
+						"Map<String, Object> test(){}",
+						EditableJavaMethod.builder()
+								.returnType("Map<String, Object>").name("test")
+								.build(),
+						"Map<String, Object> test(){ }"
+				),
+				// With Name and type is complicated
+				Triple.of(
+						"List<Map<String, Object>> test(){}",
+						EditableJavaMethod.builder()
+								.returnType("List<Map<String, Object>>").name("test")
+								.build(),
+						"List<Map<String, Object>> test(){ }"
+				),
+				// With Name and type is complicated 2
+				Triple.of(
+						"Map<Character, Map<Character, ?>> test(){}",
+						EditableJavaMethod.builder()
+								.returnType("Map<Character, Map<Character, ?>>").name("test")
+								.build(),
+						"Map<Character, Map<Character, ?>> test(){ }"
+				),
+				// With Name and type is complicated 3
+				Triple.of(
+						"Map<? extends List<String>, Object> test(){}",
+						EditableJavaMethod.builder()
+								.returnType("Map<? extends List<String>, Object>").name("test")
+								.build(),
+						"Map<? extends List<String>, Object> test(){ }"
+				),
 				/*
 				 * Edge Cases
 				 */

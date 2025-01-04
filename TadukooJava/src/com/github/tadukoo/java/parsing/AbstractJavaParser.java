@@ -109,8 +109,31 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @return Either {@link JavaCodeTypes#FIELD}, {@link JavaCodeTypes#METHOD}, or {@link JavaCodeTypes#UNKNOWN}
 	 */
 	protected static JavaCodeTypes determineFieldOrMethod(List<String> tokens, int currentToken){
-		// First token is a type, can't have parameter open or assignment, so skip it
+		// Start would be a type, have to handle type parameter tokens
+		String type = tokens.get(currentToken);
 		int thisToken = currentToken + 1;
+		int openTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_OPEN_TOKEN);
+		int closeTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_CLOSE_TOKEN);
+		while(openTokenCount != closeTokenCount){
+			// Skip whitespace
+			while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
+				thisToken++;
+			}
+			
+			// Check if we hit end of tokens
+			if(thisToken >= tokens.size()){
+				return JavaCodeTypes.UNKNOWN;
+			}
+			
+			// Add on to type
+			type += tokens.get(thisToken);
+			thisToken++;
+			
+			// Count open and close tokens again
+			openTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_OPEN_TOKEN);
+			closeTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_CLOSE_TOKEN);
+		}
+		
 		// Skip whitespace
 		while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
 			thisToken++;

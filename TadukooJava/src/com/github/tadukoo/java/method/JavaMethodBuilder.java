@@ -1,6 +1,7 @@
 package com.github.tadukoo.java.method;
 
 import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -53,7 +54,7 @@ import java.util.List;
  *     </tr>
  *     <tr>
  *         <td>returnType</td>
- *         <td>The return type of the method</td>
+ *         <td>The return {@link JavaType type} of the method</td>
  *         <td>Required</td>
  *     </tr>
  *     <tr>
@@ -96,8 +97,8 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	protected boolean isStatic = false;
 	/** Whether the method is final or not */
 	protected boolean isFinal = false;
-	/** The return type of the method */
-	protected String returnType = null;
+	/** The return {@link JavaType type} of the method */
+	protected JavaType returnType = null;
 	/** The name of the method */
 	protected String name = null;
 	/** The {@link JavaParameter parameters} used in the method */
@@ -227,11 +228,20 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	}
 	
 	/**
-	 * @param returnType The return type of the method
+	 * @param returnType The return {@link JavaType type} of the method
 	 * @return this, to continue building
 	 */
-	public JavaMethodBuilder<MethodType> returnType(String returnType){
+	public JavaMethodBuilder<MethodType> returnType(JavaType returnType){
 		this.returnType = returnType;
+		return this;
+	}
+	
+	/**
+	 * @param returnTypeText The text of the return {@link JavaType type} to be parsed
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> returnType(String returnTypeText){
+		this.returnType = FullJavaParser.parseJavaType(returnTypeText);
 		return this;
 	}
 	
@@ -344,7 +354,7 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 		}
 		
 		// Must specify return type
-		if(StringUtil.isBlank(returnType)){
+		if(returnType == null){
 			errors.add("Must specify returnType!");
 		}
 		

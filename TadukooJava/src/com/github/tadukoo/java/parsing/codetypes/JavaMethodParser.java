@@ -83,7 +83,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 	 */
 	private static final Pattern METHOD_PATTERN = Pattern.compile(
 			"\\s*" + MODIFIERS_REGEX +
-					"([^\\s(]*)(\\s*[^\\s(]*)?\\s*" +
+					"(" + TYPE_REGEX + ")(\\s*[^\\s(]*)?\\s*" +
 					"\\(\\s*((" + PARAMETER_REGEX + ",?)*)\\s*\\)(?:\\s*throws ([^{]*))?" +
 					"\\s*(?:\\{\\s*(.*)\\s*}|;\\s*)",
 			Pattern.DOTALL);
@@ -282,10 +282,10 @@ public class JavaMethodParser extends AbstractJavaParser{
 				}
 			}
 			String returnType = StringUtil.trim(matcher.group(4));
-			String name = StringUtil.trim(matcher.group(5));
-			String parameterString = StringUtil.trim(matcher.group(6));
-			String throwsString = StringUtil.trim(matcher.group(17));
-			String contentString = StringUtil.trim(matcher.group(18));
+			String name = StringUtil.trim(matcher.group(11));
+			String parameterString = StringUtil.trim(matcher.group(12));
+			String throwsString = StringUtil.trim(matcher.group(23));
+			String contentString = StringUtil.trim(matcher.group(24));
 			
 			// Parse parameters
 			List<JavaParameter> parameters = new ArrayList<>();

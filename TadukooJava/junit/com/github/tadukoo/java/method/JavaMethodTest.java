@@ -5,7 +5,6 @@ import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
-import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.javadoc.EditableJavadoc;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.javadoc.JavadocBuilder;
@@ -303,7 +302,21 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Return Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> "int",
+						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+								.baseType("int")
+								.build(),
+						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+								.returnType(JavaType.builder()
+										.baseType("int")
+										.build())
+								.build()
+								.getReturnType()
+				),
+				// Set Return Type by Text
+				Pair.of(
+						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+								.baseType("int")
+								.build(),
 						(builder, javadocBuilder, annotationBuilder) -> builder.get()
 								.returnType("int")
 								.build()
@@ -1351,11 +1364,39 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 		EditableJavaMethod method = EditableJavaMethod.builder()
 				.returnType("int")
 				.build();
-		assertEquals("int", method.getReturnType());
+		assertEquals(JavaType.builder()
+				.baseType("int")
+				.build(), method.getReturnType());
+		method.setReturnType(JavaType.builder()
+				.baseType("String")
+				.build());
+		assertEquals(JavaType.builder()
+				.baseType("String")
+				.build(), method.getReturnType());
+		method.setReturnType(JavaType.builder()
+				.baseType("Derp")
+				.build());
+		assertEquals(JavaType.builder()
+				.baseType("Derp")
+				.build(), method.getReturnType());
+	}
+	
+	@Test
+	public void testSetReturnTypeByText(){
+		EditableJavaMethod method = EditableJavaMethod.builder()
+				.returnType("int")
+				.build();
+		assertEquals(JavaType.builder()
+				.baseType("int")
+				.build(), method.getReturnType());
 		method.setReturnType("String");
-		assertEquals("String", method.getReturnType());
+		assertEquals(JavaType.builder()
+				.baseType("String")
+				.build(), method.getReturnType());
 		method.setReturnType("Derp");
-		assertEquals("Derp", method.getReturnType());
+		assertEquals(JavaType.builder()
+				.baseType("Derp")
+				.build(), method.getReturnType());
 	}
 	
 	@Test
