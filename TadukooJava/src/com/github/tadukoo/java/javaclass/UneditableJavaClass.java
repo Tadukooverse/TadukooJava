@@ -1,6 +1,7 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
@@ -167,9 +168,11 @@ public class UneditableJavaClass extends JavaClass{
 	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
-	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (can be null)
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -180,8 +183,8 @@ public class UneditableJavaClass extends JavaClass{
 	private UneditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-			String superClassName, List<String> implementsInterfaceNames,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){

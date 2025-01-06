@@ -2,6 +2,7 @@ package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaClassType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
@@ -51,12 +52,12 @@ public abstract class JavaClass implements JavaClassType{
 	protected boolean isStatic;
 	/** Whether this is a final class or not */
 	protected boolean isFinal;
-	/** The name of the class */
-	protected String className;
-	/** The name of the class this one extends (may be null) */
-	protected String superClassName;
-	/** The names of interfaces this class implements */
-	protected List<String> implementsInterfaceNames;
+	/** The name of the class, along with type parameters to form a {@link JavaType} */
+	protected JavaType className;
+	/** The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType} */
+	protected JavaType superClassName;
+	/** The names of interfaces this class implements, along with type parameters to form a {@link JavaType} */
+	protected List<JavaType> implementsInterfaceNames;
 	/** The {@link JavaSingleLineComment single-line comments} inside the class */
 	protected List<JavaSingleLineComment> singleLineComments;
 	/** The {@link JavaMultiLineComment multi-line comments} inside the class */
@@ -83,9 +84,9 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
-	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (can be null)
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
+	 * @param superClassName The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType}
+	 * @param implementsInterfaceNames The names of interfaces this class implements, along with type parameters to form a {@link JavaType}
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -97,8 +98,8 @@ public abstract class JavaClass implements JavaClassType{
 			boolean editable, boolean isInnerClass,
 			JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-			String superClassName, List<String> implementsInterfaceNames,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, JavaType className,
+			JavaType superClassName, List<JavaType> implementsInterfaceNames,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -200,23 +201,30 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
-	 * @return The name of the class
+	 * @return The name of the class, along with type parameters to form a {@link JavaType}
 	 */
-	public String getClassName(){
+	public JavaType getClassName(){
 		return className;
 	}
 	
 	/**
-	 * @return The name of the class this one extends (may be null)
+	 * @return The simple name of the class, not including any type parameters
 	 */
-	public String getSuperClassName(){
+	public String getSimpleClassName(){
+		return className.getBaseType();
+	}
+	
+	/**
+	 * @return The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType}
+	 */
+	public JavaType getSuperClassName(){
 		return superClassName;
 	}
 	
 	/**
-	 * @return The names of interfaces this class implements
+	 * @return The names of interfaces this class implements, along with type parameters to form a {@link JavaType}
 	 */
-	public List<String> getImplementsInterfaceNames(){
+	public List<JavaType> getImplementsInterfaceNames(){
 		return implementsInterfaceNames;
 	}
 	
@@ -247,7 +255,7 @@ public abstract class JavaClass implements JavaClassType{
 	public Map<String, JavaClass> getInnerClassesMap(){
 		Map<String, JavaClass> classMap = new HashMap<>();
 		for(JavaClass clazz: innerClasses){
-			classMap.put(clazz.getClassName(), clazz);
+			classMap.put(clazz.getSimpleClassName(), clazz);
 		}
 		return classMap;
 	}
@@ -393,14 +401,14 @@ public abstract class JavaClass implements JavaClassType{
 		declaration.append(CLASS_TOKEN).append(' ').append(className);
 		
 		// Optionally append super class name to the declaration
-		if(StringUtil.isNotBlank(superClassName)){
+		if(superClassName != null){
 			declaration.append(' ').append(EXTENDS_TOKEN).append(' ').append(superClassName);
 		}
 		
 		// Optionally append implemented interfaces to the declaration
 		if(ListUtil.isNotBlank(implementsInterfaceNames)){
 			declaration.append(' ').append(IMPLEMENTS_TOKEN);
-			for(String implementsInterfaceName: implementsInterfaceNames){
+			for(JavaType implementsInterfaceName: implementsInterfaceNames){
 				declaration.append(' ').append(implementsInterfaceName).append(',');
 			}
 			// Remove final comma
@@ -622,13 +630,13 @@ public abstract class JavaClass implements JavaClassType{
 		codeString.append(NEWLINE_WITH_2_TABS).append(".className(\"").append(className).append("\")");
 		
 		// Extends
-		if(StringUtil.isNotBlank(superClassName)){
+		if(superClassName != null){
 			codeString.append(NEWLINE_WITH_2_TABS).append(".superClassName(\"").append(superClassName).append("\")");
 		}
 		
 		// Implements
 		if(ListUtil.isNotBlank(implementsInterfaceNames)){
-			for(String interfaceName: implementsInterfaceNames){
+			for(JavaType interfaceName: implementsInterfaceNames){
 				codeString.append(NEWLINE_WITH_2_TABS).append(".implementsInterfaceName(\"")
 						.append(interfaceName).append("\")");
 			}

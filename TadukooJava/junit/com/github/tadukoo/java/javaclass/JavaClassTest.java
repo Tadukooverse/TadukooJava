@@ -2,6 +2,7 @@ package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -568,7 +569,33 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.build()
 								.getPackageDeclaration()
 				),
+				// Set Class Name by Text
+				Pair.of(
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+								.baseType("AClassName")
+								.build(),
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+								.className("AClassName")
+								.build()
+								.getClassName()
+				),
 				// Set Class Name
+				Pair.of(
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+								.baseType("AClassName")
+								.build(),
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+								.className(JavaType.builder()
+										.baseType("AClassName")
+										.build())
+								.build()
+								.getClassName()
+				),
+				// Get Simple Class Name
 				Pair.of(
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> "AClassName",
@@ -576,7 +603,17 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
 								.className("AClassName")
 								.build()
-								.getClassName()
+								.getSimpleClassName()
+				),
+				// Get Simple Class Name Complex Class Name
+				Pair.of(
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> "AClassName",
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+								.className("AClassName<Map<String,Object>, T>")
+								.build()
+								.getSimpleClassName()
 				),
 				// Set Import Statement
 				Pair.of(
@@ -824,10 +861,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.build()
 								.isFinal()
 				),
-				// Set Super Class Name
+				// Set Super Class Name by Text
 				Pair.of(
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> "AnotherClassName",
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+								.baseType("AnotherClassName")
+								.build(),
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
 								.className("AClassName")
@@ -835,11 +874,28 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.build()
 								.getSuperClassName()
 				),
-				// Set Implements Interface Name
+				// Set Super Class Name
+				Pair.of(
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+								.baseType("AnotherClassName")
+								.build(),
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+								.className("AClassName")
+								.superClassName(JavaType.builder()
+										.baseType("AnotherClassName")
+										.build())
+								.build()
+								.getSuperClassName()
+				),
+				// Set Implements Interface Name by Text
 				Pair.of(
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								 "SomeInterface"
+								JavaType.builder()
+										.baseType("SomeInterface")
+										.build()
 						),
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
@@ -848,17 +904,63 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.build()
 								.getImplementsInterfaceNames()
 				),
+				// Set Implements Interface Name
+				Pair.of(
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
+								JavaType.builder()
+										.baseType("SomeInterface")
+										.build()
+						),
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+								.className("AClassName")
+								.implementsInterfaceName(JavaType.builder()
+										.baseType("SomeInterface")
+										.build())
+								.build()
+								.getImplementsInterfaceNames()
+				),
+				// Set Implements Interface Names by Text
+				Pair.of(
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
+								JavaType.builder()
+										.baseType("SomeInterface")
+										.build(),
+								JavaType.builder()
+										.baseType("SomeOtherInterface")
+										.build()
+						),
+						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
+						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+								.className("AClassName")
+								.implementsInterfaceNameTexts(ListUtil.createList(
+										"SomeInterface", "SomeOtherInterface"))
+								.build()
+								.getImplementsInterfaceNames()
+				),
 				// Set Implements Interface Names
 				Pair.of(
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								"SomeInterface", "SomeOtherInterface"
+								JavaType.builder()
+										.baseType("SomeInterface")
+										.build(),
+								JavaType.builder()
+										.baseType("SomeOtherInterface")
+										.build()
 						),
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
 						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
 								.className("AClassName")
 								.implementsInterfaceNames(ListUtil.createList(
-										"SomeInterface", "SomeOtherInterface"))
+										JavaType.builder()
+												.baseType("SomeInterface")
+												.build(),
+										JavaType.builder()
+												.baseType("SomeOtherInterface")
+												.build()))
 								.build()
 								.getImplementsInterfaceNames()
 				),
@@ -3802,9 +3904,29 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 		EditableJavaClass clazz = EditableJavaClass.builder()
 				.className("AClassName")
 				.build();
-		assertEquals("AClassName", clazz.getClassName());
+		assertEquals(JavaType.builder()
+				.baseType("AClassName")
+				.build(), clazz.getClassName());
+		clazz.setClassName(JavaType.builder()
+				.baseType("SomethingElse")
+				.build());
+		assertEquals(JavaType.builder()
+				.baseType("SomethingElse")
+				.build(), clazz.getClassName());
+	}
+	
+	@Test
+	public void testSetClassNameByText(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		assertEquals(JavaType.builder()
+				.baseType("AClassName")
+				.build(), clazz.getClassName());
 		clazz.setClassName("SomethingElse");
-		assertEquals("SomethingElse", clazz.getClassName());
+		assertEquals(JavaType.builder()
+				.baseType("SomethingElse")
+				.build(), clazz.getClassName());
 	}
 	
 	@Test
@@ -3813,8 +3935,24 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				.className("AClassName")
 				.build();
 		assertNull(clazz.getSuperClassName());
+		clazz.setSuperClassName(JavaType.builder()
+				.baseType("SomethingElse")
+				.build());
+		assertEquals(JavaType.builder()
+				.baseType("SomethingElse")
+				.build(), clazz.getSuperClassName());
+	}
+	
+	@Test
+	public void testSetSuperClassNameByText(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		assertNull(clazz.getSuperClassName());
 		clazz.setSuperClassName("SomethingElse");
-		assertEquals("SomethingElse", clazz.getSuperClassName());
+		assertEquals(JavaType.builder()
+				.baseType("SomethingElse")
+				.build(), clazz.getSuperClassName());
 	}
 	
 	@Test
@@ -3823,10 +3961,38 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				.className("AClassName")
 				.build();
 		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceName(JavaType.builder()
+				.baseType("SomeInterface")
+				.build());
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceName(JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build());
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testAddImplementsInterfaceNameByText(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
 		clazz.addImplementsInterfaceName("SomeInterface");
-		assertEquals(ListUtil.createList("SomeInterface"), clazz.getImplementsInterfaceNames());
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build()), clazz.getImplementsInterfaceNames());
 		clazz.addImplementsInterfaceName("SomeOtherInterface");
-		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()), clazz.getImplementsInterfaceNames());
 	}
 	
 	@Test
@@ -3835,10 +4001,55 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				.className("AClassName")
 				.build();
 		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
-		clazz.addImplementsInterfaceNames(ListUtil.createList("SomeInterface", "SomeOtherInterface"));
-		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
-		clazz.addImplementsInterfaceNames(ListUtil.createList("AInterface", "BInterface"));
-		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface", "AInterface", "BInterface"),
+		clazz.addImplementsInterfaceNames(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()));
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceNames(ListUtil.createList(JavaType.builder()
+				.baseType("AInterface")
+				.build(), JavaType.builder()
+				.baseType("BInterface")
+				.build()));
+		assertEquals(ListUtil.createList(JavaType.builder()
+						.baseType("SomeInterface")
+						.build(), JavaType.builder()
+						.baseType("SomeOtherInterface")
+						.build(), JavaType.builder()
+						.baseType("AInterface")
+						.build(), JavaType.builder()
+						.baseType("BInterface")
+						.build()),
+				clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testAddImplementsInterfaceNameTexts(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceNameTexts(ListUtil.createList("SomeInterface", "SomeOtherInterface"));
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+		clazz.addImplementsInterfaceNameTexts(ListUtil.createList("AInterface", "BInterface"));
+		assertEquals(ListUtil.createList(JavaType.builder()
+						.baseType("SomeInterface")
+						.build(), JavaType.builder()
+						.baseType("SomeOtherInterface")
+						.build(), JavaType.builder()
+						.baseType("AInterface")
+						.build(), JavaType.builder()
+						.baseType("BInterface")
+						.build()),
 				clazz.getImplementsInterfaceNames());
 	}
 	
@@ -3848,10 +4059,46 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				.className("AClassName")
 				.build();
 		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
-		clazz.setImplementsInterfaceNames(ListUtil.createList("SomeInterface", "SomeOtherInterface"));
-		assertEquals(ListUtil.createList("SomeInterface", "SomeOtherInterface"), clazz.getImplementsInterfaceNames());
-		clazz.setImplementsInterfaceNames(ListUtil.createList("AInterface", "BInterface"));
-		assertEquals(ListUtil.createList("AInterface", "BInterface"), clazz.getImplementsInterfaceNames());
+		clazz.setImplementsInterfaceNames(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()));
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+		clazz.setImplementsInterfaceNames(ListUtil.createList(JavaType.builder()
+				.baseType("AInterface")
+				.build(), JavaType.builder()
+				.baseType("BInterface")
+				.build()));
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("AInterface")
+				.build(), JavaType.builder()
+				.baseType("BInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testSetImplementsInterfaceNameTexts(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		assertEquals(ListUtil.createList(), clazz.getImplementsInterfaceNames());
+		clazz.setImplementsInterfaceNameTexts(ListUtil.createList("SomeInterface", "SomeOtherInterface"));
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("SomeInterface")
+				.build(), JavaType.builder()
+				.baseType("SomeOtherInterface")
+				.build()), clazz.getImplementsInterfaceNames());
+		clazz.setImplementsInterfaceNameTexts(ListUtil.createList("AInterface", "BInterface"));
+		assertEquals(ListUtil.createList(JavaType.builder()
+				.baseType("AInterface")
+				.build(), JavaType.builder()
+				.baseType("BInterface")
+				.build()), clazz.getImplementsInterfaceNames());
 	}
 	
 	@Test
@@ -4452,9 +4699,6 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 	@Test
 	public void testToStringSkipsInvalidInnerElementType(){
 		EditableJavaClass clazz = EditableJavaClass.builder()
-				.className("AClassName")
-				.build();
-		clazz = EditableJavaClass.builder()
 				.className("AClassName")
 				.build();
 		clazz.setInnerElementsOrder(ListUtil.createList(

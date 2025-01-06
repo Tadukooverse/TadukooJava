@@ -1,6 +1,7 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
@@ -18,10 +19,12 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a class in Java that can be modified
@@ -169,9 +172,11 @@ public class EditableJavaClass extends JavaClass{
 	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
-	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (can be null)
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -182,8 +187,8 @@ public class EditableJavaClass extends JavaClass{
 	private EditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-			String superClassName, List<String> implementsInterfaceNames,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -367,38 +372,84 @@ public class EditableJavaClass extends JavaClass{
 	}
 	
 	/**
-	 * @param className The name of the class
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
 	 */
-	public void setClassName(String className){
+	public void setClassName(JavaType className){
 		this.className = className;
 	}
 	
 	/**
-	 * @param superClassName The name of the class this one extends (may be null)
+	 * @param classNameText The text to parse of the name of the class,
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void setSuperClassName(String superClassName){
+	public void setClassName(String classNameText){
+		this.className = FullJavaParser.parseJavaType(classNameText);
+	}
+	
+	/**
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void setSuperClassName(JavaType superClassName){
 		this.superClassName = superClassName;
 	}
 	
 	/**
-	 * @param implementsInterfaceName The name of an interface this class implements
+	 * @param superClassNameText The text to parse of the name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void addImplementsInterfaceName(String implementsInterfaceName){
+	public void setSuperClassName(String superClassNameText){
+		this.superClassName = FullJavaParser.parseJavaType(superClassNameText);
+	}
+	
+	/**
+	 * @param implementsInterfaceName The name of an interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void addImplementsInterfaceName(JavaType implementsInterfaceName){
 		implementsInterfaceNames.add(implementsInterfaceName);
 	}
 	
 	/**
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param implementsInterfaceNameText The text for the name of an interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void addImplementsInterfaceNames(List<String> implementsInterfaceNames){
+	public void addImplementsInterfaceName(String implementsInterfaceNameText){
+		implementsInterfaceNames.add(FullJavaParser.parseJavaType(implementsInterfaceNameText));
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void addImplementsInterfaceNames(List<JavaType> implementsInterfaceNames){
 		this.implementsInterfaceNames.addAll(implementsInterfaceNames);
 	}
 	
 	/**
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param implementsInterfaceNameTexts The text of the names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void setImplementsInterfaceNames(List<String> implementsInterfaceNames){
+	public void addImplementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
+		this.implementsInterfaceNames.addAll(implementsInterfaceNameTexts.stream()
+				.map(FullJavaParser::parseJavaType).toList());
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void setImplementsInterfaceNames(List<JavaType> implementsInterfaceNames){
 		this.implementsInterfaceNames = implementsInterfaceNames;
+	}
+	
+	/**
+	 * @param implementsInterfaceNameTexts The text for the names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void setImplementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
+		this.implementsInterfaceNames = implementsInterfaceNameTexts.stream()
+				.map(FullJavaParser::parseJavaType).collect(Collectors.toList());
 	}
 	
 	/**

@@ -24,7 +24,8 @@ import java.util.regex.Pattern;
  * A parser to use for parsing {@link JavaField fields in Java}
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public class JavaFieldParser extends AbstractJavaParser{
 	

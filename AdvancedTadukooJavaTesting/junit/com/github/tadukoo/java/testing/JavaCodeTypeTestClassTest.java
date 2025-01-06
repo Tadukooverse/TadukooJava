@@ -292,7 +292,7 @@ public class JavaCodeTypeTestClassTest{
 						EditableJavaClass.builder()
 								.className("Derp")
 								.build(),
-						ListUtil.createList("Class Name is different!")
+						ListUtil.createList("Class Name differs:\n\tBase Type is different!")
 				),
 				// Super Class Name
 				Arguments.of(
@@ -302,7 +302,7 @@ public class JavaCodeTypeTestClassTest{
 						EditableJavaClass.builder()
 								.className("Test")
 								.build(),
-						ListUtil.createList("Super Class Name is different!")
+						ListUtil.createList("Super Class Name differs:\n\tOne of the types is null, and the other isn't!")
 				),
 				// Implements Interface Names
 				Arguments.of(
@@ -312,7 +312,7 @@ public class JavaCodeTypeTestClassTest{
 						EditableJavaClass.builder()
 								.className("Test").implementsInterfaceName("SomethingElse")
 								.build(),
-						ListUtil.createList("Implements Interface Names differs on #1!")
+						ListUtil.createList("Implements Interface Names differs on #1:\n\tBase Type is different!")
 				),
 				// Implements Interface Names Length
 				Arguments.of(
@@ -445,8 +445,10 @@ public class JavaCodeTypeTestClassTest{
 										.className("SomethingElse")
 										.build())
 								.build(),
-						ListUtil.createList("Inner Classes differs on #1:\n" +
-										"\tClass Name is different!",
+						ListUtil.createList("""
+										Inner Classes differs on #1:
+											Class Name differs:
+											Base Type is different!""",
 								"Inner Elements Order differs on #1!")
 				),
 				// Inner Classes Length
@@ -639,8 +641,8 @@ public class JavaCodeTypeTestClassTest{
 								"Abstract is different!",
 								"Static is different!",
 								"Final is different!",
-								"Class Name is different!",
-								"Super Class Name is different!",
+								"Class Name differs:\n\tBase Type is different!",
+								"Super Class Name differs:\n\tOne of the types is null, and the other isn't!",
 								"Implements Interface Names length is different!",
 								"Implements Interface Names differs on #2!",
 								"Single Line Comments length is different!",

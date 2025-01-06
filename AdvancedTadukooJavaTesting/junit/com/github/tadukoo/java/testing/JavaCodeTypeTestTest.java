@@ -5,6 +5,10 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.javaclass.EditableJavaClass;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.javaclass.UneditableJavaClass;
+import com.github.tadukoo.java.javadoc.EditableJavadoc;
+import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.java.method.EditableJavaMethod;
+import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.util.StringUtil;
 import org.junit.jupiter.api.Test;
@@ -54,46 +58,42 @@ public class JavaCodeTypeTestTest{
 	
 	@Test
 	public void testCheckStringSuccess(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
+		JavaMethod method1 = EditableJavaMethod.builder()
+				.returnType("String").name("test")
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
+		JavaMethod method2 = EditableJavaMethod.builder()
+				.returnType("String").name("test")
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkString(clazz1, clazz2, differences, "Class Name", JavaClass::getClassName);
+		checkString(method1, method2, differences, "Name", JavaMethod::getName);
 		assertTrue(differences.isEmpty());
 	}
 	
 	@Test
 	public void testCheckStringBlankSuccess(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
-				.superClassName(null)
+		JavaMethod method1 = EditableJavaMethod.builder()
+				.returnType("String").name(null)
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
-				.superClassName("")
+		JavaMethod method2 = EditableJavaMethod.builder()
+				.returnType("String").name("")
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkString(clazz1, clazz2, differences, "Super Class Name", JavaClass::getSuperClassName);
+		checkString(method1, method2, differences, "Name", JavaMethod::getName);
 		assertTrue(differences.isEmpty());
 	}
 	
 	@Test
 	public void testCheckStringFailure(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
-				.superClassName("Something")
+		JavaMethod method1 = EditableJavaMethod.builder()
+				.returnType("String").name("something")
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
-				.superClassName("Nothing")
+		JavaMethod method2 = EditableJavaMethod.builder()
+				.returnType("String").name("nothing")
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkString(clazz1, clazz2, differences, "Super Class Name", JavaClass::getSuperClassName);
+		checkString(method1, method2, differences, "Name", JavaMethod::getName);
 		assertEquals(1, differences.size());
-		assertEquals("Super Class Name is different!", differences.get(0));
+		assertEquals("Name is different!", differences.get(0));
 	}
 	
 	@Test
@@ -107,65 +107,53 @@ public class JavaCodeTypeTestTest{
 	
 	@Test
 	public void testCheckListSuccessBothEmpty(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
+		Javadoc doc1 = EditableJavadoc.builder()
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
+		Javadoc doc2 = EditableJavadoc.builder()
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkList(clazz1, clazz2, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, StringUtil::equals);
+		checkList(doc1, doc2, differences, "Content", Javadoc::getContent, StringUtil::equals);
 		assertTrue(differences.isEmpty());
 	}
 	
 	@Test
 	public void testCheckListFailureFirstEmpty(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
+		Javadoc doc1 = EditableJavadoc.builder()
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
-				.implementsInterfaceName("Something")
+		Javadoc doc2 = EditableJavadoc.builder()
+				.content("something")
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkList(clazz1, clazz2, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, StringUtil::equals);
+		checkList(doc1, doc2, differences, "Content", Javadoc::getContent, StringUtil::equals);
 		assertEquals(1, differences.size());
-		assertEquals("Implements Interface Names length is different!", differences.get(0));
+		assertEquals("Content length is different!", differences.get(0));
 	}
 	
 	@Test
 	public void testCheckListSuccessNotEmpty(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
-				.implementsInterfaceName("Something")
+		Javadoc doc1 = EditableJavadoc.builder()
+				.content("Something")
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
-				.implementsInterfaceName("Something")
+		Javadoc doc2 = EditableJavadoc.builder()
+				.content("Something")
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkList(clazz1, clazz2, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, StringUtil::equals);
+		checkList(doc1, doc2, differences, "Content", Javadoc::getContent, StringUtil::equals);
 		assertTrue(differences.isEmpty());
 	}
 	
 	@Test
 	public void testCheckListFailure(){
-		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
-				.implementsInterfaceName("SomethingElse")
+		Javadoc doc1 = EditableJavadoc.builder()
+				.content("SomethingElse")
 				.build();
-		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
-				.implementsInterfaceName("Something")
+		Javadoc doc2 = EditableJavadoc.builder()
+				.content("Something")
 				.build();
 		List<String> differences = new ArrayList<>();
-		checkList(clazz1, clazz2, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, StringUtil::equals);
+		checkList(doc1, doc2, differences, "Content", Javadoc::getContent, StringUtil::equals);
 		assertEquals(1, differences.size());
-		assertEquals("Implements Interface Names differs on #1!", differences.get(0));
+		assertEquals("Content differs on #1!", differences.get(0));
 	}
 	
 	@Test

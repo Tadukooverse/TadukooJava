@@ -6,6 +6,7 @@ import com.github.tadukoo.java.JavaTokens;
 import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.util.StringUtil;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	protected static final String MODIFIERS_REGEX = SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX + SINGLE_MODIFIER_REGEX;
 	
 	/** A regular expression used for tokens to match on when splitting tokens from a content String */
-	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|<|>|=|[^\\S\n]+|[^\\s(){}=]+";
+	protected static final String TOKEN_REGEX = "\n|\\(|\\)|\\{|}|<|>|=|,|[^\\S\n]+|[^\\s(){}=,]+";
 	/** A matcher to use to find whitespace (usually to skip it) */
 	protected static final Matcher WHITESPACE_MATCHER = Pattern.compile("\\s+").matcher("");
 	
@@ -100,6 +101,66 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	}
 	
 	/**
+	 * Parse the tokens from {@code currentToken} onward to get a {@link JavaType} string, where we have all the
+	 * type parameters in the String for it. We leave the parsing of that type to the caller, but return the
+	 * next token index (after the type string) as well.
+	 *
+	 * @param tokens The List of tokens to parse a type string from
+	 * @param currentToken The current token index to start at to get a type
+	 * @return A Pair of the type string and the next token index
+	 */
+	protected static Pair<String, Integer> parseOutType(List<String> tokens, int currentToken){
+		// Check that we're not already at end of tokens
+		if(currentToken >= tokens.size()){
+			return null;
+		}
+		
+		// Start grabbing type
+		String type = tokens.get(currentToken);
+		int thisToken = currentToken + 1;
+		
+		// Skip any whitespace
+		while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
+			thisToken++;
+		}
+		
+		// Check if we hit end of tokens
+		if(thisToken >= tokens.size()){
+			return null;
+		}
+		
+		// Have to handle type parameters potential
+		if(!type.contains(TYPE_PARAMETER_OPEN_TOKEN)){
+			// Check for next token being open token
+			String nextToken = tokens.get(thisToken);
+			if(nextToken.startsWith(TYPE_PARAMETER_OPEN_TOKEN)){
+				type += nextToken;
+				thisToken++;
+			}
+		}
+		
+		// If we have type parameters, have to make sure we get to the end of it
+		if(type.contains(TYPE_PARAMETER_OPEN_TOKEN)){
+			int openTokens = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_OPEN_TOKEN);
+			int closeTokens = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_CLOSE_TOKEN);
+			while(openTokens != closeTokens){
+				// Check if we hit end of tokens
+				if(thisToken >= tokens.size()){
+					return null;
+				}
+				
+				String nextToken = tokens.get(thisToken);
+				type += nextToken;
+				thisToken++;
+				openTokens = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_OPEN_TOKEN);
+				closeTokens = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_CLOSE_TOKEN);
+			}
+		}
+		
+		return Pair.of(type, thisToken);
+	}
+	
+	/**
 	 * Used to determine if we have a field or method based on the token we're looking at in parsing.
 	 * This is used in several places to determine which we're looking at, hence the need for a method to
 	 * reduce repeated code :P
@@ -110,29 +171,11 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 */
 	protected static JavaCodeTypes determineFieldOrMethod(List<String> tokens, int currentToken){
 		// Start would be a type, have to handle type parameter tokens
-		String type = tokens.get(currentToken);
-		int thisToken = currentToken + 1;
-		int openTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_OPEN_TOKEN);
-		int closeTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_CLOSE_TOKEN);
-		while(openTokenCount != closeTokenCount){
-			// Skip whitespace
-			while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){
-				thisToken++;
-			}
-			
-			// Check if we hit end of tokens
-			if(thisToken >= tokens.size()){
-				return JavaCodeTypes.UNKNOWN;
-			}
-			
-			// Add on to type
-			type += tokens.get(thisToken);
-			thisToken++;
-			
-			// Count open and close tokens again
-			openTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_OPEN_TOKEN);
-			closeTokenCount = StringUtil.countSubstringInstances(type, TYPE_PARAMETER_CLOSE_TOKEN);
+		Pair<String, Integer> typeStringAndNextToken = parseOutType(tokens, currentToken);
+		if(typeStringAndNextToken == null){
+			return JavaCodeTypes.UNKNOWN;
 		}
+		int thisToken = typeStringAndNextToken.getRight();
 		
 		// Skip whitespace
 		while(thisToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(thisToken)).matches()){

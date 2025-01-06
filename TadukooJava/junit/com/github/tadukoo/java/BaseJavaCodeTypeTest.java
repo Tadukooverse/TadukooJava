@@ -478,8 +478,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 				boolean editable, boolean isInnerClass,
 				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
-				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-				String superClassName, List<String> implementsInterfaceNames,
+				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+				JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
 				List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 				List<Pair<JavaCodeTypes, String>> innerElementsOrder){

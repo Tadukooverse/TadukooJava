@@ -34,6 +34,13 @@ import static com.github.tadukoo.util.junit.AssertionFailedErrors.buildTwoPartEr
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+/**
+ * Contains methods for testing that {@link JavaCodeType Java code types} are as expected for unit testing.
+ *
+ * @author Logan Ferree (Tadukoo)
+ * @version Beta v.0.6
+ * @since Beta v.0.5
+ */
 public class JavaCodeTypeTest{
 	
 	/**
@@ -762,10 +769,12 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedClass, actualClass, differences, "Final", JavaClass::isFinal);
 		
 		// Class Name, Extends, Implements
-		checkString(expectedClass, actualClass, differences, "Class Name", JavaClass::getClassName);
-		checkString(expectedClass, actualClass, differences, "Super Class Name", JavaClass::getSuperClassName);
-		checkList(expectedClass, actualClass, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, StringUtil::equals);
+		checkSingleSubtype(expectedClass, actualClass, differences, "Class Name",
+				JavaClass::getClassName, JavaCodeTypeTest::findTypeDifferences);
+		checkSingleSubtype(expectedClass, actualClass, differences, "Super Class Name",
+				JavaClass::getSuperClassName, JavaCodeTypeTest::findTypeDifferences);
+		checkListSubtype(expectedClass, actualClass, differences, "Implements Interface Names",
+				JavaClass::getImplementsInterfaceNames, JavaCodeTypeTest::findTypeDifferences);
 		
 		// Single Line Comments
 		checkListSubtype(expectedClass, actualClass, differences, "Single Line Comments",

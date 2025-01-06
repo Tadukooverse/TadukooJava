@@ -423,6 +423,96 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								"""
 				),
+				// With Type Parameter on class name
+				Triple.of(
+						"""
+								class Test<T>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test<T>")
+								.build(),
+						"""
+								class Test<T>{
+								\t
+								}
+								"""
+				),
+				// With Type Parameter on class name and space
+				Triple.of(
+						"""
+								class Test <T>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test<T>")
+								.build(),
+						"""
+								class Test<T>{
+								\t
+								}
+								"""
+				),
+				// With Multiple Type Parameters on class name
+				Triple.of(
+						"""
+								class Test<T, S>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test<T, S>")
+								.build(),
+						"""
+								class Test<T, S>{
+								\t
+								}
+								"""
+				),
+				// With Complex Type Parameters on class name
+				Triple.of(
+						"""
+								class Test<Map<String, Object>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test<Map<String, Object>>")
+								.build(),
+						"""
+								class Test<Map<String, Object>>{
+								\t
+								}
+								"""
+				),
+				// With Complex Type Parameters on class name 2
+				Triple.of(
+						"""
+								class Test<Character, Map<Character, ?>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test<Character, Map<Character, ?>>")
+								.build(),
+						"""
+								class Test<Character, Map<Character, ?>>{
+								\t
+								}
+								"""
+				),
+				// With Complex Type Parameters on class name 3
+				Triple.of(
+						"""
+								class Test<? extends List<String>, Object>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test<? extends List<String>, Object>")
+								.build(),
+						"""
+								class Test<? extends List<String>, Object>{
+								\t
+								}
+								"""
+				),
 				// With Super Class
 				Triple.of(
 						"""
@@ -435,6 +525,102 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								.build(),
 						"""
 								class Test extends Derp{
+								\t
+								}
+								"""
+				),
+				// With Super Class with Type Parameter
+				Triple.of(
+						"""
+								class Test extends Derp<T>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.superClassName("Derp<T>")
+								.build(),
+						"""
+								class Test extends Derp<T>{
+								\t
+								}
+								"""
+				),
+				// With Super Class with Multiple Type Parameters
+				Triple.of(
+						"""
+								class Test extends Derp<T, S>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.superClassName("Derp<T, S>")
+								.build(),
+						"""
+								class Test extends Derp<T, S>{
+								\t
+								}
+								"""
+				),
+				// With Super Class with Space Before Type Parameters
+				Triple.of(
+						"""
+								class Test extends Derp <T, S>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.superClassName("Derp<T, S>")
+								.build(),
+						"""
+								class Test extends Derp<T, S>{
+								\t
+								}
+								"""
+				),
+				// With Super Class with Complex Type
+				Triple.of(
+						"""
+								class Test extends Derp<Map<String, Object>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.superClassName("Derp<Map<String, Object>>")
+								.build(),
+						"""
+								class Test extends Derp<Map<String, Object>>{
+								\t
+								}
+								"""
+				),
+				// With Super Class with Complex Type 2
+				Triple.of(
+						"""
+								class Test extends Derp<Character, Map<Character, ?>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.superClassName("Derp<Character, Map<Character, ?>>")
+								.build(),
+						"""
+								class Test extends Derp<Character, Map<Character, ?>>{
+								\t
+								}
+								"""
+				),
+				// With Super Class with Complex Type 3
+				Triple.of(
+						"""
+								class Test extends Derp<? extends List<String>, Object>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.superClassName("Derp<? extends List<String>, Object>")
+								.build(),
+						"""
+								class Test extends Derp<? extends List<String>, Object>{
 								\t
 								}
 								"""
@@ -455,10 +641,192 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								"""
 				),
+				// With Implements Interface With Type Parameter
+				Triple.of(
+						"""
+								class Test implements Derp<String>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<String>")
+								.build(),
+						"""
+								class Test implements Derp<String>{
+								\t
+								}
+								"""
+				),
+				// With Implements Interface With Multiple Type Parameters
+				Triple.of(
+						"""
+								class Test implements Derp<String, Object>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<String, Object>")
+								.build(),
+						"""
+								class Test implements Derp<String, Object>{
+								\t
+								}
+								"""
+				),
+				// With Implements Interface With Complex Type
+				Triple.of(
+						"""
+								class Test implements Derp<Map<String, Object>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<Map<String, Object>>")
+								.build(),
+						"""
+								class Test implements Derp<Map<String, Object>>{
+								\t
+								}
+								"""
+				),
+				// With Implements Interface With Complex Type 2
+				Triple.of(
+						"""
+								class Test implements Derp<Character, Map<Character, ?>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<Character, Map<Character, ?>>")
+								.build(),
+						"""
+								class Test implements Derp<Character, Map<Character, ?>>{
+								\t
+								}
+								"""
+				),
+				// With Implements Interface With Complex Type 3
+				Triple.of(
+						"""
+								class Test implements Derp<? extends List<String>, Object>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<? extends List<String>, Object>")
+								.build(),
+						"""
+								class Test implements Derp<? extends List<String>, Object>{
+								\t
+								}
+								"""
+				),
 				// With Multiple Implements Interfaces
 				Triple.of(
 						"""
 								class Test implements Derp, Blah{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp")
+								.implementsInterfaceName("Blah")
+								.build(),
+						"""
+								class Test implements Derp, Blah{
+								\t
+								}
+								"""
+				),
+				// With Multiple Implements Interfaces With Type Parameter
+				Triple.of(
+						"""
+								class Test implements Derp<String>, Blah<String>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<String>")
+								.implementsInterfaceName("Blah<String>")
+								.build(),
+						"""
+								class Test implements Derp<String>, Blah<String>{
+								\t
+								}
+								"""
+				),
+				// With Multiple Implements Interfaces With Multiple Type Parameters
+				Triple.of(
+						"""
+								class Test implements Derp<String, Object>, Blah<String, Object>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<String, Object>")
+								.implementsInterfaceName("Blah<String, Object>")
+								.build(),
+						"""
+								class Test implements Derp<String, Object>, Blah<String, Object>{
+								\t
+								}
+								"""
+				),
+				// With Multiple Implements Interfaces With Complex Type
+				Triple.of(
+						"""
+								class Test implements Derp<Map<String, Object>>, Blah<Map<String, Object>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<Map<String, Object>>")
+								.implementsInterfaceName("Blah<Map<String, Object>>")
+								.build(),
+						"""
+								class Test implements Derp<Map<String, Object>>, Blah<Map<String, Object>>{
+								\t
+								}
+								"""
+				),
+				// With Multiple Implements Interfaces With Complex Type 2
+				Triple.of(
+						"""
+								class Test implements Derp<Character, Map<Character, ?>>, Blah<Character, Map<Character, ?>>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<Character, Map<Character, ?>>")
+								.implementsInterfaceName("Blah<Character, Map<Character, ?>>")
+								.build(),
+						"""
+								class Test implements Derp<Character, Map<Character, ?>>, Blah<Character, Map<Character, ?>>{
+								\t
+								}
+								"""
+				),
+				// With Multiple Implements Interfaces With Complex Type 3
+				Triple.of(
+						"""
+								class Test implements Derp<? extends List<String>, Object>, Blah<? extends List<String>, Object>{
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.implementsInterfaceName("Derp<? extends List<String>, Object>")
+								.implementsInterfaceName("Blah<? extends List<String>, Object>")
+								.build(),
+						"""
+								class Test implements Derp<? extends List<String>, Object>, Blah<? extends List<String>, Object>{
+								\t
+								}
+								"""
+				),
+				// With Multiple Implements Interfaces no space around comma
+				Triple.of(
+						"""
+								class Test implements Derp,Blah{
 								}
 								""",
 						EditableJavaClass.builder()

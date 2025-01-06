@@ -28,6 +28,7 @@ import com.github.tadukoo.java.parsing.comment.JavadocParser;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
 import com.github.tadukoo.util.functional.function.ThrowingFunction2;
+import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,8 @@ import java.util.List;
  * A parser used for parsing {@link JavaClass classes in Java}
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public class JavaClassParser extends AbstractJavaParser{
 	
@@ -189,11 +191,12 @@ public class JavaClassParser extends AbstractJavaParser{
 		}
 		
 		// Next token is class name
-		if(currentToken >= tokens.size()){
+		Pair<String, Integer> typeAndNextToken = parseOutType(tokens, currentToken);
+		if(currentToken >= tokens.size() || typeAndNextToken == null){
 			throw new JavaParsingException(JavaCodeTypes.CLASS, "Failed to find class name!");
 		}
-		String className = tokens.get(currentToken);
-		currentToken++;
+		String className = typeAndNextToken.getLeft();
+		currentToken = typeAndNextToken.getRight();
 		
 		// Parse the rest for items within the class
 		boolean hitBlockOpenToken = false;
@@ -208,7 +211,8 @@ public class JavaClassParser extends AbstractJavaParser{
 			if(StringUtil.equals(token, EXTENDS_TOKEN)){
 				// If we already hit the block open token, there's a problem
 				if(hitBlockOpenToken){
-					errors.add("found '" + EXTENDS_TOKEN + "' after hitting the block open token!");
+					throw new JavaParsingException(JavaCodeTypes.CLASS,
+							"found '" + EXTENDS_TOKEN + "' after hitting the block open token!");
 				}
 				
 				// Skip whitespace
@@ -218,18 +222,19 @@ public class JavaClassParser extends AbstractJavaParser{
 				}
 				
 				// Class has a super class
-				if(currentToken >= tokens.size()){
+				Pair<String, Integer> extendsTypeAndNextToken = parseOutType(tokens, currentToken);
+				if(currentToken >= tokens.size() || extendsTypeAndNextToken == null){
 					throw new JavaParsingException(JavaCodeTypes.CLASS, "Failed to find super class name after '" +
 							EXTENDS_TOKEN + "'!");
 				}
-				superClassName = tokens.get(currentToken);
-				
-				currentToken++;
+				superClassName = extendsTypeAndNextToken.getLeft();
+				currentToken = extendsTypeAndNextToken.getRight();
 				continue;
 			}else if(StringUtil.equals(token, IMPLEMENTS_TOKEN)){
 				// If we already hit the block open token, there's a problem
 				if(hitBlockOpenToken){
-					errors.add("found '" + IMPLEMENTS_TOKEN + "' after hitting the block open token!");
+					throw new JavaParsingException(JavaCodeTypes.CLASS,
+							"found '" + IMPLEMENTS_TOKEN + "' after hitting the block open token!");
 				}
 				
 				// Skip whitespace
@@ -241,12 +246,13 @@ public class JavaClassParser extends AbstractJavaParser{
 				boolean continueInterfaces = true;
 				while(continueInterfaces){
 					// Class has an interface it implements
-					if(currentToken >= tokens.size()){
+					Pair<String, Integer> interfaceTypeAndNextToken = parseOutType(tokens, currentToken);
+					if(currentToken >= tokens.size() || interfaceTypeAndNextToken == null){
 						throw new JavaParsingException(JavaCodeTypes.CLASS, "Failed to find implements interface name " +
 								"after '" + IMPLEMENTS_TOKEN + "' or '" + LIST_SEPARATOR_TOKEN + "'!");
 					}
-					String interfaceName = tokens.get(currentToken);
-					currentToken++;
+					String interfaceName = interfaceTypeAndNextToken.getLeft();
+					currentToken = interfaceTypeAndNextToken.getRight();
 					// Remove starting comma if it has it (unless first one, in which case it's an error)
 					if(interfaceName.startsWith(LIST_SEPARATOR_TOKEN)){
 						if(implementsInterfaces.isEmpty()){
@@ -336,9 +342,14 @@ public class JavaClassParser extends AbstractJavaParser{
 		
 		// Start building a JavaClass
 		JavaClassBuilder<EditableJavaClass> builder = EditableJavaClass.builder()
-				.className(className)
-				.superClassName(superClassName)
-				.implementsInterfaceNames(implementsInterfaces);
+				.className(className);
+		// Only add extends and implements if we have them
+		if(StringUtil.isNotBlank(superClassName)){
+			builder.superClassName(superClassName);
+		}
+		if(ListUtil.isNotBlank(implementsInterfaces)){
+			builder.implementsInterfaceNameTexts(implementsInterfaces);
+		}
 		Javadoc doc = null;
 		List<JavaAnnotation> annotations = new ArrayList<>();
 		for(JavaCodeType type: itemsInClass){

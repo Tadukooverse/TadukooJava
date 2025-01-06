@@ -1,6 +1,7 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
@@ -14,6 +15,7 @@ import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.SetUtil;
 import com.github.tadukoo.util.StringUtil;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Java Class Builder is used to create a {@link JavaClass}. It has the following parameters:
@@ -150,12 +153,12 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected boolean isStatic = false;
 	/** Whether the class is final or not */
 	protected boolean isFinal = false;
-	/** The name of the class */
-	protected String className = null;
-	/** The name of the class this one extends (can be null) */
-	protected String superClassName = null;
-	/** The names of interfaces the class implements */
-	protected List<String> implementsInterfaceNames = new ArrayList<>();
+	/** The name of the class, along with type parameters to form a {@link JavaType} */
+	protected JavaType className = null;
+	/** The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType} */
+	protected JavaType superClassName = null;
+	/** The names of interfaces this class implements, along with type parameters to form a {@link JavaType} */
+	protected List<JavaType> implementsInterfaceNames = new ArrayList<>();
 	/** The {@link JavaSingleLineComment single-line comments} inside the class */
 	protected List<JavaSingleLineComment> singleLineComments = new ArrayList<>();
 	/** The {@link JavaMultiLineComment multi-line comments} inside the class */
@@ -387,38 +390,81 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
-	 * @param className The name of the class
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> className(String className){
+	public JavaClassBuilder<ClassType> className(JavaType className){
 		this.className = className;
 		return this;
 	}
 	
 	/**
-	 * @param superClassName The name of the class this one extends (may be null)
+	 * @param classNameText The text to parse for name of the class, along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> superClassName(String superClassName){
+	public JavaClassBuilder<ClassType> className(String classNameText){
+		this.className = FullJavaParser.parseJavaType(classNameText);
+		return this;
+	}
+	
+	/**
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> superClassName(JavaType superClassName){
 		this.superClassName = superClassName;
 		return this;
 	}
 	
 	/**
-	 * @param implementsInterfaceName The name of an interface this class implements
+	 * @param superClassNameText The text to parse for the name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> implementsInterfaceName(String implementsInterfaceName){
+	public JavaClassBuilder<ClassType> superClassName(String superClassNameText){
+		this.superClassName = FullJavaParser.parseJavaType(superClassNameText);
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceName The name of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceName(JavaType implementsInterfaceName){
 		implementsInterfaceNames.add(implementsInterfaceName);
 		return this;
 	}
 	
 	/**
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param implementsInterfaceNameText The text for the name of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> implementsInterfaceNames(List<String> implementsInterfaceNames){
+	public JavaClassBuilder<ClassType> implementsInterfaceName(String implementsInterfaceNameText){
+		implementsInterfaceNames.add(FullJavaParser.parseJavaType(implementsInterfaceNameText));
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceNames(List<JavaType> implementsInterfaceNames){
 		this.implementsInterfaceNames = implementsInterfaceNames;
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceNameTexts The text for the names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
+		this.implementsInterfaceNames = implementsInterfaceNameTexts.stream()
+				.map(FullJavaParser::parseJavaType).collect(Collectors.toList());
 		return this;
 	}
 	
@@ -507,7 +553,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	public JavaClassBuilder<ClassType> innerClasses(List<JavaClass> innerClasses){
 		this.innerClasses = innerClasses;
 		for(JavaClass innerClass: innerClasses){
-			innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getClassName()));
+			innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getSimpleClassName()));
 		}
 		return this;
 	}
@@ -518,7 +564,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 */
 	public JavaClassBuilder<ClassType> innerClass(JavaClass innerClass){
 		this.innerClasses.add(innerClass);
-		innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getClassName()));
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getSimpleClassName()));
 		return this;
 	}
 	
@@ -589,7 +635,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		}
 		
 		// ClassName required
-		if(StringUtil.isBlank(className)){
+		if(className == null){
 			errors.add("Must specify className!");
 		}
 		
@@ -616,7 +662,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		if(ListUtil.isNotBlank(innerElementsOrder)){
 			// Count comments usage
 			int numSingleLineComments = singleLineComments.size(), numMultiLineComments = multiLineComments.size();
-			Set<String> innerClassNames = SetUtil.createOrderedSet(innerClasses.stream().map(JavaClass::getClassName)
+			Set<String> innerClassNames = SetUtil.createOrderedSet(innerClasses.stream().map(JavaClass::getSimpleClassName)
 					.toList().toArray(new String[0]));
 			Set<String> fieldNames = SetUtil.createOrderedSet(fields.stream().map(JavaField::getName).toList()
 					.toArray(new String[0]));
