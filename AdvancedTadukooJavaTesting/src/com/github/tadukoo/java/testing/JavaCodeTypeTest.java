@@ -19,10 +19,9 @@ import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.function.ThrowingFunction2;
-import com.github.tadukoo.util.functional.predicate.ThrowingPredicate2;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.function.Function2;
+import com.github.tadukoo.util.functional.predicate.Predicate2;
 import com.github.tadukoo.util.tuple.Pair;
 import org.opentest4j.AssertionFailedError;
 
@@ -56,7 +55,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType> void checkBoolean(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, Boolean, NoException> booleanMethod){
+			Function<Type, Boolean> booleanMethod){
 		if(booleanMethod.apply(expectedObject) != booleanMethod.apply(actualObject)){
 			differences.add(valueName + " is different!");
 		}
@@ -75,7 +74,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType> void checkString(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, String, NoException> stringMethod){
+			Function<Type, String> stringMethod){
 		if(StringUtil.notEquals(stringMethod.apply(expectedObject), stringMethod.apply(actualObject)) &&
 				!StringUtil.allBlank(stringMethod.apply(expectedObject), stringMethod.apply(actualObject))){
 			differences.add(valueName + " is different!");
@@ -97,8 +96,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, ListType> void checkList(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, List<ListType>, NoException> listMethod,
-			ThrowingPredicate2<ListType, ListType, NoException> listItemCompareMethod){
+			Function<Type, List<ListType>> listMethod, Predicate2<ListType, ListType> listItemCompareMethod){
 		List<ListType> list1 = listMethod.apply(expectedObject), list2 = listMethod.apply(actualObject);
 		if(list1.size() != list2.size()){
 			differences.add(valueName + " length is different!");
@@ -124,7 +122,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, E extends Enum<?>> void checkEnum(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, E, NoException> enumMethod){
+			Function<Type, E> enumMethod){
 		if(enumMethod.apply(expectedObject) != enumMethod.apply(actualObject)){
 			differences.add(valueName + " is different!");
 		}
@@ -145,8 +143,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, Subtype extends JavaCodeType> void checkSingleSubtype(
 			Type expectedObject, Type actualObject, List<String> differences, String subtypeName,
-			ThrowingFunction<Type, Subtype, NoException> subtypeMethod,
-			ThrowingFunction2<Subtype, Subtype, List<String>, NoException> subtypeDifferencesMethod){
+			Function<Type, Subtype> subtypeMethod, Function2<Subtype, Subtype, List<String>> subtypeDifferencesMethod){
 		Subtype subtype1 = subtypeMethod.apply(expectedObject), subtype2 = subtypeMethod.apply(actualObject);
 		List<String> subtypeDifferences = subtypeDifferencesMethod.apply(subtype1, subtype2);
 		if(ListUtil.isNotBlank(subtypeDifferences)){
@@ -170,8 +167,8 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, Subtype extends JavaCodeType> void checkListSubtype(
 			Type expectedObject, Type actualObject, List<String> differences, String subtypeName,
-			ThrowingFunction<Type, List<Subtype>, NoException> subtypeListMethod,
-			ThrowingFunction2<Subtype, Subtype, List<String>, NoException> subtypeDifferencesMethod){
+			Function<Type, List<Subtype>> subtypeListMethod,
+			Function2<Subtype, Subtype, List<String>> subtypeDifferencesMethod){
 		List<Subtype> subtypeList1 = subtypeListMethod.apply(expectedObject),
 				subtypeList2 = subtypeListMethod.apply(actualObject);
 		if(subtypeList1.size() != subtypeList2.size()){
@@ -216,7 +213,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType> void baseAssertEquals(
 			Type expectedObject, Type actualObject,
-			ThrowingFunction2<Type, Type, List<String>, NoException> differencesMethod){
+			Function2<Type, Type, List<String>> differencesMethod){
 		// Find any differences
 		List<String> differences = differencesMethod.apply(expectedObject, actualObject);
 		// If there are differences, throw an assertion error with the differences

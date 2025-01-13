@@ -29,9 +29,8 @@ import com.github.tadukoo.java.method.*;
 import com.github.tadukoo.java.packagedeclaration.*;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,7 +52,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 	
 	@ParameterizedTest
 	@MethodSource("getEditableData")
-	public void testIsEditable(CodeType type, boolean editable, ThrowingFunction<CodeType, Boolean, NoException> editableFunc){
+	public void testIsEditable(CodeType type, boolean editable, Function<CodeType, Boolean> editableFunc){
 		assertEquals(editable, editableFunc.apply(type));
 	}
 	
@@ -89,13 +88,13 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 	
 	protected Stream<Arguments> getBuilderErrorData(){
 		return Stream.of(
-				Arguments.of((ThrowingSupplier<CodeType, NoException>) () -> null, null)
+				Arguments.of((Supplier<CodeType>) () -> null, null)
 		);
 	}
 	
 	@ParameterizedTest
 	@MethodSource("getBuilderErrorData")
-	public void testBuilderError(ThrowingSupplier<CodeType, NoException> buildFunc, String errorText){
+	public void testBuilderError(Supplier<CodeType> buildFunc, String errorText){
 		// Skip for cases where we don't have real tests
 		if(StringUtil.isBlank(errorText)){
 			return;
@@ -137,7 +136,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>> packageDeclarationBuilders =
+	protected static final List<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>> packageDeclarationBuilders =
 			ListUtil.createList(
 					UneditableJavaPackageDeclaration::builder,
 					EditableJavaPackageDeclaration::builder,
@@ -179,7 +178,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>> importStatementBuilders =
+	protected static final List<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>> importStatementBuilders =
 			ListUtil.createList(
 					UneditableJavaImportStatement::builder,
 					EditableJavaImportStatement::builder,
@@ -220,7 +219,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>> singleLineCommentBuilders =
+	protected static final List<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>> singleLineCommentBuilders =
 			ListUtil.createList(
 					UneditableJavaSingleLineComment::builder,
 					EditableJavaSingleLineComment::builder,
@@ -261,7 +260,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>> multiLineCommentBuilders =
+	protected static final List<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>> multiLineCommentBuilders =
 			ListUtil.createList(
 					UneditableJavaMultiLineComment::builder,
 					EditableJavaMultiLineComment::builder,
@@ -304,7 +303,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>> javadocBuilders =
+	protected static final List<Supplier<JavadocBuilder<? extends Javadoc>>> javadocBuilders =
 			ListUtil.createList(
 					UneditableJavadoc::builder,
 					EditableJavadoc::builder,
@@ -345,7 +344,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>> annotationBuilders =
+	protected static final List<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>> annotationBuilders =
 			ListUtil.createList(
 					UneditableJavaAnnotation::builder,
 					EditableJavaAnnotation::builder,
@@ -398,7 +397,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>> fieldBuilders =
+	protected static final List<Supplier<JavaFieldBuilder<? extends JavaField>>> fieldBuilders =
 			ListUtil.createList(
 					UneditableJavaField::builder,
 					EditableJavaField::builder,
@@ -455,7 +454,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>> methodBuilders =
+	protected static final List<Supplier<JavaMethodBuilder<? extends JavaMethod>>> methodBuilders =
 			ListUtil.createList(
 					UneditableJavaMethod::builder,
 					EditableJavaMethod::builder,
@@ -542,7 +541,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>> classBuilders =
+	protected static final List<Supplier<JavaClassBuilder<? extends JavaClass>>> classBuilders =
 			ListUtil.createList(
 					UneditableJavaClass::builder,
 					EditableJavaClass::builder,

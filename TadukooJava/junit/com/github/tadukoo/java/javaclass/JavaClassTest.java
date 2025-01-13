@@ -37,11 +37,10 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.function.ThrowingFunction3;
-import com.github.tadukoo.util.functional.function.ThrowingFunction9;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.function.Function3;
+import com.github.tadukoo.util.functional.function.Function9;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.map.MapUtil;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
@@ -68,68 +67,65 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.className("Test")
 								.build(),
 						false,
-						(ThrowingFunction<UneditableJavaClass, Boolean, NoException>)
-								UneditableJavaClass::isEditable
+						(Function<UneditableJavaClass, Boolean>) UneditableJavaClass::isEditable
 				),
 				Arguments.of(
 						EditableJavaClass.builder()
 								.className("Test")
 								.build(),
 						true,
-						(ThrowingFunction<EditableJavaClass, Boolean, NoException>)
-								EditableJavaClass::isEditable
+						(Function<EditableJavaClass, Boolean>) EditableJavaClass::isEditable
 				)
 		);
 	}
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						Object, NoException>,
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						Object, NoException>
+		List<Pair<Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Object>,
+				Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Object>
 				>> comparisons = ListUtil.<Pair<
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						Object, NoException>,
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						Object, NoException>>>createList(
+				Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Object>,
+				Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Object>>>createList(
 				// Java Code Type
 				Pair.of(
 						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
@@ -1282,28 +1278,28 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
 		List<Pair<
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						Object, NoException>,
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						Object, NoException>
+				Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Object>,
+				Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Object>
 				>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
@@ -1345,19 +1341,19 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 	@Override
 	protected Stream<Arguments> getStringData(){
 		List<Triple<
-				ThrowingFunction9<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						ThrowingSupplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						JavaClass, NoException>,
+				Function9<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
+						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						JavaClass>,
 				String,
-				ThrowingFunction9<String, String, String, String, String, String, String, String, String, String, NoException>
+				Function9<String, String, String, String, String, String, String, String, String, String>
 				>> comparisons = ListUtil.createList(
 				// Simple
 				Triple.of(
@@ -2766,12 +2762,11 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaClassBuilder<? extends JavaClass>, NoException>,
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<? extends JavaClass, NoException>, NoException>,
+		List<Pair<Function3<
+						Supplier<JavaClassBuilder<? extends JavaClass>>,
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<? extends JavaClass>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Null Visibility
 				Pair.of(
@@ -3210,7 +3205,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				)
 		);
 		
-		List<Pair<ThrowingSupplier<JavaClass, NoException>, String>> editableRelatedErrors = ListUtil.createList(
+		List<Pair<Supplier<JavaClass>, String>> editableRelatedErrors = ListUtil.createList(
 				// Editable Package Declaration in Uneditable JavaClass
 				Pair.of(
 						() -> UneditableJavaClass.builder()

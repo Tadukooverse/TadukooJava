@@ -4,8 +4,7 @@ import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
+import com.github.tadukoo.util.functional.function.Function;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -233,29 +232,25 @@ public class AbstractJavaParserTest{
 				// Not a type parameter
 				Arguments.of(
 						"Something extends Something extends Yes",
-						(ThrowingFunction<String, ?, NoException>)
-								AbstractJavaParser::parseJavaTypeParameters,
+						(Function<String, ?>) AbstractJavaParser::parseJavaTypeParameters,
 						"'Something extends Something extends Yes' is not a valid type parameter"
 				),
 				// Failed to parse remaining type parameter content
 				Arguments.of(
 						"Map<String,Object",
-						(ThrowingFunction<String, ?, NoException>)
-								AbstractJavaParser::parseJavaTypeParameters,
+						(Function<String, ?>) AbstractJavaParser::parseJavaTypeParameters,
 						"Failed to parse remaining type parameter content: 'Map<String,Object'"
 				),
 				// Not a type
 				Arguments.of(
 						"Something>Truly Garbage<",
-						(ThrowingFunction<String, ?, NoException>)
-								AbstractJavaParser::parseJavaType,
+						(Function<String, ?>) AbstractJavaParser::parseJavaType,
 						"'Something>Truly Garbage<' is not a valid type"
 				),
 				// Not a parameter
 				Arguments.of(
 						"Something>Truly Garbage< text ...",
-						(ThrowingFunction<String, ?, NoException>)
-								AbstractJavaParser::parseJavaParameter,
+						(Function<String, ?>) AbstractJavaParser::parseJavaParameter,
 						"'Something>Truly Garbage< text ...' is not a valid parameter"
 				)
 		);
@@ -263,7 +258,7 @@ public class AbstractJavaParserTest{
 	
 	@ParameterizedTest
 	@MethodSource("getErrorData")
-	public void testErrors(String text, ThrowingFunction<String, ?, NoException> method, String error){
+	public void testErrors(String text, Function<String, ?> method, String error){
 		try{
 			method.apply(text);
 			fail();

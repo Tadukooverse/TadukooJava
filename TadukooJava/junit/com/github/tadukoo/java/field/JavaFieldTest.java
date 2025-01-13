@@ -13,10 +13,9 @@ import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.function.ThrowingFunction3;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.function.Function3;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -37,27 +36,25 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				Arguments.of(UneditableJavaField.builder()
 						.type("int").name("test")
 						.build(), false,
-						(ThrowingFunction<UneditableJavaField, Boolean, NoException>) UneditableJavaField::isEditable),
+						(Function<UneditableJavaField, Boolean>) UneditableJavaField::isEditable),
 				Arguments.of(EditableJavaField.builder()
 						.type("int").name("test")
 						.build(), true,
-						(ThrowingFunction<EditableJavaField, Boolean, NoException>) EditableJavaField::isEditable)
+						(Function<EditableJavaField, Boolean>) EditableJavaField::isEditable)
 		);
 	}
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>,
-				ThrowingFunction3<
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function3<
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
+				Function3<
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						(builder, javadocBuilder, annotationBuilder) -> JavaCodeTypes.FIELD,
@@ -316,17 +313,15 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>,
-				ThrowingFunction3<
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function3<
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
+				Function3<
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
 						(builder, javadocBuilder, annotationBuilder) -> builder.get()
@@ -369,14 +364,13 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						JavaField, NoException>,
+		List<Triple<Function3<
+						Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						JavaField>,
 				String,
-				ThrowingFunction3<String, String, String, String, NoException>>> fieldMakersAndStrings = ListUtil.createList(
+				Function3<String, String, String, String>>> fieldMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						(builder, javadocBuilder, annotationBuilder) -> builder.get()
@@ -569,9 +563,8 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaFieldBuilder<? extends JavaField>, NoException>,
-						ThrowingSupplier<? extends JavaField, NoException>, NoException>,
+		List<Pair<Function<Supplier<JavaFieldBuilder<? extends JavaField>>,
+						Supplier<? extends JavaField>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Null Visibility
 				Pair.of(
@@ -607,7 +600,7 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				)
 		);
 		
-		List<Pair<ThrowingSupplier<JavaField, NoException>, String>> editableRelatedErrors = ListUtil.createList(
+		List<Pair<Supplier<JavaField>, String>> editableRelatedErrors = ListUtil.createList(
 				// Editable Javadoc in Uneditable JavaField
 				Pair.of(
 						() -> UneditableJavaField.builder()

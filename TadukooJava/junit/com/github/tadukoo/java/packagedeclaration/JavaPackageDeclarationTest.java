@@ -3,9 +3,8 @@ package com.github.tadukoo.java.packagedeclaration;
 import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -24,25 +23,21 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 				Arguments.of(
 						UneditableJavaPackageDeclaration.builder().packageName("com.example").build(),
 						false,
-						(ThrowingFunction<UneditableJavaPackageDeclaration, Boolean, NoException>)
-								UneditableJavaPackageDeclaration::isEditable
+						(Function<UneditableJavaPackageDeclaration, Boolean>) UneditableJavaPackageDeclaration::isEditable
 				),
 				Arguments.of(
 						EditableJavaPackageDeclaration.builder().packageName("com.example").build(),
 						true,
-						(ThrowingFunction<EditableJavaPackageDeclaration, Boolean, NoException>)
-								EditableJavaPackageDeclaration::isEditable
+						(Function<EditableJavaPackageDeclaration, Boolean>) EditableJavaPackageDeclaration::isEditable
 				)
 		);
 	}
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>,
+				Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.PACKAGE_DECLARATION,
@@ -88,11 +83,9 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>,
+				Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
 						builder -> builder.get()
@@ -119,12 +112,10 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				ThrowingFunction<
-						ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						JavaPackageDeclaration, NoException>,
+		List<Triple<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+					JavaPackageDeclaration>,
 				String,
-				ThrowingFunction<String, String, NoException>>> commentMakersAndStrings = ListUtil.createList(
+				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						builder -> builder.get()
@@ -147,9 +138,8 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>, NoException>,
-						ThrowingSupplier<? extends JavaPackageDeclaration, NoException>, NoException>,
+		List<Pair<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
+						Supplier<? extends JavaPackageDeclaration>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Missing Package Name
 				Pair.of(

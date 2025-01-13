@@ -3,9 +3,8 @@ package com.github.tadukoo.java.importstatement;
 import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 								.importName("com.example")
 								.build(),
 						false,
-						(ThrowingFunction<UneditableJavaImportStatement, Boolean, NoException>)
+						(Function<UneditableJavaImportStatement, Boolean>)
 								UneditableJavaImportStatement::isEditable
 				),
 				Arguments.of(
@@ -35,7 +34,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 								.importName("com.example")
 								.build(),
 						true,
-						(ThrowingFunction<EditableJavaImportStatement, Boolean, NoException>)
+						(Function<EditableJavaImportStatement, Boolean>)
 								EditableJavaImportStatement::isEditable
 				)
 		);
@@ -44,10 +43,9 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 	@Override
 	protected Stream<Arguments> getEqualsData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>,
+				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.IMPORT_STATEMENT,
@@ -124,10 +122,9 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>,
+				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
 						builder -> builder.get()
@@ -156,11 +153,9 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 	@Override
 	protected Stream<Arguments> getStringData(){
 		List<Triple<
-				ThrowingFunction<
-						ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						JavaImportStatement, NoException>,
+				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, JavaImportStatement>,
 				String,
-				ThrowingFunction<String, String, NoException>>> commentMakersAndStrings = ListUtil.createList(
+				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						builder -> builder.get()
@@ -197,8 +192,8 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaImportStatementBuilder<? extends JavaImportStatement>, NoException>,
-						ThrowingSupplier<? extends JavaImportStatement, NoException>, NoException>,
+				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
+						Supplier<? extends JavaImportStatement>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Missing Import Name
 				Pair.of(

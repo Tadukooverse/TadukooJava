@@ -4,9 +4,8 @@ import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.map.MapUtil;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
@@ -28,23 +27,20 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				Arguments.of(UneditableJavaAnnotation.builder()
 						.name("Test")
 						.build(), false,
-						(ThrowingFunction<UneditableJavaAnnotation, Boolean, NoException>)
-								UneditableJavaAnnotation::isEditable),
+						(Function<UneditableJavaAnnotation, Boolean>) UneditableJavaAnnotation::isEditable),
 				Arguments.of(EditableJavaAnnotation.builder()
 						.name("Test")
 						.build(), true,
-						(ThrowingFunction<EditableJavaAnnotation, Boolean, NoException>)
-								EditableJavaAnnotation::isEditable)
+						(Function<EditableJavaAnnotation, Boolean>) EditableJavaAnnotation::isEditable)
 		);
 	}
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
+				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Get Type
 				Pair.of(
 						builder -> JavaCodeTypes.ANNOTATION,
@@ -178,10 +174,9 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
+				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Not Equal
 				Pair.of(
 						builder -> builder.get()
@@ -218,12 +213,9 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				ThrowingFunction<
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						JavaAnnotation, NoException>,
+		List<Triple<Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, JavaAnnotation>,
 				String,
-				ThrowingFunction<String, String, NoException>>> annotationMakersAndStrings = ListUtil.createList(
+				Function<String, String>>> annotationMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						builder -> builder.get()
@@ -332,9 +324,8 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						ThrowingSupplier<? extends JavaAnnotation, NoException>, NoException>,
+		List<Pair<Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Supplier<? extends JavaAnnotation>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Missing Name
 				Pair.of(

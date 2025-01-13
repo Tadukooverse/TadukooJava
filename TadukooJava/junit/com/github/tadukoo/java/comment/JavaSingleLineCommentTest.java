@@ -3,9 +3,8 @@ package com.github.tadukoo.java.comment;
 import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -23,11 +22,11 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 		return Stream.of(
 				Arguments.of(UneditableJavaSingleLineComment.builder()
 						.build(), false,
-						(ThrowingFunction<UneditableJavaSingleLineComment, Boolean, NoException>)
+						(Function<UneditableJavaSingleLineComment, Boolean>)
 								UneditableJavaSingleLineComment::isEditable),
 				Arguments.of(EditableJavaSingleLineComment.builder()
 						.build(), true,
-						(ThrowingFunction<EditableJavaSingleLineComment, Boolean, NoException>)
+						(Function<EditableJavaSingleLineComment, Boolean>)
 								EditableJavaSingleLineComment::isEditable)
 		);
 	}
@@ -35,10 +34,9 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 	@Override
 	protected Stream<Arguments> getEqualsData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>,
+				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.SINGLE_LINE_COMMENT,
@@ -97,10 +95,9 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
 		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>,
+				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>>>
+				comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
 						builder -> builder.get()
@@ -135,11 +132,9 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 	@Override
 	protected Stream<Arguments> getStringData(){
 		List<Triple<
-				ThrowingFunction<
-						ThrowingSupplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>, NoException>,
-						JavaSingleLineComment, NoException>,
+				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, JavaSingleLineComment>,
 				String,
-				ThrowingFunction<String, String, NoException>>> commentMakersAndStrings = ListUtil.createList(
+				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						builder -> builder.get()

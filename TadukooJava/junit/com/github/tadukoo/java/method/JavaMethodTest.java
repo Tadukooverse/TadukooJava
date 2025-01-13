@@ -10,10 +10,9 @@ import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.function.ThrowingFunction3;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.function.Function3;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -37,33 +36,30 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								.returnType("int")
 								.build(),
 						false,
-						(ThrowingFunction<UneditableJavaMethod, Boolean, NoException>)
-								UneditableJavaMethod::isEditable
+						(Function<UneditableJavaMethod, Boolean>) UneditableJavaMethod::isEditable
 				),
 				Arguments.of(
 						EditableJavaMethod.builder()
 								.returnType("int")
 								.build(),
 						true,
-						(ThrowingFunction<EditableJavaMethod, Boolean, NoException>)
-								EditableJavaMethod::isEditable
+						(Function<EditableJavaMethod, Boolean>) EditableJavaMethod::isEditable
 				)
 		);
 	}
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>,
-				ThrowingFunction3<
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function3<
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Object>,
+				Function3<
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						(builder, javadocBuilder, annotationBuilder) -> JavaCodeTypes.METHOD,
@@ -495,17 +491,16 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>,
-				ThrowingFunction3<
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function3<
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Object>,
+				Function3<
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						Object>>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
 						(builder, javadocBuilder, annotationBuilder) -> builder.get().returnType("int")
@@ -554,14 +549,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				ThrowingFunction3<
-						ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						ThrowingSupplier<JavaAnnotationBuilder<? extends JavaAnnotation>, NoException>,
-						JavaMethod, NoException>,
+		List<Triple<Function3<
+						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<JavadocBuilder<? extends Javadoc>>,
+						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
+						JavaMethod>,
 				String,
-				ThrowingFunction3<String, String, String, String, NoException>>> commentMakersAndStrings = ListUtil.createList(
+				Function3<String, String, String, String>>> commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						(builder, javadocBuilder, annotationBuilder) -> builder.get()
@@ -967,9 +961,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-						ThrowingSupplier<? extends JavaMethod, NoException>, NoException>,
+		List<Pair<Function<Supplier<JavaMethodBuilder<? extends JavaMethod>>,
+						Supplier<? extends JavaMethod>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Null Visibility
 				Pair.of(
@@ -1048,7 +1041,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				)
 		);
 		
-		List<Pair<ThrowingSupplier<JavaMethod, NoException>, String>> editableRelatedErrors = ListUtil.createList(
+		List<Pair<Supplier<JavaMethod>, String>> editableRelatedErrors = ListUtil.createList(
 				// Editable Javadoc in Uneditable JavaMethod
 				Pair.of(
 						() -> UneditableJavaMethod.builder()
@@ -1130,9 +1123,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 	 */
 	
 	private Stream<Arguments> getUniqueNameData(){
-		List<Pair<ThrowingFunction<
-				ThrowingSupplier<JavaMethodBuilder<? extends JavaMethod>, NoException>,
-				JavaMethod, NoException>, String>> uniqueNameAndBuilders = ListUtil.createList(
+		List<Pair<Function<Supplier<JavaMethodBuilder<? extends JavaMethod>>, JavaMethod>, String>>
+				uniqueNameAndBuilders = ListUtil.createList(
 				// Constructor
 				Pair.of(
 						builder -> builder.get()

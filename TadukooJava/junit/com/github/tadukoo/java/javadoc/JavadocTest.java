@@ -3,9 +3,8 @@ package com.github.tadukoo.java.javadoc;
 import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.supplier.ThrowingSupplier;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -27,26 +26,21 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 						UneditableJavadoc.builder()
 								.build(),
 						false,
-						(ThrowingFunction<UneditableJavadoc, Boolean, NoException>)
-								UneditableJavadoc::isEditable
+						(Function<UneditableJavadoc, Boolean>) UneditableJavadoc::isEditable
 				),
 				Arguments.of(
 						EditableJavadoc.builder()
 								.build(),
 						true,
-						(ThrowingFunction<EditableJavadoc, Boolean, NoException>)
-								EditableJavadoc::isEditable
+						(Function<EditableJavadoc, Boolean>) EditableJavadoc::isEditable
 				)
 		);
 	}
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>,
+				Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.JAVADOC,
@@ -286,11 +280,8 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				ThrowingFunction<ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						Object, NoException>,
-				ThrowingFunction<ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						Object, NoException>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>,
+				Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>>> comparisons = ListUtil.createList(
 				// Not Equal
 				Pair.of(
 						builder -> builder.get()
@@ -330,12 +321,9 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				ThrowingFunction<
-						ThrowingSupplier<JavadocBuilder<? extends Javadoc>, NoException>,
-						Javadoc, NoException>,
+		List<Triple<Function<Supplier<JavadocBuilder<? extends Javadoc>>, Javadoc>,
 				String,
-				ThrowingFunction<String, String, NoException>>> commentMakersAndStrings = ListUtil.createList(
+				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
 						builder -> builder.get()
