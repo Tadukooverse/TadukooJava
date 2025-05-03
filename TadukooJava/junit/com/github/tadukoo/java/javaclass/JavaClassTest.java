@@ -6,40 +6,29 @@ import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
-import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
-import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
-import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
 import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.field.JavaField;
-import com.github.tadukoo.java.field.JavaFieldBuilder;
 import com.github.tadukoo.java.field.UneditableJavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
-import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
 import com.github.tadukoo.java.importstatement.UneditableJavaImportStatement;
 import com.github.tadukoo.java.javadoc.EditableJavadoc;
-import com.github.tadukoo.java.javadoc.Javadoc;
-import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.java.method.EditableJavaMethod;
 import com.github.tadukoo.java.method.JavaMethod;
-import com.github.tadukoo.java.method.JavaMethodBuilder;
 import com.github.tadukoo.java.method.UneditableJavaMethod;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
-import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.Function;
-import com.github.tadukoo.util.functional.function.Function3;
-import com.github.tadukoo.util.functional.function.Function9;
 import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.map.MapUtil;
 import com.github.tadukoo.util.tuple.Pair;
@@ -81,246 +70,166 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Object>,
-				Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Object>
-				>> comparisons = ListUtil.<Pair<
-				Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Object>,
-				Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Object>>>createList(
+		List<Pair<Function<Builders, Object>,
+				Function<Builders, Object>
+				>> comparisons = ListUtil.<Pair<Function<Builders, Object>, Function<Builders, Object>>>createList(
 				// Java Code Type
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) ->
+						builders ->
 								JavaCodeTypes.CLASS,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) ->
-								builder.get()
+						builders ->
+								builders.classBuilder().get()
 										.className("AClassName")
 										.build()
 										.getJavaCodeType()
 				),
 				// Default Is Inner Class
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> false,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.isInnerClass()
 				),
 				// Default Package Declaration
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> null,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getPackageDeclaration()
 				),
 				// Default Import Statements
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getImportStatements()
 				),
 				// Default Javadoc
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> null,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getJavadoc()
 				),
 				// Default Annotations
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getAnnotations()
 				),
 				// Default Visibility
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> Visibility.NONE,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> Visibility.NONE,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getVisibility()
 				),
 				// Default Abstract
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> false,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.isAbstract()
 				),
 				// Default Static
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> false,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.isStatic()
 				),
 				// Default Final
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> false,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.isFinal()
 				),
 				// Default Super Class Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> null,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getSuperClassName()
 				),
 				// Default Implements Interfaces
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getImplementsInterfaceNames()
 				),
 				// Default Single Line Comments
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getSingleLineComments()
 				),
 				// Default Multi Line Comments
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getMultiLineComments()
 				),
 				// Default Fields
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getFields()
 				),
 				// Default Methods
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getMethods()
 				),
 				// Default Inner Elements Order
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> new ArrayList<>(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getInnerElementsOrder()
 				),
 				// Empty Inner Classes Map
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> MapUtil.createMap(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getInnerClassesMap()
 				),
 				// Inner Classes Map 1 Inner Class
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(
-								 Pair.of("BClassName", builder.get()
+						builders -> MapUtil.createMap(
+								 Pair.of("BClassName", builders.classBuilder().get()
 										 .innerClass()
 										 .className("BClassName")
 										 .build())
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
@@ -329,25 +238,23 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Inner Classes Map 2 Inner Classes
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(
-								Pair.of("BClassName", builder.get()
+						builders -> MapUtil.createMap(
+								Pair.of("BClassName", builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build()),
-								Pair.of("CClassName", builder.get()
+								Pair.of("CClassName", builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build())
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build())
@@ -356,26 +263,22 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Fields Map No Fields
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> MapUtil.createMap(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getFieldsMap()
 				),
 				// Fields Map 1 Field
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(
-								 Pair.of("test", fieldBuilder.get()
+						builders -> MapUtil.createMap(
+								 Pair.of("test", builders.fieldBuilder().get()
 										 .type("String").name("test")
 										 .build())
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("test")
 										.build())
 								.build()
@@ -383,22 +286,20 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Fields Map 2 Fields
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(
-								Pair.of("test", fieldBuilder.get()
+						builders -> MapUtil.createMap(
+								Pair.of("test", builders.fieldBuilder().get()
 										.type("String").name("test")
 										.build()),
-								Pair.of("version", fieldBuilder.get()
+								Pair.of("version", builders.fieldBuilder().get()
 										.type("int").name("version")
 										.build())
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("test")
 										.build())
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("version")
 										.build())
 								.build()
@@ -406,26 +307,22 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Methods Map No Methods
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> MapUtil.createMap(),
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getMethodsMap()
 				),
 				// Methods Map 1 Method
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(
-								 Pair.of("getType()", methodBuilder.get()
+						builders -> MapUtil.createMap(
+								 Pair.of("getType()", builders.methodBuilder().get()
 										 .returnType("String").name("getType")
 										 .build())
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("String").name("getType")
 										.build())
 								.build()
@@ -433,23 +330,21 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Methods Map 2 Methods
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> MapUtil.createMap(
-								Pair.of("getType()", methodBuilder.get()
+						builders -> MapUtil.createMap(
+								Pair.of("getType()", builders.methodBuilder().get()
 										.returnType("String").name("getType")
 										.build()),
-								Pair.of("getVersion(String type)", methodBuilder.get()
+								Pair.of("getVersion(String type)", builders.methodBuilder().get()
 										.returnType("int").name("getVersion")
 										.parameter("String type")
 										.build())
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("String").name("getType")
 										.build())
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("int").name("getVersion")
 										.parameter("String type")
 										.build())
@@ -458,13 +353,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Copy
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.importName("some.classname", false)
-								.javadoc(docBuilder.get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
-								.annotation(annBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.visibility(Visibility.PUBLIC)
@@ -474,25 +368,24 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.implementsInterfaceName("SomeInterface")
 								.singleLineComment("some comment")
 								.multiLineComment("some content", "more comment")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build())
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("test")
 										.build())
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("String").name("type")
 										.build())
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.copy(builder.get()
+						builders -> builders.classBuilder().get()
+								.copy(builders.classBuilder().get()
 										.packageName("some.package")
 										.importName("some.classname", false)
-										.javadoc(docBuilder.get()
+										.javadoc(builders.javadocBuilder().get()
 												.build())
-										.annotation(annBuilder.get()
+										.annotation(builders.annotationBuilder().get()
 												.name("Test")
 												.build())
 										.visibility(Visibility.PUBLIC)
@@ -502,14 +395,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.implementsInterfaceName("SomeInterface")
 										.singleLineComment("some comment")
 										.multiLineComment("some content", "more comment")
-										.innerClass(builder.get()
+										.innerClass(builders.classBuilder().get()
 												.innerClass()
 												.className("CClassName")
 												.build())
-										.field(fieldBuilder.get()
+										.field(builders.fieldBuilder().get()
 												.type("String").name("test")
 												.build())
-										.method(methodBuilder.get()
+										.method(builders.methodBuilder().get()
 												.returnType("String").name("type")
 												.build())
 										.build())
@@ -517,10 +410,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Inner Class
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.isInnerClass(true)
 								.build()
@@ -528,10 +419,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Inner Class
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.innerClass()
 								.build()
@@ -539,13 +428,11 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Package Declaration
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> pdBuilder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("some.package")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.packageDeclaration(pdBuilder.get()
+						builders -> builders.classBuilder().get()
+								.packageDeclaration(builders.packageDeclarationBuilder().get()
 										.packageName("some.package")
 										.build())
 								.className("AClassName")
@@ -554,12 +441,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Package Declaration
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> pdBuilder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("some.package")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.className("AClassName")
 								.build()
@@ -567,24 +452,20 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Class Name by Text
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("AClassName")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getClassName()
 				),
 				// Set Class Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("AClassName")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className(JavaType.builder()
 										.baseType("AClassName")
 										.build())
@@ -593,35 +474,29 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Get Simple Class Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> "AClassName",
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> "AClassName",
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build()
 								.getSimpleClassName()
 				),
 				// Get Simple Class Name Complex Class Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> "AClassName",
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> "AClassName",
+						builders -> builders.classBuilder().get()
 								.className("AClassName<Map<String,Object>, T>")
 								.build()
 								.getSimpleClassName()
 				),
 				// Set Import Statement
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								 isBuilder.get()
+						builders -> ListUtil.createList(
+								 builders.importStatementBuilder().get()
 										 .importName("com.example")
 										 .build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.importStatement(isBuilder.get()
+						builders -> builders.classBuilder().get()
+								.importStatement(builders.importStatementBuilder().get()
 										.importName("com.example")
 										.build())
 								.className("AClassName")
@@ -630,23 +505,21 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Import Statements
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								isBuilder.get()
+						builders -> ListUtil.createList(
+								builders.importStatementBuilder().get()
 										.importName("com.example")
 										.build(),
-								isBuilder.get()
+								builders.importStatementBuilder().get()
 										.isStatic()
 										.importName("com.other")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importStatements(ListUtil.createList(
-										isBuilder.get()
+										builders.importStatementBuilder().get()
 												.importName("com.example")
 												.build(),
-										isBuilder.get()
+										builders.importStatementBuilder().get()
 												.isStatic()
 												.importName("com.other")
 												.build()))
@@ -656,14 +529,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Import Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								isBuilder.get()
+						builders -> ListUtil.createList(
+								builders.importStatementBuilder().get()
 										.importName("com.example")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.example", false)
 								.className("AClassName")
 								.build()
@@ -671,15 +542,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Static Import Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								isBuilder.get()
+						builders -> ListUtil.createList(
+								builders.importStatementBuilder().get()
 										.isStatic()
 										.importName("com.example")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.example", true)
 								.className("AClassName")
 								.build()
@@ -687,17 +556,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Import Names
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								isBuilder.get()
+						builders -> ListUtil.createList(
+								builders.importStatementBuilder().get()
 										.importName("com.example")
 										.build(),
-								isBuilder.get()
+								builders.importStatementBuilder().get()
 										.importName("com.other")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importNames(ListUtil.createList("com.example", "com.other"), false)
 								.className("AClassName")
 								.build()
@@ -705,19 +572,17 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Static Import Names
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								isBuilder.get()
+						builders -> ListUtil.createList(
+								builders.importStatementBuilder().get()
 										.isStatic()
 										.importName("com.example")
 										.build(),
-								isBuilder.get()
+								builders.importStatementBuilder().get()
 										.isStatic()
 										.importName("com.other")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importNames(ListUtil.createList("com.example", "com.other"), true)
 								.className("AClassName")
 								.build()
@@ -725,12 +590,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Javadoc
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> docBuilder.get()
+						builders -> builders.javadocBuilder().get()
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.javadoc(docBuilder.get()
+						builders -> builders.classBuilder().get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
 								.className("AClassName")
 								.build()
@@ -738,15 +601,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Single Annotation
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								 annBuilder.get()
+						builders -> ListUtil.createList(
+								 builders.annotationBuilder().get()
 										 .name("Test")
 										 .build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.annotation(annBuilder.get()
+						builders -> builders.classBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.className("AClassName")
@@ -755,22 +616,20 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Annotations
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								annBuilder.get()
+						builders -> ListUtil.createList(
+								builders.annotationBuilder().get()
 										.name("Test")
 										.build(),
-								annBuilder.get()
+								builders.annotationBuilder().get()
 										.name("Derp")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.annotations(ListUtil.createList(
-										annBuilder.get()
+										builders.annotationBuilder().get()
 												.name("Test")
 												.build(),
-										annBuilder.get()
+										builders.annotationBuilder().get()
 												.name("Derp")
 												.build()
 								))
@@ -780,10 +639,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Visibility
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> Visibility.PRIVATE,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> Visibility.PRIVATE,
+						builders -> builders.classBuilder().get()
 								.visibility(Visibility.PRIVATE)
 								.className("AClassName")
 								.build()
@@ -791,10 +648,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Abstract Param
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.isAbstract(true)
 								.className("AClassName")
 								.build()
@@ -802,10 +657,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Abstract No Param
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.isAbstract()
 								.className("AClassName")
 								.build()
@@ -813,10 +666,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Static Param
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.innerClass()
 								.isStatic(true)
 								.className("AClassName")
@@ -825,10 +676,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Static No Param
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.innerClass()
 								.isStatic()
 								.className("AClassName")
@@ -837,10 +686,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Final Param
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.isFinal(true)
 								.className("AClassName")
 								.build()
@@ -848,10 +695,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Is Final No Param
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> true,
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.classBuilder().get()
 								.isFinal()
 								.className("AClassName")
 								.build()
@@ -859,12 +704,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Super Class Name by Text
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("AnotherClassName")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.superClassName("AnotherClassName")
 								.build()
@@ -872,12 +715,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Super Class Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("AnotherClassName")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.superClassName(JavaType.builder()
 										.baseType("AnotherClassName")
@@ -887,14 +728,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Implements Interface Name by Text
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaType.builder()
 										.baseType("SomeInterface")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.implementsInterfaceName("SomeInterface")
 								.build()
@@ -902,14 +741,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Implements Interface Name
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaType.builder()
 										.baseType("SomeInterface")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.implementsInterfaceName(JavaType.builder()
 										.baseType("SomeInterface")
@@ -919,8 +756,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Implements Interface Names by Text
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaType.builder()
 										.baseType("SomeInterface")
 										.build(),
@@ -928,8 +764,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.baseType("SomeOtherInterface")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.implementsInterfaceNameTexts(ListUtil.createList(
 										"SomeInterface", "SomeOtherInterface"))
@@ -938,8 +773,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Implements Interface Names
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaType.builder()
 										.baseType("SomeInterface")
 										.build(),
@@ -947,8 +781,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.baseType("SomeOtherInterface")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.implementsInterfaceNames(ListUtil.createList(
 										JavaType.builder()
@@ -962,16 +795,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Single Line Comment
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								slcBuilder.get()
+						builders -> ListUtil.createList(
+								builders.singleLineCommentBuilder().get()
 										.content("some comment")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.singleLineComment(slcBuilder.get()
+								.singleLineComment(builders.singleLineCommentBuilder().get()
 										.content("some comment")
 										.build())
 								.build()
@@ -979,23 +810,21 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Single Line Comments
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								slcBuilder.get()
+						builders -> ListUtil.createList(
+								builders.singleLineCommentBuilder().get()
 										.content("some comment")
 										.build(),
-								slcBuilder.get()
+								builders.singleLineCommentBuilder().get()
 										.content("some more comment")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComments(ListUtil.createList(
-										slcBuilder.get()
+										builders.singleLineCommentBuilder().get()
 												.content("some comment")
 												.build(),
-										slcBuilder.get()
+										builders.singleLineCommentBuilder().get()
 												.content("some more comment")
 												.build()
 								))
@@ -1004,14 +833,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Single Line Comment by string
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								slcBuilder.get()
+						builders -> ListUtil.createList(
+								builders.singleLineCommentBuilder().get()
 										.content("some comment")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.build()
@@ -1019,17 +846,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multi Line Comment
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								mlcBuilder.get()
+						builders -> ListUtil.createList(
+								builders.multiLineCommentBuilder().get()
 										.content("some comment")
 										.content("more content")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.multiLineComment(mlcBuilder.get()
+								.multiLineComment(builders.multiLineCommentBuilder().get()
 										.content("some comment")
 										.content("more content")
 										.build())
@@ -1038,25 +863,23 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Multi Line Comments
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								mlcBuilder.get()
+						builders -> ListUtil.createList(
+								builders.multiLineCommentBuilder().get()
 										.content("some comment")
 										.content("more content")
 										.build(),
-								mlcBuilder.get()
+								builders.multiLineCommentBuilder().get()
 										.content("some more comment")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComments(ListUtil.createList(
-										mlcBuilder.get()
+										builders.multiLineCommentBuilder().get()
 												.content("some comment")
 												.content("more content")
 												.build(),
-										mlcBuilder.get()
+										builders.multiLineCommentBuilder().get()
 												.content("some more comment")
 												.build()
 								))
@@ -1065,15 +888,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multi Line Comment by strings
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								mlcBuilder.get()
+						builders -> ListUtil.createList(
+								builders.multiLineCommentBuilder().get()
 										.content("some comment")
 										.content("more content")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComment("some comment", "more content")
 								.build()
@@ -1081,17 +902,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Inner Class
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								builder.get()
+						builders -> ListUtil.createList(
+								builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
@@ -1100,26 +919,24 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Inner Classes
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								builder.get()
+						builders -> ListUtil.createList(
+								builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build(),
-								builder.get()
+								builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.innerClasses(ListUtil.createList(
-										builder.get()
+										builders.classBuilder().get()
 												.innerClass()
 												.className("BClassName")
 												.build(),
-										builder.get()
+										builders.classBuilder().get()
 												.innerClass()
 												.className("CClassName")
 												.build()))
@@ -1128,16 +945,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Field
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								fieldBuilder.get()
+						builders -> ListUtil.createList(
+								builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build())
 								.build()
@@ -1145,23 +960,21 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Fields
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								fieldBuilder.get()
+						builders -> ListUtil.createList(
+								builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build(),
-								fieldBuilder.get()
+								builders.fieldBuilder().get()
 										.type("String").name("derp")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.fields(ListUtil.createList(
-										fieldBuilder.get()
+										builders.fieldBuilder().get()
 												.type("int").name("test")
 												.build(),
-										fieldBuilder.get()
+										builders.fieldBuilder().get()
 												.type("String").name("derp")
 												.build()))
 								.build()
@@ -1169,16 +982,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Method
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								methodBuilder.get()
+						builders -> ListUtil.createList(
+								builders.methodBuilder().get()
 										.returnType("int").name("test")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("int").name("test")
 										.build())
 								.build()
@@ -1186,24 +997,22 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Set Multiple Methods
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> ListUtil.createList(
-								methodBuilder.get()
+						builders -> ListUtil.createList(
+								builders.methodBuilder().get()
 										.returnType("int").name("test")
 										.build(),
-								methodBuilder.get()
+								builders.methodBuilder().get()
 										.returnType("String").name("derp")
 										.line("return 42;")
 										.build()
 						),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.methods(ListUtil.createList(
-										methodBuilder.get()
+										builders.methodBuilder().get()
 												.returnType("int").name("test")
 												.build(),
-										methodBuilder.get()
+										builders.methodBuilder().get()
 												.returnType("String").name("derp")
 												.line("return 42;")
 												.build()))
@@ -1212,8 +1021,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Equals
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.importName("com.whatever", false)
 								.importName("org.yep", false)
@@ -1223,20 +1031,19 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.importName("org.yep.dope", true)
 								.importName("com.example.test.*", true)
 								.importName("org.test.yep", true)
-								.javadoc(docBuilder.get().build())
-								.annotation(annBuilder.get().name("Test").build())
-								.annotation(annBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.className("AClassName").superClassName("AnotherClassName")
-								.innerClass(builder.get().innerClass().className("BClassName").build())
-								.innerClass(builder.get().innerClass().className("CClassName").build())
-								.field(fieldBuilder.get().type("int").name("test").build())
-								.field(fieldBuilder.get().type("String").name("derp").build())
-								.method(methodBuilder.get().returnType("AClassName").build())
-								.method(methodBuilder.get().returnType("String").name("getSomething")
+								.innerClass(builders.classBuilder().get().innerClass().className("BClassName").build())
+								.innerClass(builders.classBuilder().get().innerClass().className("CClassName").build())
+								.field(builders.fieldBuilder().get().type("int").name("test").build())
+								.field(builders.fieldBuilder().get().type("String").name("derp").build())
+								.method(builders.methodBuilder().get().returnType("AClassName").build())
+								.method(builders.methodBuilder().get().returnType("String").name("getSomething")
 										.parameter("int test").line("return doSomething();").build())
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.importName("com.whatever", false)
 								.importName("org.yep", false)
@@ -1246,16 +1053,16 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.importName("org.yep.dope", true)
 								.importName("com.example.test.*", true)
 								.importName("org.test.yep", true)
-								.javadoc(docBuilder.get().build())
-								.annotation(annBuilder.get().name("Test").build())
-								.annotation(annBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.className("AClassName").superClassName("AnotherClassName")
-								.innerClass(builder.get().innerClass().className("BClassName").build())
-								.innerClass(builder.get().innerClass().className("CClassName").build())
-								.field(fieldBuilder.get().type("int").name("test").build())
-								.field(fieldBuilder.get().type("String").name("derp").build())
-								.method(methodBuilder.get().returnType("AClassName").build())
-								.method(methodBuilder.get().returnType("String").name("getSomething")
+								.innerClass(builders.classBuilder().get().innerClass().className("BClassName").build())
+								.innerClass(builders.classBuilder().get().innerClass().className("CClassName").build())
+								.field(builders.fieldBuilder().get().type("int").name("test").build())
+								.field(builders.fieldBuilder().get().type("String").name("derp").build())
+								.method(builders.methodBuilder().get().returnType("AClassName").build())
+								.method(builders.methodBuilder().get().returnType("String").name("getSomething")
 										.parameter("int test").line("return doSomething();").build())
 								.build()
 				)
@@ -1263,102 +1070,50 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(classBuilders.get(index),
-										packageDeclarationBuilders.get(index), importStatementBuilders.get(index),
-										singleLineCommentBuilders.get(index), multiLineCommentBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index),
-										fieldBuilders.get(index), methodBuilders.get(index)),
-								pair.getRight().apply(classBuilders.get(index),
-										packageDeclarationBuilders.get(index), importStatementBuilders.get(index),
-										singleLineCommentBuilders.get(index), multiLineCommentBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index),
-										fieldBuilders.get(index), methodBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Object>,
-				Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Object>
+		List<Pair<Function<Builders, Object>,
+				Function<Builders, Object>
 				>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package.different")
 								.className("AClassName")
 								.build()
 				),
 				// Different Types
 				Pair.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build(),
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> "testing"
+						builders -> "testing"
 				)
 		);
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(classBuilders.get(index),
-										packageDeclarationBuilders.get(index), importStatementBuilders.get(index),
-										singleLineCommentBuilders.get(index), multiLineCommentBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index),
-										fieldBuilders.get(index), methodBuilders.get(index)),
-								pair.getRight().apply(classBuilders.get(index),
-										packageDeclarationBuilders.get(index), importStatementBuilders.get(index),
-										singleLineCommentBuilders.get(index), multiLineCommentBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index),
-										fieldBuilders.get(index), methodBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
 		List<Triple<
-				Function9<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>,
-						Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						JavaClass>,
+				Function<Builders, JavaClass>,
 				String,
-				Function9<String, String, String, String, String, String, String, String, String, String>
+				Function<SimpleClassNames, String>
 				>> comparisons = ListUtil.createList(
 				// Simple
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.build(),
 						"""
@@ -1366,16 +1121,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
 										.build()"""
 				),
 				// With Package Name
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.className("AClassName")
 								.build(),
@@ -1386,8 +1139,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.packageName("some.package")
 										.className("AClassName")
@@ -1395,8 +1147,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Import
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.example.*", false)
 								.className("AClassName")
 								.build(),
@@ -1407,8 +1158,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", false)
 										.className("AClassName")
@@ -1416,8 +1166,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Imports Same Base in Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.example.*", false)
 								.importName("com.whatever", false)
 								.className("AClassName")
@@ -1430,8 +1179,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", false)
 										.importName("com.whatever", false)
@@ -1440,8 +1188,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Imports Same Base Reverse Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.whatever", false)
 								.importName("com.example.*", false)
 								.className("AClassName")
@@ -1454,8 +1201,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", false)
 										.importName("com.whatever", false)
@@ -1464,8 +1210,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Imports Different Base Strange Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.whatever", false)
 								.importName("org.yep", false)
 								.importName("com.example.*", false)
@@ -1483,8 +1228,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", false)
 										.importName("com.whatever", false)
@@ -1495,8 +1239,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Static Import
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.example.*", true)
 								.className("AClassName")
 								.build(),
@@ -1507,8 +1250,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", true)
 										.className("AClassName")
@@ -1516,8 +1258,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Static Imports Same Base in Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.example.*", true)
 								.importName("com.whatever", true)
 								.className("AClassName")
@@ -1530,8 +1271,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", true)
 										.importName("com.whatever", true)
@@ -1540,8 +1280,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Static Imports Same Base Reverse Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.whatever", true)
 								.importName("com.example.*", true)
 								.className("AClassName")
@@ -1554,8 +1293,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", true)
 										.importName("com.whatever", true)
@@ -1564,8 +1302,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Static Imports Different Base Strange Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.whatever", true)
 								.importName("org.yep", true)
 								.importName("com.example.*", true)
@@ -1583,8 +1320,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", true)
 										.importName("com.whatever", true)
@@ -1595,8 +1331,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Regular and Static Imports Different Base Strange Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.importName("com.whatever", false)
 								.importName("com.whatever.electric_boogaloo", true)
 								.importName("org.yep", false)
@@ -1624,8 +1359,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.importName("com.example.*", false)
 										.importName("com.whatever", false)
@@ -1640,8 +1374,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Visibility
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.visibility(Visibility.PROTECTED)
 								.className("AClassName")
 								.build(),
@@ -1650,8 +1383,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.visibility(Visibility.PROTECTED)
 										.className("AClassName")
@@ -1659,8 +1391,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Abstract
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.isAbstract()
 								.className("AClassName")
 								.build(),
@@ -1669,8 +1400,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.isAbstract()
 										.className("AClassName")
@@ -1678,8 +1408,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Final
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.isFinal()
 								.className("AClassName")
 								.build(),
@@ -1688,8 +1417,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.isFinal()
 										.className("AClassName")
@@ -1697,8 +1425,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Super Class Name
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.superClassName("AnotherClassName")
 								.build(),
@@ -1707,8 +1434,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
 										.superClassName("AnotherClassName")
@@ -1716,8 +1442,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Implements Interface
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.implementsInterfaceName("SomeInterface")
 								.build(),
@@ -1726,8 +1451,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
 										.implementsInterfaceName("SomeInterface")
@@ -1735,8 +1459,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Multiple Implements Interfaces
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.implementsInterfaceName("SomeInterface")
 								.implementsInterfaceName("SomeOtherInterface")
@@ -1746,8 +1469,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
 										.implementsInterfaceName("SomeInterface")
@@ -1756,9 +1478,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Javadoc
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.javadoc(docBuilder.get()
+						builders -> builders.classBuilder().get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
 								.className("AClassName")
 								.build(),
@@ -1769,10 +1490,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
-										.javadoc(""" + docClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
 										.className("AClassName")
@@ -1780,9 +1500,8 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Annotation
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.annotation(annBuilder.get()
+						builders -> builders.classBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.className("AClassName")
@@ -1793,10 +1512,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
@@ -1805,12 +1523,11 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Multiple Annotations
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
-								.annotation(annBuilder.get()
+						builders -> builders.classBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.className("AClassName")
@@ -1822,14 +1539,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -1838,8 +1554,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Single-Line Comment
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.build(),
@@ -1849,8 +1564,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									// some comment
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
 										.singleLineComment("some comment")
@@ -1858,8 +1572,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Multi-Line Comment
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComment("some comment", "more content")
 								.build(),
@@ -1872,8 +1585,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									 */
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
 										.multiLineComment("some comment",\s
@@ -1882,14 +1594,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Inner Classes
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build())
@@ -1907,16 +1618,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("BClassName")
 												.build())
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("CClassName")
@@ -1925,14 +1635,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Inner Classes Reverse Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build())
@@ -1953,16 +1662,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("CClassName")
 												.build())
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("BClassName")
@@ -1971,13 +1679,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Fields
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build())
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("derp")
 										.build())
 								.build(),
@@ -1988,15 +1695,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									String derp;
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("int").name("test")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
@@ -2004,13 +1710,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Fields Swap Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build())
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("derp")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -2025,15 +1730,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									int test;
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("int").name("test")
 												.build())
@@ -2041,17 +1745,16 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Fields with Javadoc on Field
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
-										.javadoc(docBuilder.get()
+								.field(builders.fieldBuilder().get()
+										.javadoc(builders.javadocBuilder().get()
 												.condensed()
 												.content("something")
 												.build())
 										.type("int").name("test")
 										.build())
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("derp")
 										.build())
 								.build(),
@@ -2063,20 +1766,19 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									String derp;
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
-												.javadoc(""" + docClassName + """
+												.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 														.condensed()
 														.content("something")
 														.build())
 												.type("int").name("test")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
@@ -2084,13 +1786,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Methods
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("AClassName")
 										.build())
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("String")
 										.name("getSomething")
 										.parameter("int test")
@@ -2107,15 +1808,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									}
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("AClassName")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("String")
 												.name("getSomething")
@@ -2126,13 +1826,12 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Methods Swap Order
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("AClassName")
 										.build())
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("String")
 										.name("getSomething")
 										.parameter("int test")
@@ -2153,18 +1852,17 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									AClassName(){ }
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.className("AClassName")
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("String")
 												.name("getSomething")
 												.parameter("int test")
 												.line("return doSomething();")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("AClassName")
 												.build())
@@ -2172,8 +1870,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Everything No Order Specified
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.importName("com.whatever", false)
 								.importName("org.yep", false)
@@ -2183,19 +1880,19 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.importName("org.yep.dope", true)
 								.importName("com.example.test.*", true)
 								.importName("org.test.yep", true)
-								.javadoc(docBuilder.get().build())
-								.annotation(annBuilder.get().name("Test").build())
-								.annotation(annBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PUBLIC)
 								.isFinal()
 								.className("AClassName").superClassName("AnotherClassName")
 								.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
-								.innerClass(builder.get().innerClass().className("BClassName").build())
-								.innerClass(builder.get().innerClass().className("CClassName").build())
-								.field(fieldBuilder.get().type("int").name("test").build())
-								.field(fieldBuilder.get().type("String").name("derp").build())
-								.method(methodBuilder.get().returnType("AClassName").build())
-								.method(methodBuilder.get().returnType("String").name("getSomething")
+								.innerClass(builders.classBuilder().get().innerClass().className("BClassName").build())
+								.innerClass(builders.classBuilder().get().innerClass().className("CClassName").build())
+								.field(builders.fieldBuilder().get().type("int").name("test").build())
+								.field(builders.fieldBuilder().get().type("String").name("derp").build())
+								.method(builders.methodBuilder().get().returnType("AClassName").build())
+								.method(builders.methodBuilder().get().returnType("String").name("getSomething")
 										.parameter("int test").line("return doSomething();").build())
 								.innerElementsOrder(new ArrayList<>())
 								.build(),
@@ -2238,8 +1935,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									}
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.packageName("some.package")
 										.importName("com.example.*", false)
@@ -2250,14 +1946,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.importName("com.whatever.electric_boogaloo", true)
 										.importName("org.test.yep", true)
 										.importName("org.yep.dope", true)
-										.javadoc(""" + docClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -2267,29 +1963,29 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.superClassName("AnotherClassName")
 										.implementsInterfaceName("SomeInterface")
 										.implementsInterfaceName("SomeOtherInterface")
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("BClassName")
 												.build())
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("CClassName")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("int").name("test")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("AClassName")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("String")
 												.name("getSomething")
@@ -2300,8 +1996,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Everything
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.importName("com.whatever", false)
 								.importName("org.yep", false)
@@ -2311,21 +2006,21 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.importName("org.yep.dope", true)
 								.importName("com.example.test.*", true)
 								.importName("org.test.yep", true)
-								.javadoc(docBuilder.get().build())
-								.annotation(annBuilder.get().name("Test").build())
-								.annotation(annBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PUBLIC)
 								.isFinal()
 								.className("AClassName").superClassName("AnotherClassName")
 								.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
 								.singleLineComment("some comment")
 								.multiLineComment("some comment", "more content")
-								.innerClass(builder.get().innerClass().className("BClassName").build())
-								.innerClass(builder.get().innerClass().className("CClassName").build())
-								.field(fieldBuilder.get().type("int").name("test").build())
-								.field(fieldBuilder.get().type("String").name("derp").build())
-								.method(methodBuilder.get().returnType("AClassName").build())
-								.method(methodBuilder.get().returnType("String").name("getSomething")
+								.innerClass(builders.classBuilder().get().innerClass().className("BClassName").build())
+								.innerClass(builders.classBuilder().get().innerClass().className("CClassName").build())
+								.field(builders.fieldBuilder().get().type("int").name("test").build())
+								.field(builders.fieldBuilder().get().type("String").name("derp").build())
+								.method(builders.methodBuilder().get().returnType("AClassName").build())
+								.method(builders.methodBuilder().get().returnType("String").name("getSomething")
 										.parameter("int test").line("return doSomething();").build())
 								.build(),
 						"""
@@ -2373,8 +2068,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									}
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.packageName("some.package")
 										.importName("com.example.*", false)
@@ -2385,14 +2079,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.importName("com.whatever.electric_boogaloo", true)
 										.importName("org.test.yep", true)
 										.importName("org.yep.dope", true)
-										.javadoc(""" + docClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -2405,29 +2099,29 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.singleLineComment("some comment")
 										.multiLineComment("some comment",\s
 												"more content")
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("BClassName")
 												.build())
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("CClassName")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("int").name("test")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("AClassName")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("String")
 												.name("getSomething")
@@ -2438,8 +2132,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// With Everything Order Swapped
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.packageName("some.package")
 								.importName("com.whatever", false)
 								.importName("org.yep", false)
@@ -2449,21 +2142,21 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.importName("org.yep.dope", true)
 								.importName("com.example.test.*", true)
 								.importName("org.test.yep", true)
-								.javadoc(docBuilder.get().build())
-								.annotation(annBuilder.get().name("Test").build())
-								.annotation(annBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PUBLIC)
 								.isFinal()
 								.className("AClassName").superClassName("AnotherClassName")
 								.implementsInterfaceName("SomeInterface").implementsInterfaceName("SomeOtherInterface")
 								.singleLineComment("some comment")
 								.multiLineComment("some comment", "more content")
-								.innerClass(builder.get().innerClass().className("BClassName").build())
-								.innerClass(builder.get().innerClass().className("CClassName").build())
-								.field(fieldBuilder.get().type("int").name("test").build())
-								.field(fieldBuilder.get().type("String").name("derp").build())
-								.method(methodBuilder.get().returnType("AClassName").build())
-								.method(methodBuilder.get().returnType("String").name("getSomething")
+								.innerClass(builders.classBuilder().get().innerClass().className("BClassName").build())
+								.innerClass(builders.classBuilder().get().innerClass().className("CClassName").build())
+								.field(builders.fieldBuilder().get().type("int").name("test").build())
+								.field(builders.fieldBuilder().get().type("String").name("derp").build())
+								.method(builders.methodBuilder().get().returnType("AClassName").build())
+								.method(builders.methodBuilder().get().returnType("String").name("getSomething")
 										.parameter("int test").line("return doSomething();").build())
 								.innerElementsOrder(ListUtil.createList(
 										Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null),
@@ -2522,8 +2215,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.packageName("some.package")
 										.importName("com.example.*", false)
@@ -2534,14 +2226,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.importName("com.whatever.electric_boogaloo", true)
 										.importName("org.test.yep", true)
 										.importName("org.yep.dope", true)
-										.javadoc(""" + docClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -2553,16 +2245,16 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.implementsInterfaceName("SomeOtherInterface")
 										.multiLineComment("some comment",\s
 												"more content")
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("CClassName")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("String")
 												.name("getSomething")
@@ -2570,15 +2262,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 												.line("return doSomething();")
 												.build())
 										.singleLineComment("some comment")
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("AClassName")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("int").name("test")
 												.build())
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("BClassName")
@@ -2587,8 +2279,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Inner Class
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.innerClass()
 								.className("AClassName")
 								.build(),
@@ -2597,8 +2288,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.innerClass()
 										.className("AClassName")
@@ -2606,8 +2296,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Inner Class Static
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.innerClass()
 								.isStatic()
 								.className("AClassName")
@@ -2617,8 +2306,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.innerClass()
 										.isStatic()
@@ -2627,8 +2315,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Inner Class Final
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.innerClass()
 								.isFinal()
 								.className("AClassName")
@@ -2638,8 +2325,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								\t
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.innerClass()
 										.isFinal()
@@ -2648,21 +2334,20 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Inner Class With Everything
 				Triple.of(
-						(builder, pdBuilder, isBuilder, slcBuilder, mlcBuilder,
-						 docBuilder, annBuilder, fieldBuilder, methodBuilder) -> builder.get()
+						builders -> builders.classBuilder().get()
 								.innerClass()
-								.javadoc(docBuilder.get().build())
-								.annotation(annBuilder.get().name("Test").build())
-								.annotation(annBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PUBLIC)
 								.isStatic().isFinal()
 								.className("AClassName").superClassName("AnotherClassName")
-								.innerClass(builder.get().innerClass().className("BClassName").build())
-								.innerClass(builder.get().innerClass().className("CClassName").build())
-								.field(fieldBuilder.get().type("int").name("test").build())
-								.field(fieldBuilder.get().type("String").name("derp").build())
-								.method(methodBuilder.get().returnType("AClassName").build())
-								.method(methodBuilder.get().returnType("String").name("getSomething")
+								.innerClass(builders.classBuilder().get().innerClass().className("BClassName").build())
+								.innerClass(builders.classBuilder().get().innerClass().className("CClassName").build())
+								.field(builders.fieldBuilder().get().type("int").name("test").build())
+								.field(builders.fieldBuilder().get().type("String").name("derp").build())
+								.method(builders.methodBuilder().get().returnType("AClassName").build())
+								.method(builders.methodBuilder().get().returnType("String").name("getSomething")
 										.parameter("int test").line("return doSomething();").build())
 								.build(),
 						"""
@@ -2690,18 +2375,17 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 									}
 								}
 								""",
-						(simpleClassName, pdClassName, isClassName, slcClassName, mlcClassName,
-						 docClassName, annClassName, fieldClassName, methodClassName) -> simpleClassName + """
+						classNames -> classNames.classSimpleClassName() + """
 								.builder()
 										.innerClass()
-										.javadoc(""" + docClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -2710,29 +2394,29 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.isFinal()
 										.className("AClassName")
 										.superClassName("AnotherClassName")
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("BClassName")
 												.build())
-										.innerClass(""" + simpleClassName + """
+										.innerClass(""" + classNames.classSimpleClassName() + """
 								.builder()
 												.innerClass()
 												.className("CClassName")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("int").name("test")
 												.build())
-										.field(""" + fieldClassName + """
+										.field(""" + classNames.fieldSimpleClassName() + """
 								.builder()
 												.type("String").name("derp")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("AClassName")
 												.build())
-										.method(""" + methodClassName + """
+										.method(""" + classNames.methodSimpleClassName() + """
 								.builder()
 												.returnType("String")
 												.name("getSomething")
@@ -2745,32 +2429,18 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 		
 		return comparisons.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(classBuilders.get(index),
-										packageDeclarationBuilders.get(index), importStatementBuilders.get(index),
-										singleLineCommentBuilders.get(index), multiLineCommentBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index),
-										fieldBuilders.get(index), methodBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(classSimpleClassNames.get(index),
-										packageDeclarationSimpleClassNames.get(index),
-										importStatementSimpleClassNames.get(index),
-										singleLineCommentSimpleClassNames.get(index),
-										multiLineCommentSimpleClassNames.get(index),
-										javadocSimpleClassNames.get(index), annotationSimpleClassNames.get(index),
-										fieldSimpleClassNames.get(index), methodSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<Function3<
-						Supplier<JavaClassBuilder<? extends JavaClass>>,
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<? extends JavaClass>>,
+		List<Pair<Function<Builders, Supplier<? extends JavaClass>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Null Visibility
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.visibility(null)
 								.className("AClassName")
 								.build(),
@@ -2778,13 +2448,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Null Class Name
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.build(),
 						"Must specify className!"
 				),
 				// Abstract Static
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.innerClass()
 								.isAbstract().isStatic()
@@ -2793,7 +2463,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Abstract Final
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.innerClass()
 								.isAbstract().isFinal()
@@ -2802,7 +2472,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Abstract Static Final
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.innerClass()
 								.isAbstract().isStatic().isFinal()
@@ -2812,9 +2482,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Inner Class Not Inner Class
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("BClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.className("AClassName")
 										.build())
 								.build(),
@@ -2822,7 +2492,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Outer Class Can't be Static
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.isStatic()
 								.className("AClassName")
 								.build(),
@@ -2830,9 +2500,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// All Outer Class Errors
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.isStatic()
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.className("AClassName")
 										.build())
 								.visibility(null)
@@ -2845,7 +2515,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Null Visibility Inner Class
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.innerClass()
 								.visibility(null)
 								.className("AClassName")
@@ -2854,17 +2524,17 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Null Class Name Inner Class
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.innerClass()
 								.build(),
 						"Must specify className!"
 				),
 				// Inner Class in Inner Class Not Inner Class
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.innerClass()
 								.className("BClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.className("AClassName")
 										.build())
 								.build(),
@@ -2872,7 +2542,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Package Declaration Inner Class
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.innerClass()
 								.packageName("some.package")
 								.className("AClassName")
@@ -2881,7 +2551,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Import Statement Inner Class
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.innerClass()
 								.importName("com.example", false)
 								.className("AClassName")
@@ -2890,10 +2560,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// All Inner Class Builder Errors
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.innerClass()
 								.packageName("some.package")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.packageName("some.package")
 										.className("AClassName")
 										.build())
@@ -2909,7 +2579,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missing Inner Elements Order when Single Line Comment Present
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.innerElementsOrder(new ArrayList<>())
@@ -2918,7 +2588,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missing Inner Elements Order when Multi Line Comment Present
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComment("some comment", "more content")
 								.innerElementsOrder(new ArrayList<>())
@@ -2927,7 +2597,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missing Inner Elements Order when Both Types of Comment Present
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.multiLineComment("some comment", "more content")
@@ -2937,7 +2607,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Too Many Single Line Comments in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.innerElementsOrder(ListUtil.createList(
@@ -2949,7 +2619,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Too Many Multi Line Comments in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComment("some comment", "more content")
 								.innerElementsOrder(ListUtil.createList(
@@ -2961,9 +2631,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Reused Inner Class Name in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
@@ -2976,9 +2646,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Unknown Inner Class Name in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
@@ -2991,9 +2661,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Reused Field Name in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3005,9 +2675,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Unknown Field Name in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("test")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3019,9 +2689,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Reused Method Name in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("int").name("getVersion")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3033,9 +2703,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Unknown Method Name in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("int").name("getVersion")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3047,7 +2717,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Unknown Inner Element Type
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.innerElementsOrder(ListUtil.createList(Pair.of(JavaCodeTypes.ANNOTATION, "something")))
 								.build(),
@@ -3055,7 +2725,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 1 Single Line Comment in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.singleLineComment("some other comment")
@@ -3069,7 +2739,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 2 Single Line Comments in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
 								.singleLineComment("some other comment")
@@ -3082,7 +2752,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 1 Multi Line Comment in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComment("some comment")
 								.multiLineComment("some other comment")
@@ -3096,7 +2766,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 2 Multi Line Comments in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.multiLineComment("some comment")
 								.multiLineComment("some other comment")
@@ -3109,10 +2779,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 1 Inner Class in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
@@ -3124,14 +2794,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 2 Inner Classes in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("BClassName")
 										.build())
-								.innerClass(builder.get()
+								.innerClass(builders.classBuilder().get()
 										.innerClass()
 										.className("CClassName")
 										.build())
@@ -3143,10 +2813,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 1 Field in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("version")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3157,13 +2827,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 2 Fields in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("int").name("version")
 										.build())
-								.field(fieldBuilder.get()
+								.field(builders.fieldBuilder().get()
 										.type("String").name("test")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3174,10 +2844,10 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 1 Method in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("int").name("getVersion")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3188,13 +2858,13 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				),
 				// Missed 2 Methods in Elements Order
 				Pair.of(
-						(builder, fieldBuilder, methodBuilder) -> () -> builder.get()
+						builders -> () -> builders.classBuilder().get()
 								.className("AClassName")
 								.singleLineComment("some comment")
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("int").name("getVersion")
 										.build())
-								.method(methodBuilder.get()
+								.method(builders.methodBuilder().get()
 										.returnType("String").name("getTest")
 										.build())
 								.innerElementsOrder(ListUtil.createList(
@@ -3476,8 +3146,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 		
 		return Stream.concat(builderFuncsAndErrorMessages.stream()
 						.flatMap(pair -> Stream.of(0, 1, 2)
-								.map(index -> Arguments.of(pair.getLeft().apply(classBuilders.get(index),
-												fieldBuilders.get(index), methodBuilders.get(index)),
+								.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 										pair.getRight()))),
 				editableRelatedErrors.stream()
 						.map(pair -> Arguments.of(pair.getLeft(), pair.getRight())));

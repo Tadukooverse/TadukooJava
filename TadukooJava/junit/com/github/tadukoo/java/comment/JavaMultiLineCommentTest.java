@@ -4,7 +4,6 @@ import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.Function;
-import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -31,30 +30,28 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<Function<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>, Object>,
-				Function<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.MULTI_LINE_COMMENT,
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build()
 								.getJavaCodeType()
 				),
 				// Default Content
 				Pair.of(
 						builder -> ListUtil.createList(),
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build()
 								.getContent()
 				),
 				// Copy
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content("something useful")
 								.build(),
-						builder -> builder.get()
-								.copy(builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
+								.copy(builders.multiLineCommentBuilder().get()
 										.content("something useful")
 										.build())
 								.build()
@@ -62,7 +59,7 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 				// Set Content
 				Pair.of(
 						builder -> ListUtil.createList("something useful"),
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content("something useful")
 								.build()
 								.getContent()
@@ -70,7 +67,7 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 				// Set Multi Line Content
 				Pair.of(
 						builder -> ListUtil.createList("something useful", "something else"),
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content(ListUtil.createList("something useful", "something else"))
 								.build()
 								.getContent()
@@ -78,7 +75,7 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 				// Set Multi Line Content Separate Entries
 				Pair.of(
 						builder -> ListUtil.createList("something useful", "something else"),
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content("something useful")
 								.content("something else")
 								.build()
@@ -86,35 +83,33 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 				),
 				// Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build(),
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build()
 				)
 		);
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(multiLineCommentBuilders.get(index)),
-								pair.getRight().apply(multiLineCommentBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<Function<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>, Object>,
-				Function<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build(),
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content("something useful")
 								.build()
 				),
 				// Not Equals Different Type
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build(),
 						builder -> "testing"
 				)
@@ -122,41 +117,40 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(multiLineCommentBuilders.get(index)),
-								pair.getRight().apply(multiLineCommentBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<Function<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>, JavaMultiLineComment>,
-				String,
-				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, JavaMultiLineComment>, String, Function<SimpleClassNames, String>>>
+				commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.build(),
 						"/*\n */",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.multiLineCommentSimpleClassName() + """
 								.builder()
 										.build()"""
 				),
 				// With 1 line of content
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content("something useful")
 								.build(),
 						"""
 								/*
 								 * something useful
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.multiLineCommentSimpleClassName() + """
 								.builder()
 										.content("something useful")
 										.build()"""
 				),
 				// With 2 lines of content
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.multiLineCommentBuilder().get()
 								.content("something useful")
 								.content("something else")
 								.build(),
@@ -165,7 +159,7 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 								 * something useful
 								 * something else
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.multiLineCommentSimpleClassName() + """
 								.builder()
 										.content("something useful")
 										.content("something else")
@@ -175,12 +169,8 @@ public class JavaMultiLineCommentTest extends BaseJavaCodeTypeTest<JavaMultiLine
 		
 		return commentMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> {
-							Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>> builder =
-									multiLineCommentBuilders.get(index);
-							return Arguments.of(triple.getLeft().apply(builder), triple.getMiddle(),
-									triple.getRight().apply(multiLineCommentSimpleClassNames.get(index)));
-						}));
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)), triple.getMiddle(),
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	/*

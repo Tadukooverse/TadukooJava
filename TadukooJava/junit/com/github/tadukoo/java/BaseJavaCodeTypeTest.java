@@ -136,18 +136,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>> packageDeclarationBuilders =
-			ListUtil.createList(
-					UneditableJavaPackageDeclaration::builder,
-					EditableJavaPackageDeclaration::builder,
-					TestJavaPackageDeclaration::builder
-			);
-	protected static final List<String> packageDeclarationSimpleClassNames = ListUtil.createList(
-			UneditableJavaPackageDeclaration.class.getSimpleName(),
-			EditableJavaPackageDeclaration.class.getSimpleName(),
-			TestJavaPackageDeclaration.class.getSimpleName()
-	);
-	
 	/*
 	 * Import Statement Info
 	 */
@@ -178,18 +166,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>> importStatementBuilders =
-			ListUtil.createList(
-					UneditableJavaImportStatement::builder,
-					EditableJavaImportStatement::builder,
-					TestJavaImportStatement::builder
-			);
-	protected static final List<String> importStatementSimpleClassNames = ListUtil.createList(
-			UneditableJavaImportStatement.class.getSimpleName(),
-			EditableJavaImportStatement.class.getSimpleName(),
-			TestJavaImportStatement.class.getSimpleName()
-	);
-	
 	/*
 	 * Single Line Comment Info
 	 */
@@ -219,18 +195,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>> singleLineCommentBuilders =
-			ListUtil.createList(
-					UneditableJavaSingleLineComment::builder,
-					EditableJavaSingleLineComment::builder,
-					TestJavaSingleLineComment::builder
-			);
-	protected static final List<String> singleLineCommentSimpleClassNames = ListUtil.createList(
-			UneditableJavaSingleLineComment.class.getSimpleName(),
-			EditableJavaSingleLineComment.class.getSimpleName(),
-			TestJavaSingleLineComment.class.getSimpleName()
-	);
-	
 	/*
 	 * Multi Line Comment Info
 	 */
@@ -259,18 +223,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 			return new TestJavaMultiLineComment(editable, content);
 		}
 	}
-	
-	protected static final List<Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>>> multiLineCommentBuilders =
-			ListUtil.createList(
-					UneditableJavaMultiLineComment::builder,
-					EditableJavaMultiLineComment::builder,
-					TestJavaMultiLineComment::builder
-			);
-	protected static final List<String> multiLineCommentSimpleClassNames = ListUtil.createList(
-			UneditableJavaMultiLineComment.class.getSimpleName(),
-			EditableJavaMultiLineComment.class.getSimpleName(),
-			TestJavaMultiLineComment.class.getSimpleName()
-	);
 	
 	/*
 	 * Javadoc Info
@@ -303,19 +255,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<Supplier<JavadocBuilder<? extends Javadoc>>> javadocBuilders =
-			ListUtil.createList(
-					UneditableJavadoc::builder,
-					EditableJavadoc::builder,
-					TestJavadoc::builder
-			);
-	
-	protected static final List<String> javadocSimpleClassNames = ListUtil.createList(
-			UneditableJavadoc.class.getSimpleName(),
-			EditableJavadoc.class.getSimpleName(),
-			TestJavadoc.class.getSimpleName()
-	);
-	
 	/*
 	 * Java Annotation Info
 	 */
@@ -343,18 +282,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 			return new TestJavaAnnotation(editable, name, canonicalName, parameters);
 		}
 	}
-	
-	protected static final List<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>> annotationBuilders =
-			ListUtil.createList(
-					UneditableJavaAnnotation::builder,
-					EditableJavaAnnotation::builder,
-					TestJavaAnnotation::builder
-			);
-	protected static final List<String> annotationSimpleClassNames = ListUtil.createList(
-			UneditableJavaAnnotation.class.getSimpleName(),
-			EditableJavaAnnotation.class.getSimpleName(),
-			TestJavaAnnotation.class.getSimpleName()
-	);
 	
 	/*
 	 * Field Info
@@ -397,19 +324,6 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<Supplier<JavaFieldBuilder<? extends JavaField>>> fieldBuilders =
-			ListUtil.createList(
-					UneditableJavaField::builder,
-					EditableJavaField::builder,
-					TestJavaField::builder
-			);
-	
-	protected static final List<String> fieldSimpleClassNames = ListUtil.createList(
-			UneditableJavaField.class.getSimpleName(),
-			EditableJavaField.class.getSimpleName(),
-			TestJavaField.class.getSimpleName()
-	);
-	
 	/*
 	 * Method Info
 	 */
@@ -419,11 +333,11 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		private TestJavaMethod(
 				boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-				JavaType returnType, String name,
+				List<JavaTypeParameter> typeParameters, JavaType returnType, String name,
 				List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 			super(editable, javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,
-					returnType, name,
+					typeParameters, returnType, name,
 					parameters, throwTypes, lines);
 		}
 		
@@ -449,23 +363,10 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		protected TestJavaMethod constructMethod(){
 			return new TestJavaMethod(editable, javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,
-					returnType, name,
+					typeParameters, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
-	
-	protected static final List<Supplier<JavaMethodBuilder<? extends JavaMethod>>> methodBuilders =
-			ListUtil.createList(
-					UneditableJavaMethod::builder,
-					EditableJavaMethod::builder,
-					TestJavaMethod::builder
-			);
-	
-	protected static final List<String> methodSimpleClassNames = ListUtil.createList(
-			UneditableJavaMethod.class.getSimpleName(),
-			EditableJavaMethod.class.getSimpleName(),
-			TestJavaMethod.class.getSimpleName()
-	);
 	
 	/*
 	 * Class Info
@@ -541,16 +442,89 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 	}
 	
-	protected static final List<Supplier<JavaClassBuilder<? extends JavaClass>>> classBuilders =
-			ListUtil.createList(
-					UneditableJavaClass::builder,
-					EditableJavaClass::builder,
-					TestJavaClass::builder
-			);
+	protected record Builders(
+			Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>> packageDeclarationBuilder,
+			Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>> importStatementBuilder,
+			Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>> singleLineCommentBuilder,
+			Supplier<JavaMultiLineCommentBuilder<? extends JavaMultiLineComment>> multiLineCommentBuilder,
+			Supplier<JavadocBuilder<? extends Javadoc>> javadocBuilder,
+			Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>> annotationBuilder,
+			Supplier<JavaFieldBuilder<? extends JavaField>> fieldBuilder,
+			Supplier<JavaMethodBuilder<? extends JavaMethod>> methodBuilder,
+			Supplier<JavaClassBuilder<? extends JavaClass>> classBuilder
+			){
+	}
 	
-	protected static final List<String> classSimpleClassNames = ListUtil.createList(
-			UneditableJavaClass.class.getSimpleName(),
-			EditableJavaClass.class.getSimpleName(),
-			TestJavaClass.class.getSimpleName()
+	protected record SimpleClassNames(
+			String packageDeclarationSimpleClassName,
+			String importStatementSimpleClassName,
+			String singleLineCommentSimpleClassName,
+			String multiLineCommentSimpleClassName,
+			String javadocSimpleClassName,
+			String annotationSimpleClassName,
+			String fieldSimpleClassName,
+			String methodSimpleClassName,
+			String classSimpleClassName
+	){
+	}
+	
+	protected static final List<Builders> allBuilders = ListUtil.createList(
+			new Builders(UneditableJavaPackageDeclaration::builder,
+					UneditableJavaImportStatement::builder,
+					UneditableJavaSingleLineComment::builder,
+					UneditableJavaMultiLineComment::builder,
+					UneditableJavadoc::builder,
+					UneditableJavaAnnotation::builder,
+					UneditableJavaField::builder,
+					UneditableJavaMethod::builder,
+					UneditableJavaClass::builder),
+			new Builders(EditableJavaPackageDeclaration::builder,
+					EditableJavaImportStatement::builder,
+					EditableJavaSingleLineComment::builder,
+					EditableJavaMultiLineComment::builder,
+					EditableJavadoc::builder,
+					EditableJavaAnnotation::builder,
+					EditableJavaField::builder,
+					EditableJavaMethod::builder,
+					EditableJavaClass::builder),
+			new Builders(TestJavaPackageDeclaration::builder,
+					TestJavaImportStatement::builder,
+					TestJavaSingleLineComment::builder,
+					TestJavaMultiLineComment::builder,
+					TestJavadoc::builder,
+					TestJavaAnnotation::builder,
+					TestJavaField::builder,
+					TestJavaMethod::builder,
+					TestJavaClass::builder)
+	);
+	
+	protected static final List<SimpleClassNames> simpleClassNames = ListUtil.createList(
+			new SimpleClassNames(UneditableJavaPackageDeclaration.class.getSimpleName(),
+					UneditableJavaImportStatement.class.getSimpleName(),
+					UneditableJavaSingleLineComment.class.getSimpleName(),
+					UneditableJavaMultiLineComment.class.getSimpleName(),
+					UneditableJavadoc.class.getSimpleName(),
+					UneditableJavaAnnotation.class.getSimpleName(),
+					UneditableJavaField.class.getSimpleName(),
+					UneditableJavaMethod.class.getSimpleName(),
+					UneditableJavaClass.class.getSimpleName()),
+			new SimpleClassNames(EditableJavaPackageDeclaration.class.getSimpleName(),
+					EditableJavaImportStatement.class.getSimpleName(),
+					EditableJavaSingleLineComment.class.getSimpleName(),
+					EditableJavaMultiLineComment.class.getSimpleName(),
+					EditableJavadoc.class.getSimpleName(),
+					EditableJavaAnnotation.class.getSimpleName(),
+					EditableJavaField.class.getSimpleName(),
+					EditableJavaMethod.class.getSimpleName(),
+					EditableJavaClass.class.getSimpleName()),
+			new SimpleClassNames(TestJavaPackageDeclaration.class.getSimpleName(),
+					TestJavaImportStatement.class.getSimpleName(),
+					TestJavaSingleLineComment.class.getSimpleName(),
+					TestJavaMultiLineComment.class.getSimpleName(),
+					TestJavadoc.class.getSimpleName(),
+					TestJavaAnnotation.class.getSimpleName(),
+					TestJavaField.class.getSimpleName(),
+					TestJavaMethod.class.getSimpleName(),
+					TestJavaClass.class.getSimpleName())
 	);
 }

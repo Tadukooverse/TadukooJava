@@ -35,23 +35,21 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>,
-				Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.PACKAGE_DECLARATION,
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build().getJavaCodeType()
 				),
 				// Copy
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build(),
-						builder -> builder.get()
-								.copy(builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
+								.copy(builders.packageDeclarationBuilder().get()
 										.packageName("com.example")
 										.build())
 								.build()
@@ -59,17 +57,17 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 				// Package Name
 				Pair.of(
 						builder -> "com.example",
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build()
 								.getPackageName()
 				),
 				// Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build()
 				)
@@ -77,27 +75,25 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(packageDeclarationBuilders.get(index)),
-								pair.getRight().apply(packageDeclarationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>,
-				Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.github.tadukoo")
 								.build()
 				),
 				// Different Types
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build(),
 						builder -> "testing"
@@ -106,23 +102,21 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(packageDeclarationBuilders.get(index)),
-								pair.getRight().apply(packageDeclarationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-					JavaPackageDeclaration>,
-				String,
-				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, JavaPackageDeclaration>, String, Function<SimpleClassNames, String>>>
+				commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.packageDeclarationBuilder().get()
 								.packageName("com.example")
 								.build(),
 						"package com.example;",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.packageDeclarationSimpleClassName() + """
 								.builder()
 										.packageName("com.example")
 										.build()"""
@@ -131,19 +125,18 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 		
 		return commentMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(packageDeclarationBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(packageDeclarationSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<Function<Supplier<JavaPackageDeclarationBuilder<? extends JavaPackageDeclaration>>,
-						Supplier<? extends JavaPackageDeclaration>>,
+		List<Pair<Function<Builders, Supplier<? extends JavaPackageDeclaration>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Missing Package Name
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.packageDeclarationBuilder().get()
 								.build(),
 						"packageName is required!"
 				)
@@ -151,7 +144,7 @@ public class JavaPackageDeclarationTest extends BaseJavaCodeTypeTest<JavaPackage
 		
 		return builderFuncsAndErrorMessages.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(packageDeclarationBuilders.get(index)),
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 								pair.getRight())));
 	}
 	

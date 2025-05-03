@@ -4,7 +4,6 @@ import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.Function;
-import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -39,73 +38,72 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>,
-				Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.JAVADOC,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build().getJavaCodeType()
 				),
 				// Default Condensed
 				Pair.of(
 						builder -> false,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.isCondensed()
 				),
 				// Default Content
 				Pair.of(
 						builder -> new ArrayList<>(),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getContent()
 				),
 				// Default Author
 				Pair.of(
 						builder -> null,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getAuthor()
 				),
 				// Default Version
 				Pair.of(
 						builder -> null,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getVersion()
 				),
 				// Default Since
 				Pair.of(
 						builder -> null,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getSince()
 				),
 				// Default Params
 				Pair.of(
 						builder -> new ArrayList<>(),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getParams()
 				),
 				// Default Return Value
 				Pair.of(
 						builder -> null,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getReturnVal()
 				),
 				// Default Throws Infos
 				Pair.of(
 						builder -> new ArrayList<>(),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build()
 								.getThrowsInfos()
 				),
 				// Copy
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.content("Some information")
 								.content("Some more information")
@@ -116,8 +114,8 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								.returnVal("yep")
 								.throwsInfo("Exception", "because I can")
 								.build(),
-						builder -> builder.get()
-								.copy(builder.get()
+						builders -> builders.javadocBuilder().get()
+								.copy(builders.javadocBuilder().get()
 										.condensed()
 										.content("Some information")
 										.content("Some more information")
@@ -133,7 +131,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Condensed Value
 				Pair.of(
 						builder -> true,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed(true)
 								.build()
 								.isCondensed()
@@ -141,7 +139,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Condensed
 				Pair.of(
 						builder -> true,
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.build()
 								.isCondensed()
@@ -149,7 +147,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Content
 				Pair.of(
 						builder -> ListUtil.createList("test", "derp"),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content(ListUtil.createList("test", "derp"))
 								.build()
 								.getContent()
@@ -157,7 +155,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Content Line
 				Pair.of(
 						builder -> ListUtil.createList("test"),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.build()
 								.getContent()
@@ -165,7 +163,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Author
 				Pair.of(
 						builder -> "Logan Ferree (Tadukoo)",
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.author("Logan Ferree (Tadukoo)")
 								.build()
 								.getAuthor()
@@ -173,7 +171,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Version
 				Pair.of(
 						builder -> "Alpha v.0.1",
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.version("Alpha v.0.1")
 								.build()
 								.getVersion()
@@ -181,7 +179,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Since
 				Pair.of(
 						builder -> "Alpha v.0.0.1",
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.since("Alpha v.0.0.1")
 								.build()
 								.getSince()
@@ -189,7 +187,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Params
 				Pair.of(
 						builder -> ListUtil.createList(Pair.of("test", "yes"), Pair.of("derp", "no")),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.params(ListUtil.createList(Pair.of("test", "yes"),
 										Pair.of("derp", "no")))
 								.build()
@@ -198,7 +196,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Param Pair
 				Pair.of(
 						builder -> ListUtil.createList(Pair.of("test", "yes")),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.param(Pair.of("test", "yes"))
 								.build()
 								.getParams()
@@ -206,7 +204,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Param Pieces
 				Pair.of(
 						builder -> ListUtil.createList(Pair.of("test", "yes")),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.param("test", "yes")
 								.build()
 								.getParams()
@@ -214,7 +212,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Return Value
 				Pair.of(
 						builder -> "this, to continue building",
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.returnVal("this, to continue building")
 								.build()
 								.getReturnVal()
@@ -223,7 +221,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				Pair.of(
 						builder -> ListUtil.createList(Pair.of("Exception", "Because I can"),
 								Pair.of("Throwable", "Because I want to")),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.throwsInfos(ListUtil.createList(Pair.of("Exception", "Because I can"),
 										Pair.of("Throwable", "Because I want to")))
 								.build()
@@ -232,7 +230,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Throws Info Pair
 				Pair.of(
 						builder -> ListUtil.createList(Pair.of("Exception", "Because I can")),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.throwsInfo(Pair.of("Exception", "Because I can"))
 								.build()
 								.getThrowsInfos()
@@ -240,14 +238,14 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				// Set Throws Info Pieces
 				Pair.of(
 						builder -> ListUtil.createList(Pair.of("Exception", "Because I can")),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.throwsInfo("Exception", "Because I can")
 								.build()
 								.getThrowsInfos()
 				),
 				// Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.content("derp")
 								.author("Logan Ferree (Tadukoo)")
@@ -258,7 +256,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								.returnVal("this, to continue building")
 								.throwsInfo("Exception", "Because I can")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.content("derp")
 								.author("Logan Ferree (Tadukoo)")
@@ -274,17 +272,16 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(javadocBuilders.get(index)),
-								pair.getRight().apply(javadocBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>,
-				Function<Supplier<JavadocBuilder<? extends Javadoc>>, Object>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equal
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("tes")
 								.content("derp")
 								.author("Logan Ferree (Tadukoo)")
@@ -294,7 +291,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								.param("derp", "no")
 								.returnVal("this, to continue building")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.content("derp")
 								.author("Logan Ferree (Tadukoo)")
@@ -307,7 +304,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Different type
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build(),
 						builder -> "test"
 				)
@@ -315,29 +312,28 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(javadocBuilders.get(index)),
-								pair.getRight().apply(javadocBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<Function<Supplier<JavadocBuilder<? extends Javadoc>>, Javadoc>,
-				String,
-				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, Javadoc>, String, Function<SimpleClassNames, String>>>
+				commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.build(),
 						"""
 								/**
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.build()"""
 				),
 				// With Content
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.content("derp")
 								.build(),
@@ -346,7 +342,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 * test
 								 * derp
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.content("test")
 										.content("derp")
@@ -354,63 +350,63 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// With Author
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.author("Logan Ferree (Tadukoo)")
 								.build(),
 						"""
 								/**
 								 * @author Logan Ferree (Tadukoo)
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.author("Logan Ferree (Tadukoo)")
 										.build()"""
 				),
 				// With Version
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.version("Alpha v.0.1")
 								.build(),
 						"""
 								/**
 								 * @version Alpha v.0.1
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.version("Alpha v.0.1")
 										.build()"""
 				),
 				// With Since
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.since("Alpha v.0.0.1")
 								.build(),
 						"""
 								/**
 								 * @since Alpha v.0.0.1
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.since("Alpha v.0.0.1")
 										.build()"""
 				),
 				// With Single Param
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.param("test", "yes")
 								.build(),
 						"""
 								/**
 								 * @param test yes
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.param("test", "yes")
 										.build()"""
 				),
 				// With Multiple Params
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.param("test", "yes")
 								.param("derp", "no")
 								.build(),
@@ -419,7 +415,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 * @param test yes
 								 * @param derp no
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.param("test", "yes")
 										.param("derp", "no")
@@ -427,35 +423,35 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// With Return Value
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.returnVal("this, to continue building")
 								.build(),
 						"""
 								/**
 								 * @return this, to continue building
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.returnVal("this, to continue building")
 										.build()"""
 				),
 				// With Throws Info
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.throwsInfo("Exception", "Because I can")
 								.build(),
 						"""
 								/**
 								 * @throws Exception Because I can
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.throwsInfo("Exception", "Because I can")
 										.build()"""
 				),
 				// With Multiple Throws Infos
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.throwsInfo("Exception", "Because I can")
 								.throwsInfo("Throwable", "Because I want to")
 								.build(),
@@ -464,7 +460,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 * @throws Exception Because I can
 								 * @throws Throwable Because I want to
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.throwsInfo("Exception", "Because I can")
 										.throwsInfo("Throwable", "Because I want to")
@@ -472,7 +468,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// With Everything
 				Triple.of(
-						builder-> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.content("derp")
 								.author("Logan Ferree (Tadukoo)")
@@ -499,7 +495,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 * @throws Exception Because I can
 								 * @throws Throwable Because I want to
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.content("test")
 										.content("derp")
@@ -515,19 +511,19 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.build(),
 						"""
 								/** */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.build()"""
 				),
 				// Condensed With Content
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.content("test")
 								.content("derp")
@@ -535,7 +531,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 						"""
 								/** test
 								 * derp */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.content("test")
@@ -544,13 +540,13 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Author
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.author("Logan Ferree (Tadukoo)")
 								.build(),
 						"""
 								/** @author Logan Ferree (Tadukoo) */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.author("Logan Ferree (Tadukoo)")
@@ -558,13 +554,13 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Version
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.version("Alpha v.0.1")
 								.build(),
 						"""
 								/** @version Alpha v.0.1 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.version("Alpha v.0.1")
@@ -572,13 +568,13 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Since
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.since("Alpha v.0.0.1")
 								.build(),
 						"""
 								/** @since Alpha v.0.0.1 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.since("Alpha v.0.0.1")
@@ -586,13 +582,13 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Single Param
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.param("test", "yes")
 								.build(),
 						"""
 								/** @param test yes */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.param("test", "yes")
@@ -600,7 +596,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Multiple Params
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.param("test", "yes")
 								.param("derp", "no")
@@ -608,7 +604,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 						"""
 								/** @param test yes
 								 * @param derp no */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.param("test", "yes")
@@ -617,13 +613,13 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Return Value
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.returnVal("this, to continue building")
 								.build(),
 						"""
 								/** @return this, to continue building */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.returnVal("this, to continue building")
@@ -631,13 +627,13 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Throws Info
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.throwsInfo("Exception", "Because I can")
 								.build(),
 						"""
 								/** @throws Exception Because I can */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.throwsInfo("Exception", "Because I can")
@@ -645,7 +641,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Multiple Throws Infos
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.throwsInfo("Exception", "Because I can")
 								.throwsInfo("Throwable", "Because I want to")
@@ -653,7 +649,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 						"""
 								/** @throws Exception Because I can
 								 * @throws Throwable Because I want to */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.throwsInfo("Exception", "Because I can")
@@ -662,7 +658,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Condensed With Everything
 				Triple.of(
-						builder-> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.condensed()
 								.content("test")
 								.content("derp")
@@ -688,7 +684,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 * @return this, to continue building
 								 * @throws Exception Because I can
 								 * @throws Throwable Because I want to */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.condensed()
 										.content("test")
@@ -705,7 +701,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Content and Info Annotations
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.author("Me")
 								.build(),
@@ -715,7 +711,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 *\s
 								 * @author Me
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.content("test")
 										.author("Me")
@@ -723,7 +719,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 				),
 				// Content and Code Annotations
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.javadocBuilder().get()
 								.content("test")
 								.returnVal("this")
 								.build(),
@@ -733,7 +729,7 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 								 *\s
 								 * @return this
 								 */""",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.javadocSimpleClassName() + """
 								.builder()
 										.content("test")
 										.returnVal("this")
@@ -743,9 +739,9 @@ public class JavadocTest extends BaseJavaCodeTypeTest<Javadoc>{
 		
 		return commentMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(javadocBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(javadocSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	/*

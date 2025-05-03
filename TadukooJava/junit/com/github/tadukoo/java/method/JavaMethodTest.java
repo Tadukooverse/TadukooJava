@@ -3,15 +3,11 @@ package com.github.tadukoo.java.method;
 import com.github.tadukoo.java.*;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
-import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.javadoc.EditableJavadoc;
-import com.github.tadukoo.java.javadoc.Javadoc;
-import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.Function;
-import com.github.tadukoo.util.functional.function.Function3;
 import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
@@ -50,109 +46,101 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<Function3<
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Object>,
-				Function3<
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Object>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>,
+				Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> JavaCodeTypes.METHOD,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> JavaCodeTypes.METHOD,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build().getJavaCodeType()
 				),
 				// Default Javadoc
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> null,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getJavadoc()
 				),
 				// Default Annotations
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> new ArrayList<>(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getAnnotations()
 				),
 				// Default Visibility
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> Visibility.NONE,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> Visibility.NONE,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getVisibility()
 				),
 				// Default Abstract
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.isAbstract()
 				),
 				// Default Static
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.isStatic()
 				),
 				// Default Final
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.isFinal()
 				),
 				// Default Name
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> null,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getName()
 				),
 				// Default Parameters
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> new ArrayList<>(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getParameters()
 				),
 				// Default Throw Types
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> new ArrayList<>(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getThrowTypes()
 				),
 				// Default Lines
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> new ArrayList<>(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getLines()
 				),
 				// Copy
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.javadoc(javadocBuilder.get()
+						builders -> builders.methodBuilder().get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.visibility(Visibility.PRIVATE)
@@ -165,11 +153,11 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								.line("doSomething();")
 								.line("doSomethingElse();")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.copy(builder.get()
-										.javadoc(javadocBuilder.get()
+						builders -> builders.methodBuilder().get()
+								.copy(builders.methodBuilder().get()
+										.javadoc(builders.javadocBuilder().get()
 												.build())
-										.annotation(annotationBuilder.get()
+										.annotation(builders.annotationBuilder().get()
 												.name("Test")
 												.build())
 										.visibility(Visibility.PRIVATE)
@@ -186,31 +174,31 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Javadoc
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> javadocBuilder.get()
+						builders -> builders.javadocBuilder().get()
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
-								.javadoc(javadocBuilder.get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
 								.build()
 								.getJavadoc()
 				),
 				// Set Annotations
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
-								annotationBuilder.get()
+						builders -> ListUtil.createList(
+								builders.annotationBuilder().get()
 										.name("Test")
 										.build(),
-								annotationBuilder.get()
+								builders.annotationBuilder().get()
 										.name("Derp")
 										.build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.annotations(ListUtil.createList(
-										annotationBuilder.get()
+										builders.annotationBuilder().get()
 												.name("Test")
 												.build(),
-										annotationBuilder.get()
+										builders.annotationBuilder().get()
 												.name("Derp")
 												.build()
 								))
@@ -220,13 +208,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Annotation
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
-								annotationBuilder.get()
+						builders -> ListUtil.createList(
+								builders.annotationBuilder().get()
 										.name("Test")
 										.build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.returnType("int")
@@ -235,8 +223,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Visibility
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> Visibility.PRIVATE,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> Visibility.PRIVATE,
+						builders -> builders.methodBuilder().get()
 								.visibility(Visibility.PRIVATE)
 								.returnType("int")
 								.build()
@@ -244,8 +232,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Is Abstract
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.methodBuilder().get()
 								.isAbstract()
 								.returnType("int")
 								.build()
@@ -253,8 +241,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Is Abstract
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.methodBuilder().get()
 								.isAbstract(true)
 								.returnType("int")
 								.build()
@@ -262,8 +250,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Is Static
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.methodBuilder().get()
 								.isStatic()
 								.returnType("int")
 								.build()
@@ -271,8 +259,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Is Static
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.methodBuilder().get()
 								.isStatic(true)
 								.returnType("int")
 								.build()
@@ -280,8 +268,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Is Final
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.methodBuilder().get()
 								.isFinal()
 								.returnType("int")
 								.build()
@@ -289,8 +277,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Is Final
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.methodBuilder().get()
 								.isFinal(true)
 								.returnType("int")
 								.build()
@@ -298,10 +286,10 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Return Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("int")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType(JavaType.builder()
 										.baseType("int")
 										.build())
@@ -310,25 +298,25 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Return Type by Text
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("int")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build()
 								.getReturnType()
 				),
 				// Set Name
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> "someName",
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> "someName",
+						builders -> builders.methodBuilder().get()
 								.returnType("int").name("someName")
 								.build()
 								.getName()
 				),
 				// Set Parameters
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaParameter.builder()
 										.type(JavaType.builder()
 												.baseType("int")
@@ -342,7 +330,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 										.name("someText")
 										.build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameters(ListUtil.createList(
 										JavaParameter.builder()
@@ -363,7 +351,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Parameter
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaParameter.builder()
 										.type(JavaType.builder()
 												.baseType("int")
@@ -371,7 +359,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 										.name("someInt")
 										.build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter(JavaParameter.builder()
 												.type(JavaType.builder()
@@ -385,7 +373,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Parameter Text
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								JavaParameter.builder()
 										.type(JavaType.builder()
 												.baseType("int")
@@ -393,7 +381,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 										.name("someInt")
 										.build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("int someInt")
 								.build()
@@ -401,10 +389,10 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Throw Types
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								"Throwable", "Exception"
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.throwTypes(ListUtil.createList(
 										"Throwable",
@@ -416,10 +404,10 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Throw Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								"Throwable"
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.throwType("Throwable")
 								.build()
@@ -427,10 +415,10 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Lines
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								"doSomething();", "return 42;"
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.lines(ListUtil.createList(
 										"doSomething();", "return 42;"
@@ -441,10 +429,10 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Set Line
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								"return 42;"
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.line("return 42;")
 								.build()
@@ -452,12 +440,12 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Equals
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get().returnType("int")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get().returnType("int")
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.name("someMethod")
@@ -465,12 +453,12 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								.parameter("String text").parameter("int something")
 								.throwType("Throwable").throwType("Exception")
 								.line("doSomething();").line("return 42;").build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get().returnType("int")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get().returnType("int")
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.name("someMethod")
@@ -483,32 +471,22 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(methodBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)),
-								pair.getRight().apply(methodBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<Function3<
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Object>,
-				Function3<
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Object>>> comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>,
+				Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get().returnType("int")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get().returnType("int")
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.name("someMethod")
@@ -516,12 +494,12 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								.parameter("String text").parameter("int something")
 								.throwType("Throwable").throwType("Exception")
 								.line("doSomething();").line("return 42;").build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get().returnType("int")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get().returnType("int")
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.name("someMethod")
@@ -532,46 +510,40 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Different type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> "testing"
+						builders -> "testing"
 				)
 		);
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(methodBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)),
-								pair.getRight().apply(methodBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<Function3<
-						Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						JavaMethod>,
+		List<Triple<Function<Builders, JavaMethod>,
 				String,
-				Function3<String, String, String, String>>> commentMakersAndStrings = ListUtil.createList(
+				Function<SimpleClassNames, String>>> commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build(),
 						"""
 								int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.build()"""
 				),
 				// With Javadoc
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.javadoc(javadocBuilder.get()
+						builders -> builders.methodBuilder().get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
 								.returnType("int")
 								.build(),
@@ -579,9 +551,9 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								/**
 								 */
 								int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
-										.javadoc(""" + javadocClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
 										.returnType("int")
@@ -589,8 +561,8 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Annotation
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.returnType("int")
@@ -598,9 +570,9 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 						"""
 								@Test
 								int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
-										.annotation(""" + annotationClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
@@ -609,11 +581,11 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Multiple Annotations
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.annotation(annotationBuilder.get()
+						builders -> builders.methodBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.returnType("int")
@@ -622,13 +594,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								@Test
 								@Derp
 								int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
-										.annotation(""" + annotationClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annotationClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -637,13 +609,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Visibility
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.visibility(Visibility.PRIVATE)
 								.returnType("int")
 								.build(),
 						"""
 								private int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.visibility(Visibility.PRIVATE)
 										.returnType("int")
@@ -651,13 +623,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Abstract
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.isAbstract()
 								.returnType("int")
 								.build(),
 						"""
 								abstract int();""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.isAbstract()
 										.returnType("int")
@@ -665,13 +637,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Static
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.isStatic()
 								.returnType("int")
 								.build(),
 						"""
 								static int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.isStatic()
 										.returnType("int")
@@ -679,13 +651,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Final
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.isFinal()
 								.returnType("int")
 								.build(),
 						"""
 								final int(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.isFinal()
 										.returnType("int")
@@ -693,12 +665,12 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Name
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int").name("someMethod")
 								.build(),
 						"""
 								int someMethod(){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.name("someMethod")
@@ -706,13 +678,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Single Parameter
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String text")
 								.build(),
 						"""
 								int(String text){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.parameter("String text")
@@ -720,14 +692,14 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Multiple Parameters
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String text")
 								.parameter("int something")
 								.build(),
 						"""
 								int(String text, int something){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.parameter("String text")
@@ -736,7 +708,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Long Parameters
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String text")
 								.parameter("Testy testy")
@@ -751,7 +723,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 						"""
 								int(
 										String text, Testy testy, Test test, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.parameter("String text")
@@ -767,7 +739,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Long Parameters 2 Lines
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String text")
 								.parameter("Testy testy")
@@ -784,7 +756,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								int(
 										String text, Testy testy, Test test, Test test2, Test test3, Test test4, Test test5, Test test6, Test test7,\s
 										Test test8){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.parameter("String text")
@@ -801,14 +773,14 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Long Single Parameter
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
 								.build(),
 						"""
 								int(
 										String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
@@ -816,7 +788,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With 2 Long Single Parameters
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
 								.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah2")
@@ -825,7 +797,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								int(
 										String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah,\s
 										String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah2){ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.parameter("String aReallyLongNameForAStringThatReallyShouldNotBeThisWayButItIsForSomeReasonAndNoOneKnowsWhyItWasDoneThisWayAndYeah")
@@ -834,13 +806,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Single Throw Type
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.throwType("Throwable")
 								.build(),
 						"""
 								int() throws Throwable{ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.throwType("Throwable")
@@ -848,14 +820,14 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Multiple Throw Types
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.throwType("Throwable")
 								.throwType("Exception")
 								.build(),
 						"""
 								int() throws Throwable, Exception{ }""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.throwType("Throwable")
@@ -864,7 +836,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Line
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.line("return 42;")
 								.build(),
@@ -872,7 +844,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								int(){
 									return 42;
 								}""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.line("return 42;")
@@ -880,7 +852,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Lines
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.line("doSomething();")
 								.line("return 42;")
@@ -890,7 +862,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 									doSomething();
 									return 42;
 								}""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.returnType("int")
 										.line("doSomething();")
@@ -899,13 +871,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Everything
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get()
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build()).name("someMethod")
 								.visibility(Visibility.PUBLIC)
@@ -922,16 +894,16 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 									doSomething();
 									return 42;
 								}""",
-						(simpleClassName, javadocClassName, annotationClassName) -> simpleClassName + """
+						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
-										.javadoc(""" + javadocClassName + """
+										.javadoc(""" + classNames.javadocSimpleClassName() + """
 								.builder()
 												.build())
-										.annotation(""" + annotationClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + annotationClassName + """
+										.annotation(""" + classNames.annotationSimpleClassName() + """
 								.builder()
 												.name("Derp")
 												.build())
@@ -952,21 +924,17 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 		
 		return commentMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(methodBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(methodSimpleClassNames.get(index),
-										javadocSimpleClassNames.get(index), annotationSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<Function<Supplier<JavaMethodBuilder<? extends JavaMethod>>,
-						Supplier<? extends JavaMethod>>,
-				String>> builderFuncsAndErrorMessages = ListUtil.createList(
+		List<Pair<Function<Builders, Supplier<? extends JavaMethod>>, String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Null Visibility
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.returnType("int")
 								.visibility(null)
 								.build(),
@@ -974,13 +942,13 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Null Return Type
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.build(),
 						"Must specify returnType!"
 				),
 				// All Errors
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.visibility(null)
 								.build(),
 						"""
@@ -989,7 +957,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Abstract and Private
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.visibility(Visibility.PRIVATE)
 								.isAbstract()
 								.returnType("String")
@@ -998,7 +966,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Abstract and Static
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.isAbstract()
 								.isStatic()
 								.returnType("String")
@@ -1007,7 +975,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Abstract and Final
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.isAbstract()
 								.isFinal()
 								.returnType("String")
@@ -1016,7 +984,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Abstract and Lines
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.isAbstract()
 								.returnType("String")
 								.line("return this")
@@ -1025,7 +993,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// All Abstract Errors
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.methodBuilder().get()
 								.visibility(Visibility.PRIVATE)
 								.isAbstract()
 								.isStatic()
@@ -1112,7 +1080,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 		
 		return Stream.concat(builderFuncsAndErrorMessages.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(methodBuilders.get(index)),
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 								pair.getRight()))),
 				editableRelatedErrors.stream()
 						.map(pair -> Arguments.of(pair.getLeft(), pair.getRight())));
@@ -1123,18 +1091,18 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 	 */
 	
 	private Stream<Arguments> getUniqueNameData(){
-		List<Pair<Function<Supplier<JavaMethodBuilder<? extends JavaMethod>>, JavaMethod>, String>>
+		List<Pair<Function<Builders, JavaMethod>, String>>
 				uniqueNameAndBuilders = ListUtil.createList(
 				// Constructor
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.build(),
 						"init()"
 				),
 				// Constructor With Parameter
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String name")
 								.build(),
@@ -1142,7 +1110,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Constructor With Multiple Parameters
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.parameter("String name")
 								.parameter("int version")
@@ -1151,7 +1119,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// Simple
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int")
 								.name("test")
 								.build(),
@@ -1159,7 +1127,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Parameter
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int").name("test")
 								.parameter("String name")
 								.build(),
@@ -1167,7 +1135,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 				),
 				// With Multiple Parameters
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.methodBuilder().get()
 								.returnType("int").name("test")
 								.parameter("String name")
 								.parameter("int version")
@@ -1178,7 +1146,7 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 		
 		return uniqueNameAndBuilders.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(methodBuilders.get(index)),
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 								pair.getRight())));
 	}
 	

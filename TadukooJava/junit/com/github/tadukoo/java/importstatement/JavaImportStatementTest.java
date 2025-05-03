@@ -42,25 +42,22 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>,
-				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.IMPORT_STATEMENT,
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.build().getJavaCodeType()
 				),
 				// Copy
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.isStatic()
 								.importName("com.example")
 								.build(),
-						builder -> builder.get()
-								.copy(builder.get()
+						builders -> builders.importStatementBuilder().get()
+								.copy(builders.importStatementBuilder().get()
 										.isStatic()
 										.importName("com.example")
 										.build())
@@ -69,7 +66,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 				// Set Import Name
 				Pair.of(
 						builder -> "com.example",
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.build()
 								.getImportName()
@@ -77,7 +74,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 				// Default Is Static
 				Pair.of(
 						builder -> false,
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.build()
 								.isStatic()
@@ -85,7 +82,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 				// Is Static
 				Pair.of(
 						builder -> true,
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.isStatic()
 								.build()
@@ -94,7 +91,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 				// Set Is Static
 				Pair.of(
 						builder -> true,
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.isStatic(true)
 								.build()
@@ -102,11 +99,11 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 				),
 				// Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.isStatic()
 								.build(),
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.isStatic()
 								.build()
@@ -115,29 +112,26 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(importStatementBuilders.get(index)),
-								pair.getRight().apply(importStatementBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>,
-				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.isStatic()
 								.build()
 				),
 				// Different types
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.build(),
 						builder -> "testing"
@@ -146,35 +140,33 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(importStatementBuilders.get(index)),
-								pair.getRight().apply(importStatementBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>, JavaImportStatement>,
-				String,
-				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, JavaImportStatement>, String, Function<SimpleClassNames, String>>>
+				commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.build(),
 						"import com.example;",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.importStatementSimpleClassName() + """
 								.builder()
 										.importName("com.example")
 										.build()"""
 				),
 				// With Static
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.importStatementBuilder().get()
 								.importName("com.example")
 								.isStatic()
 								.build(),
 						"import static com.example;",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.importStatementSimpleClassName() + """
 								.builder()
 										.isStatic()
 										.importName("com.example")
@@ -184,20 +176,18 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 		
 		return commentMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(importStatementBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(importStatementSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<
-				Function<Supplier<JavaImportStatementBuilder<? extends JavaImportStatement>>,
-						Supplier<? extends JavaImportStatement>>,
-				String>> builderFuncsAndErrorMessages = ListUtil.createList(
+		List<Pair<Function<Builders, Supplier<? extends JavaImportStatement>>, String>>
+				builderFuncsAndErrorMessages = ListUtil.createList(
 				// Missing Import Name
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.importStatementBuilder().get()
 								.build(),
 						"importName is required!"
 				)
@@ -205,7 +195,7 @@ public class JavaImportStatementTest extends BaseJavaCodeTypeTest<JavaImportStat
 		
 		return builderFuncsAndErrorMessages.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(importStatementBuilders.get(index)),
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 								pair.getRight())));
 	}
 	

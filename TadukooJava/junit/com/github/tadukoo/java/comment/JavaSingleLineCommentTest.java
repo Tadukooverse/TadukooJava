@@ -4,7 +4,6 @@ import com.github.tadukoo.java.BaseJavaCodeTypeTest;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.Function;
-import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
 import org.junit.jupiter.api.Test;
@@ -33,29 +32,26 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>,
-				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
 						builder -> JavaCodeTypes.SINGLE_LINE_COMMENT,
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build().getJavaCodeType()
 				),
 				// Default Content
 				Pair.of(
 						builder -> "",
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build().getContent()
 				),
 				// Copy
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something useful")
 								.build(),
-						builder -> builder.get()
-								.copy(builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
+								.copy(builders.singleLineCommentBuilder().get()
 										.content("something useful")
 										.build())
 								.build()
@@ -63,24 +59,24 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 				// Set Content
 				Pair.of(
 						builder -> "something useful",
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something useful")
 								.build()
 								.getContent()
 				),
 				// Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build(),
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build()
 				),
 				// Equals With Content
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something useful")
 								.build(),
-						 builder -> builder.get()
+						 builders -> builders.singleLineCommentBuilder().get()
 								 .content("something useful")
 								 .build()
 				)
@@ -88,36 +84,33 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(singleLineCommentBuilders.get(index)),
-								pair.getRight().apply(singleLineCommentBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>,
-				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build(),
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something useful")
 								.build()
 				),
 				// Not Equals Different Content
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something else")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something useful")
 								.build()
 				),
 				// Not Equals Different Types
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build(),
 						builder -> "testing"
 				)
@@ -125,33 +118,31 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(singleLineCommentBuilders.get(index)),
-								pair.getRight().apply(singleLineCommentBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<
-				Function<Supplier<JavaSingleLineCommentBuilder<? extends JavaSingleLineComment>>, JavaSingleLineComment>,
-				String,
-				Function<String, String>>> commentMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, JavaSingleLineComment>, String, Function<SimpleClassNames, String>>>
+				commentMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.build(),
 						"// ",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.singleLineCommentSimpleClassName() + """
 								.builder()
 										.content("")
 										.build()"""
 				),
 				// With Content
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.singleLineCommentBuilder().get()
 								.content("something useful")
 								.build(),
 						"// something useful",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.singleLineCommentSimpleClassName() + """
 								.builder()
 										.content("something useful")
 										.build()"""
@@ -160,9 +151,9 @@ public class JavaSingleLineCommentTest extends BaseJavaCodeTypeTest<JavaSingleLi
 		
 		return commentMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(singleLineCommentBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(singleLineCommentSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	/*

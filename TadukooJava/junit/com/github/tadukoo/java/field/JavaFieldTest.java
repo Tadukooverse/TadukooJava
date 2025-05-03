@@ -6,15 +6,12 @@ import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
-import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.java.javadoc.EditableJavadoc;
 import com.github.tadukoo.java.javadoc.Javadoc;
-import com.github.tadukoo.java.javadoc.JavadocBuilder;
 import com.github.tadukoo.java.javadoc.UneditableJavadoc;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.functional.function.Function;
-import com.github.tadukoo.util.functional.function.Function3;
 import com.github.tadukoo.util.functional.supplier.Supplier;
 import com.github.tadukoo.util.tuple.Pair;
 import com.github.tadukoo.util.tuple.Triple;
@@ -46,77 +43,70 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<Function3<
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
-				Function3<
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>>
 				comparisons = ListUtil.createList(
 				// Java Code Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> JavaCodeTypes.FIELD,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> JavaCodeTypes.FIELD,
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getJavaCodeType()
 				),
 				// Default Javadoc
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> null,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getJavadoc()
 				),
 				// Default Annotations
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> new ArrayList<>(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getAnnotations()
 				),
 				// Default Visibility
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> Visibility.NONE,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> Visibility.NONE,
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getVisibility()
 				),
 				// Default Is Static
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.isStatic()
 				),
 				// Default Is Final
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.isFinal()
 				),
 				// Default Value
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> null,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> null,
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getValue()
 				),
 				// Copy
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.javadoc(javadocBuilder.get()
+						builders -> builders.fieldBuilder().get()
+								.javadoc(builders.javadocBuilder().get()
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.visibility(Visibility.PRIVATE)
@@ -124,11 +114,11 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 								.type("int").name("test")
 								.value("42")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.copy(builder.get()
-										.javadoc(javadocBuilder.get()
+						builders -> builders.fieldBuilder().get()
+								.copy(builders.fieldBuilder().get()
+										.javadoc(builders.javadocBuilder().get()
 												.build())
-										.annotation(annotationBuilder.get()
+										.annotation(builders.annotationBuilder().get()
 												.name("Test")
 												.build())
 										.visibility(Visibility.PRIVATE)
@@ -140,10 +130,10 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Set Type
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("int")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type(JavaType.builder()
 										.baseType("int")
 										.build()).name("test")
@@ -152,45 +142,45 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Set Type by Text
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> JavaType.builder()
+						builders -> JavaType.builder()
 								.baseType("int")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getType()
 				),
 				// Set Name
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> "test",
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> "test",
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build()
 								.getName()
 				),
 				// Set Javadoc
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> javadocBuilder.get()
+						builders -> builders.javadocBuilder().get()
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.javadoc(javadocBuilder.get().build())
+						builders -> builders.fieldBuilder().get()
+								.javadoc(builders.javadocBuilder().get().build())
 								.type("int").name("test")
 								.build()
 								.getJavadoc()
 				),
 				// Set Annotations
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
-								annotationBuilder.get()
+						builders -> ListUtil.createList(
+								builders.annotationBuilder().get()
 										.name("Test").build(),
-								annotationBuilder.get()
+								builders.annotationBuilder().get()
 										.name("Derp").build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.annotations(ListUtil.createList(
-										annotationBuilder.get()
+										builders.annotationBuilder().get()
 												.name("Test").build(),
-										annotationBuilder.get()
+										builders.annotationBuilder().get()
 												.name("Derp").build()
 								))
 								.type("int").name("test")
@@ -199,13 +189,13 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Set Annotation
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> ListUtil.createList(
-								annotationBuilder.get()
+						builders -> ListUtil.createList(
+								builders.annotationBuilder().get()
 										.name("Test")
 										.build()
 						),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
-								.annotation(annotationBuilder.get()
+						builders -> builders.fieldBuilder().get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.type("int").name("test")
@@ -214,8 +204,8 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Set Visibility
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> Visibility.PUBLIC,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> Visibility.PUBLIC,
+						builders -> builders.fieldBuilder().get()
 								.visibility(Visibility.PUBLIC)
 								.type("int").name("test")
 								.build()
@@ -223,56 +213,56 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Set Is Static False
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.fieldBuilder().get()
 								.isStatic(false).type("int").name("test")
 								.build()
 								.isStatic()
 				),
 				// Set Is Static True
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.fieldBuilder().get()
 								.isStatic(true).type("int").name("test")
 								.build()
 								.isStatic()
 				),
 				// Is Static
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.fieldBuilder().get()
 								.isStatic().type("int").name("test")
 								.build()
 								.isStatic()
 				),
 				// Set Is Final False
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> false,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> false,
+						builders -> builders.fieldBuilder().get()
 								.isFinal(false).type("int").name("test")
 								.build()
 								.isFinal()
 				),
 				// Set Is Final True
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.fieldBuilder().get()
 								.isFinal(true).type("int").name("test")
 								.build()
 								.isFinal()
 				),
 				// Is Final
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> true,
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> true,
+						builders -> builders.fieldBuilder().get()
 								.isFinal().type("int").name("test")
 								.build()
 								.isFinal()
 				),
 				// Set Value
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> "42",
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> "42",
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.value("42")
 								.build()
@@ -280,21 +270,21 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Equals
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get().name("Test").build())
-								.annotation(annotationBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.isFinal()
 								.value("42")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get().name("Test").build())
-								.annotation(annotationBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.isFinal()
@@ -305,40 +295,31 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(fieldBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)),
-								pair.getRight().apply(fieldBuilders.get(index), javadocBuilders.get(index),
-										annotationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<Function3<
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
-				Function3<
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>>
 				comparisons = ListUtil.createList(
 				// Not Equals
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get().name("Test").build())
-								.annotation(annotationBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.isFinal()
 								.value("42")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get().name("Test").build())
-								.annotation(annotationBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.isFinal()
@@ -347,54 +328,47 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Different Types
 				Pair.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build(),
-						(builder, javadocBuilder, annotationBuilder) -> "testing"
+						builders -> "testing"
 				)
 		);
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(fieldBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)),
-								pair.getRight().apply(fieldBuilders.get(index), javadocBuilders.get(index),
-										annotationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<Function3<
-						Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<JavadocBuilder<? extends Javadoc>>,
-						Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						JavaField>,
-				String,
-				Function3<String, String, String, String>>> fieldMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, JavaField>, String, Function<SimpleClassNames, String>>> fieldMakersAndStrings =
+				ListUtil.createList(
 				// Simple
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.build(),
 						"int test;",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
 										.type("int").name("test")
 										.build()"""
 				),
 				// With Javadoc
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.javadoc(javadocBuilder.get().build())
+								.javadoc(builders.javadocBuilder().get().build())
 								.build(),
 						"""
 								/**
 								 */
 								int test;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
-										.javadoc(""" + simpleJavadocClassName +
+										.javadoc(""" + classNames.javadocSimpleClassName() +
 								"""
 								.builder()
 												.build())
@@ -403,18 +377,18 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Single Annotation
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
 								.build(),
 						"""
 								@Test
 								int test;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
-										.annotation(""" + simpleAnnotationClassName +
+										.annotation(""" + classNames.annotationSimpleClassName() +
 								"""
 								.builder()
 												.name("Test")
@@ -424,12 +398,12 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Annotations
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Test")
 										.build())
-								.annotation(annotationBuilder.get()
+								.annotation(builders.annotationBuilder().get()
 										.name("Derp")
 										.build())
 								.build(),
@@ -437,14 +411,14 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 								@Test
 								@Derp
 								int test;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
-										.annotation(""" + simpleAnnotationClassName +
+										.annotation(""" + classNames.annotationSimpleClassName() +
 								"""
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + simpleAnnotationClassName +
+										.annotation(""" + classNames.annotationSimpleClassName() +
 								"""
 								.builder()
 												.name("Derp")
@@ -454,13 +428,13 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Visibility
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.visibility(Visibility.PRIVATE)
 								.type("int").name("test")
 								.build(),
 						"""
 								private int test;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
 										.visibility(Visibility.PRIVATE)
 										.type("int").name("test")
@@ -468,13 +442,13 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Static
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.isStatic()
 								.type("int").name("test")
 								.build(),
 						"""
 								static int test;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
 										.isStatic()
 										.type("int").name("test")
@@ -482,13 +456,13 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Final
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.isFinal()
 								.type("int").name("test")
 								.build(),
 						"""
 								final int test;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
 										.isFinal()
 										.type("int").name("test")
@@ -496,13 +470,13 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Value
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.value("42")
 								.build(),
 						"""
 								int test = 42;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
 										.type("int").name("test")
 										.value("42")
@@ -510,11 +484,11 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// With Everything
 				Triple.of(
-						(builder, javadocBuilder, annotationBuilder) -> builder.get()
+						builders -> builders.fieldBuilder().get()
 								.type("int").name("test")
-								.javadoc(javadocBuilder.get().build())
-								.annotation(annotationBuilder.get().name("Test").build())
-								.annotation(annotationBuilder.get().name("Derp").build())
+								.javadoc(builders.javadocBuilder().get().build())
+								.annotation(builders.annotationBuilder().get().name("Test").build())
+								.annotation(builders.annotationBuilder().get().name("Derp").build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic()
 								.isFinal()
@@ -526,18 +500,18 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 								@Test
 								@Derp
 								private static final int test = 42;""",
-						(simpleClassName, simpleJavadocClassName, simpleAnnotationClassName) -> simpleClassName + """
+						classNames -> classNames.fieldSimpleClassName() + """
 								.builder()
-										.javadoc(""" + simpleJavadocClassName +
+										.javadoc(""" + classNames.javadocSimpleClassName() +
 								"""
 								.builder()
 												.build())
-										.annotation(""" + simpleAnnotationClassName +
+										.annotation(""" + classNames.annotationSimpleClassName() +
 								"""
 								.builder()
 												.name("Test")
 												.build())
-										.annotation(""" + simpleAnnotationClassName +
+										.annotation(""" + classNames.annotationSimpleClassName() +
 								"""
 								.builder()
 												.name("Derp")
@@ -553,22 +527,18 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 		
 		return fieldMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(fieldBuilders.get(index),
-										javadocBuilders.get(index), annotationBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(fieldSimpleClassNames.get(index),
-										javadocSimpleClassNames.get(index),
-										annotationSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<Function<Supplier<JavaFieldBuilder<? extends JavaField>>,
-						Supplier<? extends JavaField>>,
+		List<Pair<Function<Builders, Supplier<? extends JavaField>>,
 				String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Null Visibility
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.fieldBuilder().get()
 								.type("int").name("test")
 								.visibility(null)
 								.build(),
@@ -576,21 +546,21 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 				),
 				// Null Type
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.fieldBuilder().get()
 								.name("test")
 								.build(),
 						"Must specify type!"
 				),
 				// Null Name
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.fieldBuilder().get()
 								.type("int")
 								.build(),
 						"Must specify name!"
 				),
 				// All
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.fieldBuilder().get()
 								.visibility(null)
 								.build(),
 						"""
@@ -659,7 +629,7 @@ public class JavaFieldTest extends BaseJavaCodeTypeTest<JavaField>{
 		
 		return Stream.concat(builderFuncsAndErrorMessages.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(fieldBuilders.get(index)),
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 								pair.getRight()))), editableRelatedErrors.stream()
 				.map(pair -> Arguments.of(pair.getLeft(), pair.getRight())));
 	}

@@ -37,35 +37,32 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 	
 	@Override
 	protected Stream<Arguments> getEqualsData(){
-		List<Pair<
-				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
-				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Get Type
 				Pair.of(
-						builder -> JavaCodeTypes.ANNOTATION,
-						builder -> builder.get()
+						builders -> JavaCodeTypes.ANNOTATION,
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build()
 								.getJavaCodeType()
 				),
 				// Default Parameters
 				Pair.of(
-						builder -> new ArrayList<>(),
-						builder -> builder.get()
+						builders -> new ArrayList<>(),
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build()
 								.getParameters()
 				),
 				// Copy
 				Pair.of(
-						builder ->  builder.get()
+						builders ->  builders.annotationBuilder().get()
 								.name("Test").canonicalName("something.Test")
 								.parameter("test", "true")
 								.parameter("derp", "false")
 								.build(),
-						builder -> builder.get()
-								.copy( builder.get()
+						builders -> builders.annotationBuilder().get()
+								.copy( builders.annotationBuilder().get()
 										.name("Test").canonicalName("something.Test")
 										.parameter("test", "true")
 										.parameter("derp", "false")
@@ -74,16 +71,16 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Name
 				Pair.of(
-						builder -> "Test",
-						builder -> builder.get()
+						builders -> "Test",
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build()
 								.getName()
 				),
 				// Canonical Name
 				Pair.of(
-						builder -> "something.Test",
-						builder -> builder.get()
+						builders -> "something.Test",
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.canonicalName("something.Test")
 								.build()
@@ -91,10 +88,10 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Add Parameter Pieces
 				Pair.of(
-						builder -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								Pair.of("test", "true"), Pair.of("derp", "false")
 						),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("test", "true")
 								.parameter("derp", "false")
@@ -103,10 +100,10 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Add Parameter Pair
 				Pair.of(
-						builder -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								Pair.of("test", "true"), Pair.of("derp", "false")
 						),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter(Pair.of("test", "true"))
 								.parameter(Pair.of("derp", "false"))
@@ -115,10 +112,10 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Set Parameters
 				Pair.of(
-						builder -> ListUtil.createList(
+						builders -> ListUtil.createList(
 								Pair.of("test", "true"), Pair.of("derp", "false")
 						),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameters(ListUtil.createList(
 										Pair.of("test", "true"), Pair.of("derp", "false")))
@@ -127,8 +124,8 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Get Parameters Map
 				Pair.of(
-						builder -> true,
-						builder -> builder.get()
+						builders -> true,
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build()
 								.getParametersMap()
@@ -136,8 +133,8 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Get Parameters Map Single Param
 				Pair.of(
-						builder -> MapUtil.createMap(Pair.of("test", "something")),
-						builder -> builder.get()
+						builders -> MapUtil.createMap(Pair.of("test", "something")),
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("test", "something")
 								.build()
@@ -145,9 +142,9 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Get Parameters Map Multiple Params
 				Pair.of(
-						builder -> MapUtil.createMap(Pair.of("test", "something"),
+						builders -> MapUtil.createMap(Pair.of("test", "something"),
 								Pair.of("derp", "something else")),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("test", "something")
 								.parameter("derp", "something else")
@@ -156,10 +153,10 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Equals
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build()
 				)
@@ -167,74 +164,70 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(annotationBuilders.get(index)),
-								pair.getRight().apply(annotationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getNotEqualsData(){
-		List<Pair<
-				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>,
-				Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, Object>>>
-				comparisons = ListUtil.createList(
+		List<Pair<Function<Builders, Object>, Function<Builders, Object>>> comparisons = ListUtil.createList(
 				// Not Equal
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Testing")
 								.build()
 				),
 				// Not Equal Canonical Name
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build(),
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.canonicalName("something.here")
 								.build()
 				),
 				// Different Type
 				Pair.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build(),
-						builder -> "testing"
+						builders -> "testing"
 				)
 		);
 		
 		return comparisons.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(annotationBuilders.get(index)),
-								pair.getRight().apply(annotationBuilders.get(index)))));
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
+								pair.getRight().apply(allBuilders.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getStringData(){
-		List<Triple<Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>, JavaAnnotation>,
-				String,
-				Function<String, String>>> annotationMakersAndStrings = ListUtil.createList(
+		List<Triple<Function<Builders, JavaAnnotation>, String, Function<SimpleClassNames, String>>>
+				annotationMakersAndStrings = ListUtil.createList(
 				// Simple
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.build(),
 						"@Test",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.build()"""
 				),
 				// Single parameter
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("test", "true")
 								.build(),
 						"@Test(test = true)",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.parameter("test", "true")
@@ -242,12 +235,12 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Value parameter
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("value", "true")
 								.build(),
 						"@Test(true)",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.parameter("value", "true")
@@ -255,13 +248,13 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Multiple parameters
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("test", "true")
 								.parameter("derp", "String.class")
 								.build(),
 						"@Test(test = true, derp = String.class)",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.parameter("test", "true")
@@ -270,13 +263,13 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Multiple parameters, one is value
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.parameter("value", "true")
 								.parameter("derp", "String.class")
 								.build(),
 						"@Test(value = true, derp = String.class)",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.parameter("value", "true")
@@ -285,12 +278,12 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Canonical Name
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.canonicalName("some.canon.name")
 								.build(),
 						"@Test",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.canonicalName("some.canon.name")
@@ -298,14 +291,14 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 				),
 				// Everything
 				Triple.of(
-						builder -> builder.get()
+						builders -> builders.annotationBuilder().get()
 								.name("Test")
 								.canonicalName("some.canon.name")
 								.parameter("test", "5")
 								.parameter("something", "42")
 								.build(),
 						"@Test(test = 5, something = 42)",
-						simpleClassName -> simpleClassName + """
+						classNames -> classNames.annotationSimpleClassName() + """
 								.builder()
 										.name("Test")
 										.canonicalName("some.canon.name")
@@ -317,19 +310,17 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 		
 		return annotationMakersAndStrings.stream()
 				.flatMap(triple -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(triple.getLeft().apply(annotationBuilders.get(index)),
+						.map(index -> Arguments.of(triple.getLeft().apply(allBuilders.get(index)),
 								triple.getMiddle(),
-								triple.getRight().apply(annotationSimpleClassNames.get(index)))));
+								triple.getRight().apply(simpleClassNames.get(index)))));
 	}
 	
 	@Override
 	protected Stream<Arguments> getBuilderErrorData(){
-		List<Pair<Function<Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>>,
-						Supplier<? extends JavaAnnotation>>,
-				String>> builderFuncsAndErrorMessages = ListUtil.createList(
+		List<Pair<Function<Builders, Supplier<? extends JavaAnnotation>>, String>> builderFuncsAndErrorMessages = ListUtil.createList(
 				// Missing Name
 				Pair.of(
-						builder -> () -> builder.get()
+						builders -> () -> builders.annotationBuilder().get()
 								.build(),
 						"Must specify name!"
 				)
@@ -337,7 +328,7 @@ public class JavaAnnotationTest extends BaseJavaCodeTypeTest<JavaAnnotation>{
 		
 		return builderFuncsAndErrorMessages.stream()
 				.flatMap(pair -> Stream.of(0, 1, 2)
-						.map(index -> Arguments.of(pair.getLeft().apply(annotationBuilders.get(index)),
+						.map(index -> Arguments.of(pair.getLeft().apply(allBuilders.get(index)),
 								pair.getRight())));
 	}
 	
