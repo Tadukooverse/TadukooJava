@@ -3,6 +3,7 @@ package com.github.tadukoo.java.parsing.codetypes;
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -83,6 +84,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 	 */
 	private static final Pattern METHOD_PATTERN = Pattern.compile(
 			"\\s*" + MODIFIERS_REGEX +
+					"(?:<((?:" + TYPE_PARAMETER_REGEX + ",)*" + TYPE_PARAMETER_REGEX + ")>)?\\s*" +
 					"(" + TYPE_REGEX + ")(\\s*[^\\s(]*)?\\s*" +
 					"\\(\\s*((" + PARAMETER_REGEX + ",?)*)\\s*\\)(?:\\s*throws ([^{]*))?" +
 					"\\s*(?:\\{\\s*(.*)\\s*}|;\\s*)",
@@ -281,11 +283,15 @@ public class JavaMethodParser extends AbstractJavaParser{
 					}
 				}
 			}
-			String returnType = StringUtil.trim(matcher.group(4));
-			String name = StringUtil.trim(matcher.group(11));
-			String parameterString = StringUtil.trim(matcher.group(12));
-			String throwsString = StringUtil.trim(matcher.group(23));
-			String contentString = StringUtil.trim(matcher.group(24));
+			String typeParametersString = StringUtil.trim(matcher.group(4));
+			String returnType = StringUtil.trim(matcher.group(9));
+			String name = StringUtil.trim(matcher.group(16));
+			String parameterString = StringUtil.trim(matcher.group(17));
+			String throwsString = StringUtil.trim(matcher.group(28));
+			String contentString = StringUtil.trim(matcher.group(29));
+			
+			// Parse type parameters
+			List<JavaTypeParameter> typeParameters = parseJavaTypeParameters(typeParametersString);
 			
 			// Parse parameters
 			List<JavaParameter> parameters = new ArrayList<>();
@@ -365,6 +371,7 @@ public class JavaMethodParser extends AbstractJavaParser{
 					.isAbstract(isAbstract)
 					.isStatic(isStatic)
 					.isFinal(isFinal)
+					.typeParameters(typeParameters)
 					.returnType(returnType).name(name)
 					.parameters(parameters)
 					.throwTypes(throwTypes)

@@ -693,6 +693,10 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedMethod, actualMethod, differences, "Static", JavaMethod::isStatic);
 		checkBoolean(expectedMethod, actualMethod, differences, "Final", JavaMethod::isFinal);
 		
+		// Type Parameters
+		checkListSubtype(expectedMethod, actualMethod, differences, "Type Parameters",
+				JavaMethod::getTypeParameters, JavaCodeTypeTest::findTypeParameterDifferences);
+		
 		// Type and Name
 		checkSingleSubtype(expectedMethod, actualMethod, differences, "Return Type",
 				JavaMethod::getReturnType, JavaCodeTypeTest::findTypeDifferences);

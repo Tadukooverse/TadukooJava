@@ -170,6 +170,11 @@ public abstract class AbstractJavaParser implements JavaTokens{
 	 * @return Either {@link JavaCodeTypes#FIELD}, {@link JavaCodeTypes#METHOD}, or {@link JavaCodeTypes#UNKNOWN}
 	 */
 	protected static JavaCodeTypes determineFieldOrMethod(List<String> tokens, int currentToken){
+		// Start could be type parameter, making it a method
+		if(StringUtil.equals(tokens.get(currentToken), TYPE_PARAMETER_OPEN_TOKEN)){
+			return JavaCodeTypes.METHOD;
+		}
+		
 		// Start would be a type, have to handle type parameter tokens
 		Pair<String, Integer> typeStringAndNextToken = parseOutType(tokens, currentToken);
 		if(typeStringAndNextToken == null){

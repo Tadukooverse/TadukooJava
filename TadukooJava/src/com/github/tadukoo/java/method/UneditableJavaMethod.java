@@ -2,6 +2,7 @@ package com.github.tadukoo.java.method;
 
 import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
@@ -59,7 +60,7 @@ public class UneditableJavaMethod extends JavaMethod{
 		protected UneditableJavaMethod constructMethod(){
 			return new UneditableJavaMethod(javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,
-					returnType, name,
+					typeParameters, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -73,6 +74,7 @@ public class UneditableJavaMethod extends JavaMethod{
 	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} for the method
 	 * @param returnType The return {@link JavaType type} of the method
 	 * @param name The name of the method
 	 * @param parameters The {@link JavaParameter parameters} used in the method
@@ -82,11 +84,11 @@ public class UneditableJavaMethod extends JavaMethod{
 	private UneditableJavaMethod(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			JavaType returnType, String name,
+			List<JavaTypeParameter> typeParameters, JavaType returnType, String name,
 			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		super(false, javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal,
-				returnType, name,
+				typeParameters, returnType, name,
 				parameters, throwTypes, lines);
 	}
 	

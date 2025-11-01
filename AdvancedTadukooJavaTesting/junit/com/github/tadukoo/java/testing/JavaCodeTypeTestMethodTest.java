@@ -210,6 +210,31 @@ public class JavaCodeTypeTestMethodTest{
 								.build(),
 						ListUtil.createList("Final is different!")
 				),
+				// Type Parameters Length
+				Arguments.of(
+						EditableJavaMethod.builder()
+								.returnType("String").name("getVersion")
+								.addTypeParameters("T")
+								.build(),
+						EditableJavaMethod.builder()
+								.returnType("String").name("getVersion")
+								.addTypeParameters("T, U")
+								.build(),
+						ListUtil.createList("Type Parameters length is different!")
+				),
+				// Type Parameters Length 1 Longer
+				Arguments.of(
+						EditableJavaMethod.builder()
+								.returnType("String").name("getVersion")
+								.addTypeParameters("T, U")
+								.build(),
+						EditableJavaMethod.builder()
+								.returnType("String").name("getVersion")
+								.addTypeParameters("T")
+								.build(),
+						ListUtil.createList("Type Parameters length is different!",
+								"Type Parameters differs on #2!")
+				),
 				// Return Type
 				Arguments.of(
 						EditableJavaMethod.builder()
@@ -348,6 +373,7 @@ public class JavaCodeTypeTestMethodTest{
 										.build())
 								.visibility(Visibility.PUBLIC)
 								.isAbstract()
+								.addTypeParameters("T, U")
 								.returnType("int").name("getVersion")
 								.parameter("String version")
 								.parameter("int version")
@@ -359,6 +385,7 @@ public class JavaCodeTypeTestMethodTest{
 										.name("getDerp")
 										.build())
 								.visibility(Visibility.PRIVATE)
+								.addTypeParameters("T")
 								.returnType("String").name("getTest")
 								.parameter("String version")
 								.throwType("Exception")
@@ -374,6 +401,8 @@ public class JavaCodeTypeTestMethodTest{
 								"Annotations differs on #2!",
 								"Visibility is different!",
 								"Abstract is different!",
+								"Type Parameters length is different!",
+								"Type Parameters differs on #2!",
 								"Return Type differs:\n\tBase Type is different!",
 								"Name is different!",
 								"Parameters length is different!",

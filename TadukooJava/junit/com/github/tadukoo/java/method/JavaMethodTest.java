@@ -103,6 +103,14 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								.build()
 								.isFinal()
 				),
+				// Default Type Parameters
+				Pair.of(
+						builders -> new ArrayList<>(),
+						builders -> builders.methodBuilder().get()
+								.returnType("int")
+								.build()
+								.getTypeParameters()
+				),
 				// Default Name
 				Pair.of(
 						builders -> null,
@@ -145,6 +153,11 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 										.build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic().isFinal()
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("T")
+												.build())
+										.build())
 								.returnType("int").name("test")
 								.parameter("String type")
 								.parameter("int derp")
@@ -162,6 +175,11 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 												.build())
 										.visibility(Visibility.PRIVATE)
 										.isStatic().isFinal()
+										.typeParameter(JavaTypeParameter.builder()
+												.baseType(JavaType.builder()
+														.baseType("T")
+														.build())
+												.build())
 										.returnType("int").name("test")
 										.parameter("String type")
 										.parameter("int derp")
@@ -283,6 +301,63 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 								.returnType("int")
 								.build()
 								.isFinal()
+				),
+				// Set a Type Parameter
+				Pair.of(
+						builders -> ListUtil.createList(JavaTypeParameter.builder()
+								.baseType(JavaType.builder()
+										.baseType("T")
+										.build())
+								.build()),
+						builders -> builders.methodBuilder().get()
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("T")
+												.build())
+										.build())
+								.returnType("int")
+								.build()
+								.getTypeParameters()
+				),
+				// Set Multiple Type Parameters
+				Pair.of(
+						builders -> ListUtil.createList(JavaTypeParameter.builder()
+								.baseType(JavaType.builder()
+										.baseType("T")
+										.build())
+								.build(),
+								JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("U")
+												.build())
+										.build()),
+						builders -> builders.methodBuilder().get()
+								.typeParameters(ListUtil.createList(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("T")
+												.build())
+										.build(),
+										JavaTypeParameter.builder()
+												.baseType(JavaType.builder()
+														.baseType("U")
+														.build())
+												.build()))
+								.returnType("int")
+								.build()
+								.getTypeParameters()
+				),
+				// Set a Type Parameter via String
+				Pair.of(
+						builders -> ListUtil.createList(JavaTypeParameter.builder()
+								.baseType(JavaType.builder()
+										.baseType("T")
+										.build())
+								.build()),
+						builders -> builders.methodBuilder().get()
+								.addTypeParameters("T")
+								.returnType("int")
+								.build()
+								.getTypeParameters()
 				),
 				// Set Return Type
 				Pair.of(
@@ -660,6 +735,36 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 						classNames -> classNames.methodSimpleClassName() + """
 								.builder()
 										.isFinal()
+										.returnType("int")
+										.build()"""
+				),
+				// With Type Parameter
+				Triple.of(
+						builders -> builders.methodBuilder().get()
+								.addTypeParameters("T")
+								.returnType("int")
+								.build(),
+						"""
+								<T> int(){ }""",
+						classNames -> classNames.methodSimpleClassName() + """
+								.builder()
+										.addTypeParameters("T")
+										.returnType("int")
+										.build()"""
+				),
+				// With Multiple Type Parameters
+				Triple.of(
+						builders -> builders.methodBuilder().get()
+								.addTypeParameters("T")
+								.addTypeParameters("U")
+								.returnType("int")
+								.build(),
+						"""
+								<T, U> int(){ }""",
+						classNames -> classNames.methodSimpleClassName() + """
+								.builder()
+										.addTypeParameters("T")
+										.addTypeParameters("U")
 										.returnType("int")
 										.build()"""
 				),
@@ -1317,6 +1422,243 @@ public class JavaMethodTest extends BaseJavaCodeTypeTest<JavaMethod>{
 		assertTrue(method.isFinal());
 		method.setFinal(true);
 		assertTrue(method.isFinal());
+	}
+	
+	@Test
+	public void testSetTypeParameters(){
+		EditableJavaMethod method = EditableJavaMethod.builder()
+				.returnType("int")
+				.build();
+		assertEquals(new ArrayList<>(), method.getTypeParameters());
+		method.setTypeParameters(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build()
+		));
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build()
+		), method.getTypeParameters());
+		method.setTypeParameters(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("S")
+								.build())
+						.build()
+		));
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("S")
+								.build())
+						.build()
+		), method.getTypeParameters());
+	}
+	
+	@Test
+	public void testAddTypeParameters(){
+		EditableJavaMethod method = EditableJavaMethod.builder()
+				.returnType("int")
+				.build();
+		assertEquals(new ArrayList<>(), method.getTypeParameters());
+		method.addTypeParameters(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build()
+		));
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build()
+		), method.getTypeParameters());
+		method.addTypeParameters(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("S")
+								.build())
+						.build()
+		));
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("S")
+								.build())
+						.build()
+		), method.getTypeParameters());
+	}
+	
+	@Test
+	public void testSetTypeParametersByString(){
+		EditableJavaMethod method = EditableJavaMethod.builder()
+				.returnType("int")
+				.build();
+		assertEquals(new ArrayList<>(), method.getTypeParameters());
+		method.setTypeParameters("T, U");
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build()
+		), method.getTypeParameters());
+		method.setTypeParameters("R, S");
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("S")
+								.build())
+						.build()
+		), method.getTypeParameters());
+	}
+	
+	@Test
+	public void testAddTypeParametersByString(){
+		EditableJavaMethod method = EditableJavaMethod.builder()
+				.returnType("int")
+				.build();
+		assertEquals(new ArrayList<>(), method.getTypeParameters());
+		method.addTypeParameters("T, U");
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build()
+		), method.getTypeParameters());
+		method.addTypeParameters("R, S");
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("U")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("S")
+								.build())
+						.build()
+		), method.getTypeParameters());
+	}
+	
+	@Test
+	public void testAddTypeParameter(){
+		EditableJavaMethod method = EditableJavaMethod.builder()
+				.returnType("int")
+				.build();
+		assertEquals(new ArrayList<>(), method.getTypeParameters());
+		method.addTypeParameter(JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build());
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build()
+		), method.getTypeParameters());
+		method.addTypeParameter(JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build());
+		assertEquals(ListUtil.createList(
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("T")
+								.build())
+						.build(),
+				JavaTypeParameter.builder()
+						.baseType(JavaType.builder()
+								.baseType("R")
+								.build())
+						.build()
+		), method.getTypeParameters());
 	}
 	
 	@Test

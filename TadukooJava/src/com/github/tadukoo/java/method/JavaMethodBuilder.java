@@ -2,6 +2,7 @@ package com.github.tadukoo.java.method;
 
 import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -53,6 +54,11 @@ import java.util.List;
  *         <td>Defaults to false</td>
  *     </tr>
  *     <tr>
+ *         <td>typeParameters</td>
+ *         <td>Any {@link JavaTypeParameter type parameters} for the method</td>
+ *         <td>Defaults to empty List</td>
+ *     </tr>
+ *     <tr>
  *         <td>returnType</td>
  *         <td>The return {@link JavaType type} of the method</td>
  *         <td>Required</td>
@@ -97,6 +103,8 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	protected boolean isStatic = false;
 	/** Whether the method is final or not */
 	protected boolean isFinal = false;
+	/** Any {@link JavaTypeParameter type parameters} for the method */
+	protected List<JavaTypeParameter> typeParameters = new ArrayList<>();
 	/** The return {@link JavaType type} of the method */
 	protected JavaType returnType = null;
 	/** The name of the method */
@@ -126,6 +134,7 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 		this.isAbstract = method.isAbstract();
 		this.isStatic = method.isStatic();
 		this.isFinal = method.isFinal();
+		this.typeParameters = method.getTypeParameters();
 		this.returnType = method.getReturnType();
 		this.name = method.getName();
 		this.parameters = method.getParameters();
@@ -224,6 +233,33 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	 */
 	public JavaMethodBuilder<MethodType> isFinal(boolean isFinal){
 		this.isFinal = isFinal;
+		return this;
+	}
+	
+	/**
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} for the method
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> typeParameters(List<JavaTypeParameter> typeParameters){
+		this.typeParameters = typeParameters;
+		return this;
+	}
+	
+	/**
+	 * @param typeParameter A {@link JavaTypeParameter type parameter} for the method to be added
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> typeParameter(JavaTypeParameter typeParameter){
+		typeParameters.add(typeParameter);
+		return this;
+	}
+	
+	/**
+	 * @param typeParameter A String representing one or more {@link JavaTypeParameter type parameters} to be added
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> addTypeParameters(String typeParameter){
+		typeParameters.addAll(FullJavaParser.parseJavaTypeParameters(typeParameter));
 		return this;
 	}
 	

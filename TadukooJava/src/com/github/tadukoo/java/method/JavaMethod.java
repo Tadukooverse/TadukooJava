@@ -4,6 +4,7 @@ import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
@@ -36,6 +37,8 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected boolean isStatic;
 	/** Whether the method is final or not */
 	protected boolean isFinal;
+	/** Any {@link JavaTypeParameter type parameters} on the method */
+	protected List<JavaTypeParameter> typeParameters;
 	/** The return {@link JavaType type} of the method */
 	protected JavaType returnType;
 	/** The name of the method */
@@ -57,6 +60,7 @@ public abstract class JavaMethod implements JavaCodeType{
 	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} on the method
 	 * @param returnType The return {@link JavaType type} of the method
 	 * @param name The name of the method
 	 * @param parameters The {@link JavaParameter parameters} used in the method
@@ -66,7 +70,7 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected JavaMethod(
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			JavaType returnType, String name,
+			List<JavaTypeParameter> typeParameters, JavaType returnType, String name,
 			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
 		this.javadoc = javadoc;
@@ -75,6 +79,7 @@ public abstract class JavaMethod implements JavaCodeType{
 		this.isAbstract = isAbstract;
 		this.isStatic = isStatic;
 		this.isFinal = isFinal;
+		this.typeParameters = typeParameters;
 		this.returnType = returnType;
 		this.name = name;
 		this.parameters = parameters;
@@ -135,6 +140,13 @@ public abstract class JavaMethod implements JavaCodeType{
 	 */
 	public boolean isFinal(){
 		return isFinal;
+	}
+	
+	/**
+	 * @return Any {@link JavaTypeParameter type parameters} for the method
+	 */
+	public List<JavaTypeParameter> getTypeParameters(){
+		return typeParameters;
 	}
 	
 	/**
@@ -247,6 +259,17 @@ public abstract class JavaMethod implements JavaCodeType{
 		// Optionally add final to the declaration
 		if(isFinal){
 			declaration.append(FINAL_MODIFIER).append(' ');
+		}
+		
+		// Optionally add type parameters to the declaration
+		if(ListUtil.isNotBlank(typeParameters)){
+			declaration.append(TYPE_PARAMETER_OPEN_TOKEN);
+			for(JavaTypeParameter typeParameter: typeParameters){
+				declaration.append(typeParameter).append(", ");
+			}
+			// Remove final comma + space
+			declaration.setLength(declaration.length()-2);
+			declaration.append(TYPE_PARAMETER_CLOSE_TOKEN).append(' ');
 		}
 		
 		// add return type to the declaration
@@ -379,6 +402,14 @@ public abstract class JavaMethod implements JavaCodeType{
 		// Add final if we have it
 		if(isFinal){
 			codeString.append(NEWLINE_WITH_2_TABS).append(".isFinal()");
+		}
+		
+		// Add Type Parameters if we have them
+		if(ListUtil.isNotBlank(typeParameters)){
+			for(JavaTypeParameter typeParameter: typeParameters){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".addTypeParameters(\"")
+						.append(typeParameter.toString()).append("\")");
+			}
 		}
 		
 		// Add return type

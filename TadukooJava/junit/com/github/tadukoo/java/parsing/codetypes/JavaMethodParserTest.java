@@ -115,6 +115,33 @@ public class JavaMethodParserTest extends BaseJavaParserTest{
 								.build(),
 						"protected static final Test(){ }"
 				),
+				// With Type Parameter
+				Triple.of(
+						"<T> Test(){}",
+						EditableJavaMethod.builder()
+								.addTypeParameters("T")
+								.returnType("Test")
+								.build(),
+						"<T> Test(){ }"
+				),
+				// With 2 Type Parameters
+				Triple.of(
+						"<T, U> Test(){}",
+						EditableJavaMethod.builder()
+								.addTypeParameters("T, U")
+								.returnType("Test")
+								.build(),
+						"<T, U> Test(){ }"
+				),
+				// With 3 Type Parameters
+				Triple.of(
+						"<T, U, V> Test(){}",
+						EditableJavaMethod.builder()
+								.addTypeParameters("T, U, V")
+								.returnType("Test")
+								.build(),
+						"<T, U, V> Test(){ }"
+				),
 				// With Parameter
 				Triple.of(
 						"Test(String type){}",
@@ -217,10 +244,11 @@ public class JavaMethodParserTest extends BaseJavaParserTest{
 				),
 				// With Everything
 				Triple.of(
-						"private static final String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}",
+						"private static final <T, U, V> String test(String type, int derp) throws Exception, Throwable{doSomething();doSomethingElse();}",
 						EditableJavaMethod.builder()
 								.visibility(Visibility.PRIVATE)
 								.isStatic().isFinal()
+								.addTypeParameters("T, U, V")
 								.returnType("String").name("test")
 								.parameter("String type")
 								.parameter("int derp")
@@ -230,7 +258,7 @@ public class JavaMethodParserTest extends BaseJavaParserTest{
 								.line("doSomethingElse();")
 								.build(),
 						"""
-								private static final String test(String type, int derp) throws Exception, Throwable{
+								private static final <T, U, V> String test(String type, int derp) throws Exception, Throwable{
 									doSomething();
 									doSomethingElse();
 								}"""
