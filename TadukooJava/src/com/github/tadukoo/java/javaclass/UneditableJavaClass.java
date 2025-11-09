@@ -1,9 +1,17 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlockBuilder;
+import com.github.tadukoo.java.code.staticcodeblock.UneditableJavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
+import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.UneditableJavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
@@ -23,7 +31,7 @@ import java.util.List;
  * Represents a class in Java that is not modifiable
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as JavaClass), Alpha v.0.4 (as UneditableJavaClass)
  */
 public class UneditableJavaClass extends JavaClass{
@@ -32,7 +40,7 @@ public class UneditableJavaClass extends JavaClass{
 	 * A builder used to make an {@link UneditableJavaClass}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaClassBuilder
 	 */
@@ -44,13 +52,33 @@ public class UneditableJavaClass extends JavaClass{
 		}
 		
 		/** {@inheritDoc} */
+		@Override
 		protected JavaPackageDeclarationBuilder<?> getPackageDeclarationBuilder(){
 			return UneditableJavaPackageDeclaration.builder();
 		}
 		
 		/** {@inheritDoc} */
+		@Override
 		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
 			return UneditableJavaImportStatement.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaStaticCodeBlockBuilder<?> getStaticCodeBlockBuilder(){
+			return UneditableJavaStaticCodeBlock.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
+			return UneditableJavaSingleLineComment.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder(){
+			return UneditableJavaMultiLineComment.builder();
 		}
 		
 		/** {@inheritDoc} */
@@ -80,6 +108,14 @@ public class UneditableJavaClass extends JavaClass{
 			for(JavaAnnotation annotation: annotations){
 				if(annotation.isEditable()){
 					errors.add("some annotations are not uneditable in this uneditable JavaClass");
+					break;
+				}
+			}
+			
+			// Static Code Blocks can't be editable
+			for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+				if(staticCodeBlock.isEditable()){
+					errors.add("some static code blocks are not uneditable in this uneditable JavaClass");
 					break;
 				}
 			}
@@ -133,6 +169,7 @@ public class UneditableJavaClass extends JavaClass{
 					javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
+					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
 					innerElementsOrder);
@@ -151,9 +188,12 @@ public class UneditableJavaClass extends JavaClass{
 	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
-	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (can be null)
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -164,8 +204,9 @@ public class UneditableJavaClass extends JavaClass{
 	private UneditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-			String superClassName, List<String> implementsInterfaceNames,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
+			List<JavaStaticCodeBlock> staticCodeBlocks,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -173,6 +214,7 @@ public class UneditableJavaClass extends JavaClass{
 				javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
+				staticCodeBlocks,
 				singleLineComments, multiLineComments,
 				innerClasses, fields, methods,
 				innerElementsOrder);

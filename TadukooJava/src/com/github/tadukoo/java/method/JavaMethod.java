@@ -2,12 +2,14 @@ package com.github.tadukoo.java.method;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,7 @@ import java.util.List;
  * Java Method represents a method in a Java class or interface, etc.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaMethod), Alpha v.0.4 (as newer version)
  */
 public abstract class JavaMethod implements JavaCodeType{
@@ -35,12 +37,14 @@ public abstract class JavaMethod implements JavaCodeType{
 	protected boolean isStatic;
 	/** Whether the method is final or not */
 	protected boolean isFinal;
-	/** The return type of the method */
-	protected String returnType;
+	/** Any {@link JavaTypeParameter type parameters} on the method */
+	protected List<JavaTypeParameter> typeParameters;
+	/** The return {@link JavaType type} of the method */
+	protected JavaType returnType;
 	/** The name of the method */
 	protected String name;
-	/** The parameters used in the method - pairs of type, then name */
-	protected List<Pair<String, String>> parameters;
+	/** The {@link JavaParameter parameters} used in the method */
+	protected List<JavaParameter> parameters;
 	/** The types that can be thrown by the method */
 	protected List<String> throwTypes;
 	/** The actual lines of code in the method */
@@ -56,17 +60,18 @@ public abstract class JavaMethod implements JavaCodeType{
 	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
-	 * @param returnType The return type of the method
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} on the method
+	 * @param returnType The return {@link JavaType type} of the method
 	 * @param name The name of the method
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @param throwTypes The types that can be thrown by the method
 	 * @param lines The actual lines of code in the method
 	 */
 	protected JavaMethod(
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			String returnType, String name,
-			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
+			List<JavaTypeParameter> typeParameters, JavaType returnType, String name,
+			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		this.editable = editable;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
@@ -74,6 +79,7 @@ public abstract class JavaMethod implements JavaCodeType{
 		this.isAbstract = isAbstract;
 		this.isStatic = isStatic;
 		this.isFinal = isFinal;
+		this.typeParameters = typeParameters;
 		this.returnType = returnType;
 		this.name = name;
 		this.parameters = parameters;
@@ -137,9 +143,16 @@ public abstract class JavaMethod implements JavaCodeType{
 	}
 	
 	/**
-	 * @return The return type of the method
+	 * @return Any {@link JavaTypeParameter type parameters} for the method
 	 */
-	public String getReturnType(){
+	public List<JavaTypeParameter> getTypeParameters(){
+		return typeParameters;
+	}
+	
+	/**
+	 * @return The return {@link JavaType type} of the method
+	 */
+	public JavaType getReturnType(){
 		return returnType;
 	}
 	
@@ -170,8 +183,8 @@ public abstract class JavaMethod implements JavaCodeType{
 		
 		// Add any parameters
 		if(ListUtil.isNotBlank(parameters)){
-			for(Pair<String, String> parameter: parameters){
-				fullName.append(parameter.getLeft()).append(' ').append(parameter.getRight()).append(", ");
+			for(JavaParameter parameter: parameters){
+				fullName.append(parameter).append(", ");
 			}
 			// Remove the extra comma and space
 			fullName.delete(fullName.length() - 2, fullName.length());
@@ -184,9 +197,9 @@ public abstract class JavaMethod implements JavaCodeType{
 	}
 	
 	/**
-	 * @return The parameters used in the method - pairs of type, then name
+	 * @return The {@link JavaParameter parameters} used in the method
 	 */
-	public List<Pair<String, String>> getParameters(){
+	public List<JavaParameter> getParameters(){
 		return parameters;
 	}
 	
@@ -248,6 +261,17 @@ public abstract class JavaMethod implements JavaCodeType{
 			declaration.append(FINAL_MODIFIER).append(' ');
 		}
 		
+		// Optionally add type parameters to the declaration
+		if(ListUtil.isNotBlank(typeParameters)){
+			declaration.append(TYPE_PARAMETER_OPEN_TOKEN);
+			for(JavaTypeParameter typeParameter: typeParameters){
+				declaration.append(typeParameter).append(", ");
+			}
+			// Remove final comma + space
+			declaration.setLength(declaration.length()-2);
+			declaration.append(TYPE_PARAMETER_CLOSE_TOKEN).append(' ');
+		}
+		
 		// add return type to the declaration
 		declaration.append(returnType);
 		
@@ -262,8 +286,8 @@ public abstract class JavaMethod implements JavaCodeType{
 		// Add parameters to the declaration
 		boolean multiline = false;
 		if(ListUtil.isNotBlank(parameters)){
-			for(Pair<String, String> parameter: parameters){
-				int parameterLength = parameter.getLeft().length() + parameter.getRight().length() + 1;
+			for(JavaParameter parameter: parameters){
+				int parameterLength = parameter.toString().length() + 1;
 				if(declaration.length() + parameterLength > 110){
 					if(!multiline){
 						int cutoff = declaration.indexOf(PARAMETER_OPEN_TOKEN) + 1;
@@ -280,8 +304,7 @@ public abstract class JavaMethod implements JavaCodeType{
 						declaration = new StringBuilder("\t\t");
 					}
 				}
-				declaration.append(parameter.getLeft()).append(' ').append(parameter.getRight())
-						.append(LIST_SEPARATOR_TOKEN).append(' ');
+				declaration.append(parameter).append(LIST_SEPARATOR_TOKEN).append(' ');
 			}
 			// Remove final comma + space
 			declaration.setLength(declaration.length()-2);
@@ -381,6 +404,14 @@ public abstract class JavaMethod implements JavaCodeType{
 			codeString.append(NEWLINE_WITH_2_TABS).append(".isFinal()");
 		}
 		
+		// Add Type Parameters if we have them
+		if(ListUtil.isNotBlank(typeParameters)){
+			for(JavaTypeParameter typeParameter: typeParameters){
+				codeString.append(NEWLINE_WITH_2_TABS).append(".addTypeParameters(\"")
+						.append(typeParameter.toString()).append("\")");
+			}
+		}
+		
 		// Add return type
 		codeString.append(NEWLINE_WITH_2_TABS).append(".returnType(\"").append(returnType).append("\")");
 		
@@ -391,10 +422,9 @@ public abstract class JavaMethod implements JavaCodeType{
 		
 		// Add parameters if we have them
 		if(ListUtil.isNotBlank(parameters)){
-			for(Pair<String, String> parameter: parameters){
+			for(JavaParameter parameter: parameters){
 				codeString.append(NEWLINE_WITH_2_TABS).append(".parameter(\"")
-						.append(parameter.getLeft()).append("\", \"")
-						.append(parameter.getRight()).append("\")");
+						.append(parameter.toString()).append("\")");
 			}
 		}
 		

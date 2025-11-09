@@ -1,8 +1,10 @@
 package com.github.tadukoo.java.field;
 
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
  * Represents a field in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.4
  */
 public class EditableJavaField extends JavaField{
@@ -20,7 +22,7 @@ public class EditableJavaField extends JavaField{
 	 * A builder used to make an {@link EditableJavaField}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaFieldBuilder
 	 */
@@ -63,14 +65,14 @@ public class EditableJavaField extends JavaField{
 	 * @param visibility The {@link Visibility} of the field
 	 * @param isStatic Whether the field is static or not
 	 * @param isFinal Whether the field is final or not
-	 * @param type The type of the field
+	 * @param type The {@link JavaType type} of the field
 	 * @param name The name of the field
 	 * @param value The value assigned to the field
 	 */
 	private EditableJavaField(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal,
-			String type, String name, String value){
+			JavaType type, String name, String value){
 		super(true, javadoc, annotations,
 				visibility, isStatic, isFinal,
 				type, name, value);
@@ -149,10 +151,17 @@ public class EditableJavaField extends JavaField{
 	}
 	
 	/**
-	 * @param type The type of the field
+	 * @param type The {@link JavaType type} of the field
 	 */
-	public void setType(String type){
+	public void setType(JavaType type){
 		this.type = type;
+	}
+	
+	/**
+	 * @param typeText The text to parse for the {@link JavaType type} of the field
+	 */
+	public void setType(String typeText){
+		this.type = FullJavaParser.parseJavaType(typeText);
 	}
 	
 	/**

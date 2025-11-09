@@ -3,6 +3,7 @@ package com.github.tadukoo.java.parsing.codetypes;
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.Visibility;
+import com.github.tadukoo.java.code.staticcodeblock.EditableJavaStaticCodeBlock;
 import com.github.tadukoo.java.field.EditableJavaField;
 import com.github.tadukoo.java.javaclass.EditableJavaClass;
 import com.github.tadukoo.java.method.EditableJavaMethod;
@@ -77,6 +78,55 @@ public class JavaTypeWithModifiersParser extends AbstractJavaParser{
 						case FINAL_MODIFIER -> clazz.setFinal(true);
 					}
 				}
+				
+				break;
+			}else if(StringUtil.equals(token, BLOCK_OPEN_TOKEN)){
+				// Parse as a static code block
+				
+				// Check we only have 1 modifier and it's static
+				if(modifiers.size() != 1 || StringUtil.notEquals(modifiers.get(0), STATIC_MODIFIER)){
+					errors.add("Static Code Block can only have 'static' as a modifier");
+				}
+				
+				// Go through every line until we get to the block close token
+				int openBlocks = 1;
+				StringBuilder content = new StringBuilder();
+				currentToken++;
+				
+				// Skip leading whitespace
+				while(currentToken < tokens.size() && WHITESPACE_MATCHER.reset(tokens.get(currentToken)).matches()){
+					currentToken++;
+				}
+				
+				while(openBlocks > 0){
+					// Grab next token, keep track of blocks we're in
+					String currentTokenContent = tokens.get(currentToken);
+					if(StringUtil.equals(currentTokenContent, BLOCK_OPEN_TOKEN)){
+						openBlocks++;
+					}else if(StringUtil.equals(currentTokenContent, BLOCK_CLOSE_TOKEN)){
+						openBlocks--;
+					}
+					
+					// Advance token count, end if we finished the original block
+					currentToken++;
+					if(openBlocks == 0){
+						continue;
+					}
+					
+					// Add to content the next token
+					content.append(currentTokenContent);
+				}
+				
+				// Last minute modifications to remove extra spacing from content
+				String endContent = content.toString().replaceAll("\n\t\t", "\n")
+						.replaceAll("\\s+$", "");
+				
+				// Create the static code block and set it as the result
+				EditableJavaStaticCodeBlock staticCodeBlock = EditableJavaStaticCodeBlock.builder()
+						.lines(StringUtil.parseListFromStringWithSeparator(endContent, "\n", false))
+						.build();
+				type = JavaCodeTypes.STATIC_CODE_BLOCK;
+				resultType = staticCodeBlock;
 				
 				break;
 			}else if(!WHITESPACE_MATCHER.reset(token).matches()){

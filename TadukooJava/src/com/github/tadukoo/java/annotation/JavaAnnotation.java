@@ -14,7 +14,7 @@ import java.util.Map;
  * Represents an annotation in Java.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.3 (as old version that is now more like UneditableJavaAnnotation), Alpha v.0.4 (as newer version)
  */
 public abstract class JavaAnnotation implements JavaCodeType{
@@ -119,7 +119,8 @@ public abstract class JavaAnnotation implements JavaCodeType{
 	@Override
 	public boolean equals(Object otherAnnotation){
 		if(otherAnnotation instanceof JavaAnnotation annotation){
-			return StringUtil.equals(this.toString(), annotation.toString());
+			return StringUtil.equals(this.toString(), annotation.toString()) &&
+					StringUtil.equals(this.getCanonicalName(), annotation.getCanonicalName());
 		}else{
 			return false;
 		}

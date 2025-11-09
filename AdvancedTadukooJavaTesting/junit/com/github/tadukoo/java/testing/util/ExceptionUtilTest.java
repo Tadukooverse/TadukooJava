@@ -82,7 +82,7 @@ public class ExceptionUtilTest extends JavaClassParsingTest{
 						.isStatic()
 						.returnType("String")
 						.name("getStackTraceAsString")
-						.parameter("Throwable", "t")
+						.parameter("Throwable t")
 						.line("// Setup a StringWriter to write the stack trace to")
 						.line("StringWriter sw = new StringWriter();")
 						.line("// Create PrintWriter for the StringWriter so it can actually be written to")

@@ -68,7 +68,7 @@ public class FloatUtilTest extends JavaClassParsingTest{
 						.isStatic()
 						.returnType("float[]")
 						.name("convertListToArray")
-						.parameter("List<Float>", "floatList")
+						.parameter("List<Float> floatList")
 						.line("float[] floatArray = new float[floatList.size()];")
 						.line("for(int i = 0; i < floatList.size(); i++){")
 						.line("\tfloatArray[i] = floatList.get(i);")

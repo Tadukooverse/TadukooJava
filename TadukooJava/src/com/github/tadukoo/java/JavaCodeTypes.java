@@ -1,6 +1,7 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -14,7 +15,8 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
  * An enum for the various {@link JavaCodeTypes} types of Java classes and elements.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public enum JavaCodeTypes{
 	
@@ -26,6 +28,33 @@ public enum JavaCodeTypes{
 	 * Standard Name: unknown
 	 */
 	UNKNOWN("unknown"),
+	
+	/**
+	 * Represents a type parameter in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaTypeParameter}
+	 * <br>
+	 * Standard Name: type parameter
+	 */
+	TYPE_PARAMETER(JavaTypeParameter.class, "type parameter"),
+	
+	/**
+	 * Represents a type in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaType}
+	 * <br>
+	 * Standard Name: type
+	 */
+	TYPE(JavaType.class, "type"),
+	
+	/**
+	 * Represents a parameter in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaParameter}
+	 * <br>
+	 * Standard Name: parameter
+	 */
+	PARAMETER(JavaParameter.class, "parameter"),
 	
 	/**
 	 * Represents a package declaration in Java
@@ -115,7 +144,16 @@ public enum JavaCodeTypes{
 	 * <br>
 	 * Standard name: class
 	 */
-	CLASS(JavaClass.class, "class");
+	CLASS(JavaClass.class, "class"),
+	
+	/**
+	 * Represents a static code block within a class
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaStaticCodeBlock}
+	 * <br>
+	 * Standard name: static code block
+	 */
+	STATIC_CODE_BLOCK(JavaStaticCodeBlock.class, "static code block");
 	
 	/** The main {@link JavaCodeType} class for the enum */
 	private final Class<? extends JavaCodeType> clazz;

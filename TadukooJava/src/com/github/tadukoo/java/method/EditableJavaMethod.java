@@ -1,9 +1,12 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
-import com.github.tadukoo.util.tuple.Pair;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +15,7 @@ import java.util.List;
  * Represents a method in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.4
  */
 public class EditableJavaMethod extends JavaMethod{
@@ -21,7 +24,7 @@ public class EditableJavaMethod extends JavaMethod{
 	 * A builder used to make an {@link EditableJavaMethod}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaMethodBuilder
 	 */
@@ -57,7 +60,7 @@ public class EditableJavaMethod extends JavaMethod{
 		protected EditableJavaMethod constructMethod(){
 			return new EditableJavaMethod(javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,
-					returnType, name,
+					typeParameters, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -71,20 +74,21 @@ public class EditableJavaMethod extends JavaMethod{
 	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
-	 * @param returnType The return type of the method
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} for the method
+	 * @param returnType The return {@link JavaType type} of the method
 	 * @param name The name of the method
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @param throwTypes The types that can be thrown by the method
 	 * @param lines The actual lines of code in the method
 	 */
 	private EditableJavaMethod(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			String returnType, String name,
-			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
+			List<JavaTypeParameter> typeParameters, JavaType returnType, String name,
+			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		super(true, javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal,
-				returnType, name,
+				typeParameters, returnType, name,
 				parameters, throwTypes, lines);
 	}
 	
@@ -168,10 +172,52 @@ public class EditableJavaMethod extends JavaMethod{
 	}
 	
 	/**
-	 * @param returnType The return type of the method
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} for the method
 	 */
-	public void setReturnType(String returnType){
+	public void setTypeParameters(List<JavaTypeParameter> typeParameters){
+		this.typeParameters = typeParameters;
+	}
+	
+	/**
+	 * @param typeParametersString A String representing any {@link JavaTypeParameter type parameters} for the method
+	 */
+	public void setTypeParameters(String typeParametersString){
+		this.typeParameters = FullJavaParser.parseJavaTypeParameters(typeParametersString);
+	}
+	
+	/**
+	 * @param typeParameters {@link JavaTypeParameter Type parameters} to be added to the method
+	 */
+	public void addTypeParameters(List<JavaTypeParameter> typeParameters){
+		this.typeParameters.addAll(typeParameters);
+	}
+	
+	/**
+	 * @param typeParametersString A String representing {@link JavaTypeParameter type parameters} to be added to the method
+	 */
+	public void addTypeParameters(String typeParametersString){
+		this.typeParameters.addAll(FullJavaParser.parseJavaTypeParameters(typeParametersString));
+	}
+	
+	/**
+	 * @param typeParameter A {@link JavaTypeParameter type parameter} to be added to the method
+	 */
+	public void addTypeParameter(JavaTypeParameter typeParameter){
+		typeParameters.add(typeParameter);
+	}
+	
+	/**
+	 * @param returnType The return {@link JavaType type} of the method
+	 */
+	public void setReturnType(JavaType returnType){
 		this.returnType = returnType;
+	}
+	
+	/**
+	 * @param returnTypeText The text of the return {@link JavaType type} of the method to be parsed
+	 */
+	public void setReturnType(String returnTypeText){
+		this.returnType = FullJavaParser.parseJavaType(returnTypeText);
 	}
 	
 	/**
@@ -182,31 +228,30 @@ public class EditableJavaMethod extends JavaMethod{
 	}
 	
 	/**
-	 * @param type The type of the parameter used in the method to be added
-	 * @param name The name of the parameter used in the method to be added
+	 * @param parameterText The text of the {@link JavaParameter parameter}, to be parsed and added
 	 */
-	public void addParameter(String type, String name){
-		parameters.add(Pair.of(type, name));
+	public void addParameter(String parameterText){
+		parameters.add(FullJavaParser.parseJavaParameter(parameterText));
 	}
 	
 	/**
-	 * @param parameter A parameter used in the method to be added - a pair of type, then name
+	 * @param parameter A {@link JavaParameter parameter} used in the method to be added
 	 */
-	public void addParameter(Pair<String, String> parameter){
+	public void addParameter(JavaParameter parameter){
 		parameters.add(parameter);
 	}
 	
 	/**
-	 * @param parameters Parameters used in the method to be added - pairs of type, then name
+	 * @param parameters {@link JavaParameter Parameters} used in the method to be added
 	 */
-	public void addParameters(List<Pair<String, String>> parameters){
+	public void addParameters(List<JavaParameter> parameters){
 		this.parameters.addAll(parameters);
 	}
 	
 	/**
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 */
-	public void setParameters(List<Pair<String, String>> parameters){
+	public void setParameters(List<JavaParameter> parameters){
 		this.parameters = parameters;
 	}
 	

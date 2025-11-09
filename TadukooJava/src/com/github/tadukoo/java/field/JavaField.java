@@ -2,7 +2,7 @@ package com.github.tadukoo.java.field;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
-import com.github.tadukoo.java.JavaCodeUtil;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
@@ -17,7 +17,7 @@ import java.util.List;
  * Java Field represents a field in a {@link JavaClass Java class}
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaField), Alpha v.0.4 (as newer version)
  */
 public abstract class JavaField implements JavaCodeType{
@@ -34,8 +34,8 @@ public abstract class JavaField implements JavaCodeType{
 	protected boolean isStatic;
 	/** Whether the field is final or not */
 	protected boolean isFinal;
-	/** The type of the field */
-	protected String type;
+	/** The {@link JavaType type} of the field */
+	protected JavaType type;
 	/** The name of the field */
 	protected String name;
 	/** The value assigned to the field */
@@ -50,14 +50,14 @@ public abstract class JavaField implements JavaCodeType{
 	 * @param visibility The {@link Visibility} of the field
 	 * @param isStatic Whether the field is static or not
 	 * @param isFinal Whether the field is final or not
-	 * @param type The type of the field
+	 * @param type The {@link JavaType type} of the field
 	 * @param name The name of the field
 	 * @param value The value assigned to the field
 	 */
 	protected JavaField(
 			boolean editable, Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isStatic, boolean isFinal,
-			String type, String name, String value){
+			JavaType type, String name, String value){
 		this.editable = editable;
 		this.javadoc = javadoc;
 		this.annotations = annotations;
@@ -118,9 +118,9 @@ public abstract class JavaField implements JavaCodeType{
 	}
 	
 	/**
-	 * @return The type of the field
+	 * @return The {@link JavaType type} of the field
 	 */
-	public String getType(){
+	public JavaType getType(){
 		return type;
 	}
 	
@@ -240,7 +240,7 @@ public abstract class JavaField implements JavaCodeType{
 		
 		// Add value if we have it
 		if(StringUtil.isNotBlank(value)){
-			codeString.append(NEWLINE_WITH_2_TABS).append(".value(\"").append(JavaCodeUtil.escapeString(value)).append("\")");
+			codeString.append(NEWLINE_WITH_2_TABS).append(".value(\"").append(StringUtil.escapeString(value)).append("\")");
 		}
 		
 		// Finish building

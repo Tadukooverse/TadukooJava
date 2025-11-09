@@ -4,10 +4,15 @@ import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
 import com.github.tadukoo.util.ListUtil;
-import org.junit.jupiter.api.Test;
+import com.github.tadukoo.util.StringUtil;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.opentest4j.AssertionFailedError;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static com.github.tadukoo.java.testing.JavaCodeTypeTest.assertAnnotationEquals;
 import static com.github.tadukoo.java.testing.JavaCodeTypeTest.findAnnotationDifferences;
@@ -18,288 +23,144 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class JavaCodeTypeTestAnnotationTest{
 	
-	@Test
-	public void testFindAnnotationDifferencesNone(){
-		assertEquals(new ArrayList<>(), findAnnotationDifferences(
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build()));
+	@ParameterizedTest
+	@MethodSource("getAnnotationDifferences")
+	public void testFindAnnotationDifferences(
+			JavaAnnotation expectedAnnotation, JavaAnnotation actualAnnotation,
+			List<String> differences){
+		assertEquals(differences, findAnnotationDifferences(expectedAnnotation, actualAnnotation));
 	}
 	
-	@Test
-	public void testFindAnnotationDifferencesBothNull(){
-		assertEquals(new ArrayList<>(), findAnnotationDifferences(
-				null, null
-		));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesDoc1NullDoc2Not(){
-		assertEquals(ListUtil.createList("One of the annotations is null, and the other isn't!"), findAnnotationDifferences(
-				null,
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build()));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesDoc2NullDoc1Not(){
-		assertEquals(ListUtil.createList("One of the annotations is null, and the other isn't!"), findAnnotationDifferences(
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build(),
-				null));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesEditable(){
-		assertEquals(ListUtil.createList("Editable is different!"), findAnnotationDifferences(
-				UneditableJavaAnnotation.builder()
-						.name("Test")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build()));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesName(){
-		assertEquals(ListUtil.createList("Name is different!"), findAnnotationDifferences(
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Derp")
-						.build()));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesCanonicalName(){
-		assertEquals(ListUtil.createList("Canonical Name is different!"), findAnnotationDifferences(
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.canonicalName("com.test.Test")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.canonicalName("com.derp.Test")
-						.build()));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesParamsLength(){
-		assertEquals(ListUtil.createList("Parameters length is different!"), findAnnotationDifferences(
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.parameter("something", "We doing something with it")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.parameter("something", "We doing something with it")
-						.parameter("version", "It a version")
-						.build()));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesParamsLengthDoc1Longer(){
-		assertEquals(ListUtil.createList("Parameters length is different!",
-				"Parameters differs on #2!"), findAnnotationDifferences(
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.parameter("something", "We doing something with it")
-						.parameter("version", "It a version")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.parameter("something", "We doing something with it")
-						.build()));
-	}
-	
-	@Test
-	public void testFindAnnotationDifferencesAll(){
-		assertEquals(ListUtil.createList("Editable is different!",
-				"Name is different!",
-				"Canonical Name is different!",
-				"Parameters length is different!",
-				"Parameters differs on #2!"), findAnnotationDifferences(
-				UneditableJavaAnnotation.builder()
-						.name("Test")
-						.canonicalName("com.test.Test")
-						.parameter("something", "We doing something with it")
-						.parameter("version", "It a version")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Derp")
-						.canonicalName("com.derp.Test")
-						.parameter("something", "We doing something with it")
-						.build()));
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsNone(){
-		assertAnnotationEquals(EditableJavaAnnotation.builder()
-						.name("Test")
-						.build(),
-				EditableJavaAnnotation.builder()
-						.name("Test")
-						.build());
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsBothNull(){
-		assertAnnotationEquals(null, null);
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsDoc1NullDoc2Not(){
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.build();
+	@ParameterizedTest
+	@MethodSource("getAnnotationDifferences")
+	public void testAssertAnnotationEquals(
+			JavaAnnotation expectedAnnotation, JavaAnnotation actualAnnotation,
+			List<String> differences){
 		try{
-			assertAnnotationEquals(null, annotation2);
-			fail();
+			assertAnnotationEquals(expectedAnnotation, actualAnnotation);
+			if(ListUtil.isNotBlank(differences)){
+				fail();
+			}
 		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("One of the annotations is null, and the other isn't!",
-					buildAssertError(null, annotation2)), e.getMessage());
+			if(ListUtil.isBlank(differences)){
+				throw e;
+			}
+			assertEquals(buildTwoPartError(StringUtil.buildStringWithNewLines(differences),
+					buildAssertError(expectedAnnotation, actualAnnotation)), e.getMessage());
 		}
 	}
 	
-	@Test
-	public void testAssertAnnotationEqualsDoc2NullDoc1Not(){
-		JavaAnnotation annotation1 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, null);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("One of the annotations is null, and the other isn't!",
-					buildAssertError(annotation1, null)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsEditable(){
-		JavaAnnotation annotation1 = UneditableJavaAnnotation.builder()
-				.name("Test")
-				.build();
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, annotation2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("Editable is different!",
-					buildAssertError(annotation1, annotation2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsName(){
-		JavaAnnotation annotation1 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.build();
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Derp")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, annotation2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("Name is different!",
-					buildAssertError(annotation1, annotation2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsCanonicalName(){
-		JavaAnnotation annotation1 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.canonicalName("com.test.Test")
-				.build();
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.canonicalName("com.derp.Test")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, annotation2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("Canonical Name is different!",
-					buildAssertError(annotation1, annotation2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsParamsLength(){
-		JavaAnnotation annotation1 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.parameter("something", "We doing something with it")
-				.build();
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.parameter("something", "We doing something with it")
-				.parameter("version", "It a version")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, annotation2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("Parameters length is different!",
-					buildAssertError(annotation1, annotation2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsParamsLengthDoc1Longer(){
-		JavaAnnotation annotation1 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.parameter("something", "We doing something with it")
-				.parameter("version", "It a version")
-				.build();
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Test")
-				.parameter("something", "We doing something with it")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, annotation2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("""
-					Parameters length is different!
-					Parameters differs on #2!""",
-					buildAssertError(annotation1, annotation2)), e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testAssertAnnotationEqualsAll(){
-		JavaAnnotation annotation1 = UneditableJavaAnnotation.builder()
-				.name("Test")
-				.canonicalName("com.test.Test")
-				.parameter("something", "We doing something with it")
-				.parameter("version", "It a version")
-				.build();
-		JavaAnnotation annotation2 = EditableJavaAnnotation.builder()
-				.name("Derp")
-				.canonicalName("com.derp.Test")
-				.parameter("something", "We doing something with it")
-				.build();
-		try{
-			assertAnnotationEquals(annotation1, annotation2);
-			fail();
-		}catch(AssertionFailedError e){
-			assertEquals(buildTwoPartError("""
-					Editable is different!
-					Name is different!
-					Canonical Name is different!
-					Parameters length is different!
-					Parameters differs on #2!""",
-					buildAssertError(annotation1, annotation2)), e.getMessage());
-		}
+	public static Stream<Arguments> getAnnotationDifferences(){
+		return Stream.of(
+				// None
+				Arguments.of(
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						new ArrayList<>()
+				),
+				// Both Null
+				Arguments.of(
+						null, null,
+						new ArrayList<>()
+				),
+				// 1 Null, 2 Not
+				Arguments.of(
+						null,
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						ListUtil.createList("One of the annotations is null, and the other isn't!")
+				),
+				// 2 Null, 1 Not
+				Arguments.of(
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						null,
+						ListUtil.createList("One of the annotations is null, and the other isn't!")
+				),
+				// Editable
+				Arguments.of(
+						UneditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						ListUtil.createList("Editable is different!")
+				),
+				// Name
+				Arguments.of(
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Derp")
+								.build(),
+						ListUtil.createList("Name is different!")
+				),
+				// Canonical Name
+				Arguments.of(
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.canonicalName("com.test.Test")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.canonicalName("com.derp.Test")
+								.build(),
+						ListUtil.createList("Canonical Name is different!")
+				),
+				// Params Length
+				Arguments.of(
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.parameter("something", "We doing something with it")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.parameter("something", "We doing something with it")
+								.parameter("version", "It a version")
+								.build(),
+						ListUtil.createList("Parameters length is different!")
+				),
+				// Params Length 1 Longer
+				Arguments.of(
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.parameter("something", "We doing something with it")
+								.parameter("version", "It a version")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Test")
+								.parameter("something", "We doing something with it")
+								.build(),
+						ListUtil.createList("Parameters length is different!",
+								"Parameters differs on #2!")
+				),
+				// All
+				Arguments.of(
+						UneditableJavaAnnotation.builder()
+								.name("Test")
+								.canonicalName("com.test.Test")
+								.parameter("something", "We doing something with it")
+								.parameter("version", "It a version")
+								.build(),
+						EditableJavaAnnotation.builder()
+								.name("Derp")
+								.canonicalName("com.derp.Test")
+								.parameter("something", "We doing something with it")
+								.build(),
+						ListUtil.createList("Editable is different!",
+								"Name is different!",
+								"Canonical Name is different!",
+								"Parameters length is different!",
+								"Parameters differs on #2!")
+				)
+		);
 	}
 }

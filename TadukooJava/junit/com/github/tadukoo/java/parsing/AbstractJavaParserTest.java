@@ -1,0 +1,269 @@
+package com.github.tadukoo.java.parsing;
+
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
+import com.github.tadukoo.util.ListUtil;
+import com.github.tadukoo.util.functional.function.Function;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+public class AbstractJavaParserTest{
+	
+	private static Stream<Arguments> getTypeParameterData(){
+		return Stream.of(
+				// Empty
+				Arguments.of(
+						"",
+						new ArrayList<>()
+				),
+				// Whitespace
+				Arguments.of(
+						"\t\n  \t",
+						new ArrayList<>()
+				),
+				// Simple
+				Arguments.of(
+						"String",
+						ListUtil.createList(
+								JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
+										.build()
+						)
+				),
+				// With Extends
+				Arguments.of(
+						"? extends String",
+						ListUtil.createList(
+								JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("?")
+												.build())
+										.extendsType(JavaType.builder()
+												.baseType("String")
+												.build())
+										.build()
+						)
+				),
+				// With Multiple
+				Arguments.of(
+						"? extends String, ? extends Object",
+						ListUtil.createList(
+								JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("?")
+												.build())
+										.extendsType(JavaType.builder()
+												.baseType("String")
+												.build())
+										.build(),
+								JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("?")
+												.build())
+										.extendsType(JavaType.builder()
+												.baseType("Object")
+												.build())
+										.build()
+						)
+				)
+		);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("getTypeParameterData")
+	public void testParseJavaTypeParameters(String text, List<JavaTypeParameter> expectedParameters){
+		assertEquals(expectedParameters, AbstractJavaParser.parseJavaTypeParameters(text));
+	}
+	
+	private static Stream<Arguments> getTypeData(){
+		return Stream.of(
+				// Basic
+				Arguments.of(
+						"String",
+						JavaType.builder()
+								.baseType("String")
+								.build()
+				),
+				// With Type Parameters
+				Arguments.of(
+						"Map<String, Object>",
+						JavaType.builder()
+								.baseType("Map")
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("String")
+												.build())
+										.build())
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("Object")
+												.build())
+										.build())
+								.build()
+				),
+				// Complex
+				Arguments.of(
+						"List<Map<String,Object>>",
+						JavaType.builder()
+								.baseType("List")
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("Map")
+												.typeParameter(JavaTypeParameter.builder()
+														.baseType(JavaType.builder()
+																.baseType("String")
+																.build())
+														.build())
+												.typeParameter(JavaTypeParameter.builder()
+														.baseType(JavaType.builder()
+																.baseType("Object")
+																.build())
+														.build())
+												.build())
+										.build())
+								.build()
+				),
+				// Complex 2
+				Arguments.of(
+						"Map<Character, Map<Character, ?>>",
+						JavaType.builder()
+								.baseType("Map")
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("Character")
+												.build())
+										.build())
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("Map")
+												.typeParameter(JavaTypeParameter.builder()
+														.baseType(JavaType.builder()
+																.baseType("Character")
+																.build())
+														.build())
+												.typeParameter(JavaTypeParameter.builder()
+														.baseType(JavaType.builder()
+																.baseType("?")
+																.build())
+														.build())
+												.build())
+										.build())
+								.build()
+				),
+				// Complex 3
+				Arguments.of(
+						"Map<? extends List<String>, Object>",
+						JavaType.builder()
+								.baseType("Map")
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("?")
+												.build())
+										.extendsType(JavaType.builder()
+												.baseType("List")
+												.typeParameter(JavaTypeParameter.builder()
+														.baseType(JavaType.builder()
+																.baseType("String")
+																.build())
+														.build())
+												.build())
+										.build())
+								.typeParameter(JavaTypeParameter.builder()
+										.baseType(JavaType.builder()
+												.baseType("Object")
+												.build())
+										.build())
+								.build()
+				)
+		);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("getTypeData")
+	public void testParseJavaType(String text, JavaType expectedType){
+		assertEquals(expectedType, AbstractJavaParser.parseJavaType(text));
+	}
+	
+	private static Stream<Arguments> getParameterData(){
+		return Stream.of(
+				// Basic
+				Arguments.of(
+						"String text",
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.name("text")
+								.build()
+				),
+				// Vararg
+				Arguments.of(
+						"String ... text",
+						JavaParameter.builder()
+								.type(JavaType.builder()
+										.baseType("String")
+										.build())
+								.vararg()
+								.name("text")
+								.build()
+				)
+		);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("getParameterData")
+	public void testParseJavaParameter(String text, JavaParameter expectedParameter){
+		assertEquals(expectedParameter, AbstractJavaParser.parseJavaParameter(text));
+	}
+	
+	private static Stream<Arguments> getErrorData(){
+		return Stream.of(
+				// Not a type parameter
+				Arguments.of(
+						"Something extends Something extends Yes",
+						(Function<String, ?>) AbstractJavaParser::parseJavaTypeParameters,
+						"'Something extends Something extends Yes' is not a valid type parameter"
+				),
+				// Failed to parse remaining type parameter content
+				Arguments.of(
+						"Map<String,Object",
+						(Function<String, ?>) AbstractJavaParser::parseJavaTypeParameters,
+						"Failed to parse remaining type parameter content: 'Map<String,Object'"
+				),
+				// Not a type
+				Arguments.of(
+						"Something>Truly Garbage<",
+						(Function<String, ?>) AbstractJavaParser::parseJavaType,
+						"'Something>Truly Garbage<' is not a valid type"
+				),
+				// Not a parameter
+				Arguments.of(
+						"Something>Truly Garbage< text ...",
+						(Function<String, ?>) AbstractJavaParser::parseJavaParameter,
+						"'Something>Truly Garbage< text ...' is not a valid parameter"
+				)
+		);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("getErrorData")
+	public void testErrors(String text, Function<String, ?> method, String error){
+		try{
+			method.apply(text);
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals(error, e.getMessage());
+		}
+	}
+}

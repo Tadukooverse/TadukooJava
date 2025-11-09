@@ -1,9 +1,17 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.EditableJavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlockBuilder;
+import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
+import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.EditableJavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
@@ -14,16 +22,18 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.packagedeclaration.EditableJavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a class in Java that can be modified
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.4
  */
 public class EditableJavaClass extends JavaClass{
@@ -32,7 +42,7 @@ public class EditableJavaClass extends JavaClass{
 	 * A builder used to make an {@link EditableJavaClass}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaClassBuilder
 	 */
@@ -53,6 +63,24 @@ public class EditableJavaClass extends JavaClass{
 		@Override
 		protected JavaImportStatementBuilder<?> getImportStatementBuilder(){
 			return EditableJavaImportStatement.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaStaticCodeBlockBuilder<?> getStaticCodeBlockBuilder(){
+			return EditableJavaStaticCodeBlock.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
+			return EditableJavaSingleLineComment.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
+		protected JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder(){
+			return EditableJavaMultiLineComment.builder();
 		}
 		
 		/** {@inheritDoc} */
@@ -82,6 +110,14 @@ public class EditableJavaClass extends JavaClass{
 			for(JavaAnnotation annotation: annotations){
 				if(!annotation.isEditable()){
 					errors.add("some annotations are not editable in this editable JavaClass");
+					break;
+				}
+			}
+			
+			// Static Code Blocks can't be uneditable
+			for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+				if(!staticCodeBlock.isEditable()){
+					errors.add("some static code blocks are not editable in this editable JavaClass");
 					break;
 				}
 			}
@@ -135,6 +171,7 @@ public class EditableJavaClass extends JavaClass{
 					javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
+					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
 					innerElementsOrder);
@@ -153,9 +190,12 @@ public class EditableJavaClass extends JavaClass{
 	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
-	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (can be null)
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -166,8 +206,9 @@ public class EditableJavaClass extends JavaClass{
 	private EditableJavaClass(
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-			String superClassName, List<String> implementsInterfaceNames,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
+			JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
+			List<JavaStaticCodeBlock> staticCodeBlocks,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -175,6 +216,7 @@ public class EditableJavaClass extends JavaClass{
 				javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
+				staticCodeBlocks,
 				singleLineComments, multiLineComments,
 				innerClasses, fields, methods,
 				innerElementsOrder);
@@ -351,38 +393,121 @@ public class EditableJavaClass extends JavaClass{
 	}
 	
 	/**
-	 * @param className The name of the class
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
 	 */
-	public void setClassName(String className){
+	public void setClassName(JavaType className){
 		this.className = className;
 	}
 	
 	/**
-	 * @param superClassName The name of the class this one extends (may be null)
+	 * @param classNameText The text to parse of the name of the class,
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void setSuperClassName(String superClassName){
+	public void setClassName(String classNameText){
+		this.className = FullJavaParser.parseJavaType(classNameText);
+	}
+	
+	/**
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void setSuperClassName(JavaType superClassName){
 		this.superClassName = superClassName;
 	}
 	
 	/**
-	 * @param implementsInterfaceName The name of an interface this class implements
+	 * @param superClassNameText The text to parse of the name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void addImplementsInterfaceName(String implementsInterfaceName){
+	public void setSuperClassName(String superClassNameText){
+		this.superClassName = FullJavaParser.parseJavaType(superClassNameText);
+	}
+	
+	/**
+	 * @param implementsInterfaceName The name of an interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void addImplementsInterfaceName(JavaType implementsInterfaceName){
 		implementsInterfaceNames.add(implementsInterfaceName);
 	}
 	
 	/**
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param implementsInterfaceNameText The text for the name of an interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void addImplementsInterfaceNames(List<String> implementsInterfaceNames){
+	public void addImplementsInterfaceName(String implementsInterfaceNameText){
+		implementsInterfaceNames.add(FullJavaParser.parseJavaType(implementsInterfaceNameText));
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void addImplementsInterfaceNames(List<JavaType> implementsInterfaceNames){
 		this.implementsInterfaceNames.addAll(implementsInterfaceNames);
 	}
 	
 	/**
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param implementsInterfaceNameTexts The text of the names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 */
-	public void setImplementsInterfaceNames(List<String> implementsInterfaceNames){
+	public void addImplementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
+		this.implementsInterfaceNames.addAll(implementsInterfaceNameTexts.stream()
+				.map(FullJavaParser::parseJavaType).toList());
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void setImplementsInterfaceNames(List<JavaType> implementsInterfaceNames){
 		this.implementsInterfaceNames = implementsInterfaceNames;
+	}
+	
+	/**
+	 * @param implementsInterfaceNameTexts The text for the names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 */
+	public void setImplementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
+		this.implementsInterfaceNames = implementsInterfaceNameTexts.stream()
+				.map(FullJavaParser::parseJavaType).collect(Collectors.toList());
+	}
+	
+	/**
+	 * @param staticCodeBlock A {@link JavaStaticCodeBlock static code block} to be added inside the class
+	 * - must be editable
+	 */
+	public void addStaticCodeBlock(JavaStaticCodeBlock staticCodeBlock){
+		if(!staticCodeBlock.isEditable()){
+			throw new IllegalArgumentException("editable Java Class requires editable static code blocks");
+		}
+		staticCodeBlocks.add(staticCodeBlock);
+	}
+	
+	/**
+	 * @param staticCodeBlocks {@link JavaStaticCodeBlock static code blocks} to be added inside the class
+	 * - must be editable
+	 */
+	public void addStaticCodeBlocks(List<JavaStaticCodeBlock> staticCodeBlocks){
+		for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+			if(!staticCodeBlock.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable static code blocks");
+			}
+		}
+		this.staticCodeBlocks.addAll(staticCodeBlocks);
+	}
+	
+	/**
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
+	 * - must be editable
+	 */
+	public void setStaticCodeBlocks(List<JavaStaticCodeBlock> staticCodeBlocks){
+		for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+			if(!staticCodeBlock.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable static code blocks");
+			}
+		}
+		this.staticCodeBlocks = staticCodeBlocks;
 	}
 	
 	/**

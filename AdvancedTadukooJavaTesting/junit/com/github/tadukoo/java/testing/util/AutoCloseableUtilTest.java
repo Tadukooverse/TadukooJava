@@ -65,7 +65,7 @@ public class AutoCloseableUtilTest extends JavaClassParsingTest{
 						.isStatic()
 						.returnType("void")
 						.name("closeQuietly")
-						.parameter("AutoCloseable", "autoCloseable")
+						.parameter("AutoCloseable autoCloseable")
 						.line("if(autoCloseable != null){")
 						.line("\ttry{")
 						.line("\t\tautoCloseable.close();")

@@ -1,11 +1,14 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +54,13 @@ import java.util.List;
  *         <td>Defaults to false</td>
  *     </tr>
  *     <tr>
+ *         <td>typeParameters</td>
+ *         <td>Any {@link JavaTypeParameter type parameters} for the method</td>
+ *         <td>Defaults to empty List</td>
+ *     </tr>
+ *     <tr>
  *         <td>returnType</td>
- *         <td>The return type of the method</td>
+ *         <td>The return {@link JavaType type} of the method</td>
  *         <td>Required</td>
  *     </tr>
  *     <tr>
@@ -78,7 +86,7 @@ import java.util.List;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (within JavaMethod), Alpha v.0.4 (as a separate class)
  */
 public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
@@ -95,12 +103,14 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	protected boolean isStatic = false;
 	/** Whether the method is final or not */
 	protected boolean isFinal = false;
-	/** The return type of the method */
-	protected String returnType = null;
+	/** Any {@link JavaTypeParameter type parameters} for the method */
+	protected List<JavaTypeParameter> typeParameters = new ArrayList<>();
+	/** The return {@link JavaType type} of the method */
+	protected JavaType returnType = null;
 	/** The name of the method */
 	protected String name = null;
-	/** The parameters used in the method - pairs of type, then name */
-	protected List<Pair<String, String>> parameters = new ArrayList<>();
+	/** The {@link JavaParameter parameters} used in the method */
+	protected List<JavaParameter> parameters = new ArrayList<>();
 	/** The types that can be thrown by the method */
 	protected List<String> throwTypes = new ArrayList<>();
 	/** The actual lines of code in the method */
@@ -124,6 +134,7 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 		this.isAbstract = method.isAbstract();
 		this.isStatic = method.isStatic();
 		this.isFinal = method.isFinal();
+		this.typeParameters = method.getTypeParameters();
 		this.returnType = method.getReturnType();
 		this.name = method.getName();
 		this.parameters = method.getParameters();
@@ -226,11 +237,47 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	}
 	
 	/**
-	 * @param returnType The return type of the method
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} for the method
 	 * @return this, to continue building
 	 */
-	public JavaMethodBuilder<MethodType> returnType(String returnType){
+	public JavaMethodBuilder<MethodType> typeParameters(List<JavaTypeParameter> typeParameters){
+		this.typeParameters = typeParameters;
+		return this;
+	}
+	
+	/**
+	 * @param typeParameter A {@link JavaTypeParameter type parameter} for the method to be added
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> typeParameter(JavaTypeParameter typeParameter){
+		typeParameters.add(typeParameter);
+		return this;
+	}
+	
+	/**
+	 * @param typeParameter A String representing one or more {@link JavaTypeParameter type parameters} to be added
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> addTypeParameters(String typeParameter){
+		typeParameters.addAll(FullJavaParser.parseJavaTypeParameters(typeParameter));
+		return this;
+	}
+	
+	/**
+	 * @param returnType The return {@link JavaType type} of the method
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> returnType(JavaType returnType){
 		this.returnType = returnType;
+		return this;
+	}
+	
+	/**
+	 * @param returnTypeText The text of the return {@link JavaType type} to be parsed
+	 * @return this, to continue building
+	 */
+	public JavaMethodBuilder<MethodType> returnType(String returnTypeText){
+		this.returnType = FullJavaParser.parseJavaType(returnTypeText);
 		return this;
 	}
 	
@@ -244,30 +291,29 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 	}
 	
 	/**
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @return this, to continue building
 	 */
-	public JavaMethodBuilder<MethodType> parameters(List<Pair<String, String>> parameters){
+	public JavaMethodBuilder<MethodType> parameters(List<JavaParameter> parameters){
 		this.parameters = parameters;
 		return this;
 	}
 	
 	/**
-	 * @param parameter A single parameter, with type first, then name - to add to the list
+	 * @param parameter A single {@link JavaParameter parameter} to add to the list
 	 * @return this, to continue building
 	 */
-	public JavaMethodBuilder<MethodType> parameter(Pair<String, String> parameter){
+	public JavaMethodBuilder<MethodType> parameter(JavaParameter parameter){
 		parameters.add(parameter);
 		return this;
 	}
 	
 	/**
-	 * @param type The type of the parameter to be added
-	 * @param name The name of the parameter to be added
+	 * @param parameterText The text of the {@link JavaParameter parameter} to be parsed to add to the list
 	 * @return this, to continue building
 	 */
-	public JavaMethodBuilder<MethodType> parameter(String type, String name){
-		parameters.add(Pair.of(type, name));
+	public JavaMethodBuilder<MethodType> parameter(String parameterText){
+		parameters.add(FullJavaParser.parseJavaParameter(parameterText));
 		return this;
 	}
 	
@@ -344,7 +390,7 @@ public abstract class JavaMethodBuilder<MethodType extends JavaMethod>{
 		}
 		
 		// Must specify return type
-		if(StringUtil.isBlank(returnType)){
+		if(returnType == null){
 			errors.add("Must specify returnType!");
 		}
 		

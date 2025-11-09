@@ -2,7 +2,11 @@ package com.github.tadukoo.java.testing;
 
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -16,10 +20,9 @@ import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.java.parsing.JavaParsingException;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.StringUtil;
-import com.github.tadukoo.util.functional.NoException;
-import com.github.tadukoo.util.functional.function.ThrowingFunction;
-import com.github.tadukoo.util.functional.function.ThrowingFunction2;
-import com.github.tadukoo.util.functional.predicate.ThrowingPredicate2;
+import com.github.tadukoo.util.functional.function.Function;
+import com.github.tadukoo.util.functional.function.Function2;
+import com.github.tadukoo.util.functional.predicate.Predicate2;
 import com.github.tadukoo.util.tuple.Pair;
 import org.opentest4j.AssertionFailedError;
 
@@ -31,6 +34,13 @@ import static com.github.tadukoo.util.junit.AssertionFailedErrors.buildTwoPartEr
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+/**
+ * Contains methods for testing that {@link JavaCodeType Java code types} are as expected for unit testing.
+ *
+ * @author Logan Ferree (Tadukoo)
+ * @version Beta v.0.6
+ * @since Beta v.0.5
+ */
 public class JavaCodeTypeTest{
 	
 	/**
@@ -46,7 +56,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType> void checkBoolean(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, Boolean, NoException> booleanMethod){
+			Function<Type, Boolean> booleanMethod){
 		if(booleanMethod.apply(expectedObject) != booleanMethod.apply(actualObject)){
 			differences.add(valueName + " is different!");
 		}
@@ -65,7 +75,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType> void checkString(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, String, NoException> stringMethod){
+			Function<Type, String> stringMethod){
 		if(StringUtil.notEquals(stringMethod.apply(expectedObject), stringMethod.apply(actualObject)) &&
 				!StringUtil.allBlank(stringMethod.apply(expectedObject), stringMethod.apply(actualObject))){
 			differences.add(valueName + " is different!");
@@ -87,8 +97,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, ListType> void checkList(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, List<ListType>, NoException> listMethod,
-			ThrowingPredicate2<ListType, ListType, NoException> listItemCompareMethod){
+			Function<Type, List<ListType>> listMethod, Predicate2<ListType, ListType> listItemCompareMethod){
 		List<ListType> list1 = listMethod.apply(expectedObject), list2 = listMethod.apply(actualObject);
 		if(list1.size() != list2.size()){
 			differences.add(valueName + " length is different!");
@@ -114,7 +123,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, E extends Enum<?>> void checkEnum(
 			Type expectedObject, Type actualObject, List<String> differences, String valueName,
-			ThrowingFunction<Type, E, NoException> enumMethod){
+			Function<Type, E> enumMethod){
 		if(enumMethod.apply(expectedObject) != enumMethod.apply(actualObject)){
 			differences.add(valueName + " is different!");
 		}
@@ -135,8 +144,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, Subtype extends JavaCodeType> void checkSingleSubtype(
 			Type expectedObject, Type actualObject, List<String> differences, String subtypeName,
-			ThrowingFunction<Type, Subtype, NoException> subtypeMethod,
-			ThrowingFunction2<Subtype, Subtype, List<String>, NoException> subtypeDifferencesMethod){
+			Function<Type, Subtype> subtypeMethod, Function2<Subtype, Subtype, List<String>> subtypeDifferencesMethod){
 		Subtype subtype1 = subtypeMethod.apply(expectedObject), subtype2 = subtypeMethod.apply(actualObject);
 		List<String> subtypeDifferences = subtypeDifferencesMethod.apply(subtype1, subtype2);
 		if(ListUtil.isNotBlank(subtypeDifferences)){
@@ -160,8 +168,8 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType, Subtype extends JavaCodeType> void checkListSubtype(
 			Type expectedObject, Type actualObject, List<String> differences, String subtypeName,
-			ThrowingFunction<Type, List<Subtype>, NoException> subtypeListMethod,
-			ThrowingFunction2<Subtype, Subtype, List<String>, NoException> subtypeDifferencesMethod){
+			Function<Type, List<Subtype>> subtypeListMethod,
+			Function2<Subtype, Subtype, List<String>> subtypeDifferencesMethod){
 		List<Subtype> subtypeList1 = subtypeListMethod.apply(expectedObject),
 				subtypeList2 = subtypeListMethod.apply(actualObject);
 		if(subtypeList1.size() != subtypeList2.size()){
@@ -206,7 +214,7 @@ public class JavaCodeTypeTest{
 	 */
 	public static <Type extends JavaCodeType> void baseAssertEquals(
 			Type expectedObject, Type actualObject,
-			ThrowingFunction2<Type, Type, List<String>, NoException> differencesMethod){
+			Function2<Type, Type, List<String>> differencesMethod){
 		// Find any differences
 		List<String> differences = differencesMethod.apply(expectedObject, actualObject);
 		// If there are differences, throw an assertion error with the differences
@@ -214,6 +222,131 @@ public class JavaCodeTypeTest{
 			throw new AssertionFailedError(buildTwoPartError(StringUtil.buildStringWithNewLines(differences),
 					buildAssertError(expectedObject, actualObject)));
 		}
+	}
+	
+	/**
+	 * Finds any differences between the two given {@link JavaTypeParameter type parameters}
+	 *
+	 * @param expectedTypeParameter The "expected" {@link JavaTypeParameter type parameter}
+	 * @param actualTypeParameter The "actual" {@link JavaTypeParameter type parameter}
+	 * @return The List of differences between the {@link JavaTypeParameter type parameters}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findTypeParameterDifferences(
+			JavaTypeParameter expectedTypeParameter, JavaTypeParameter actualTypeParameter){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedTypeParameter == null && actualTypeParameter == null){
+			return differences;
+		}else if(expectedTypeParameter == null || actualTypeParameter == null){
+			differences.add("One of the type parameters is null, and the other isn't!");
+			return differences;
+		}
+		
+		// Base Type and Extends Type
+		checkSingleSubtype(expectedTypeParameter, actualTypeParameter, differences,
+				"Base Type", JavaTypeParameter::getBaseType, JavaCodeTypeTest::findTypeDifferences);
+		checkSingleSubtype(expectedTypeParameter, actualTypeParameter, differences,
+				"Extends Type", JavaTypeParameter::getExtendsType, JavaCodeTypeTest::findTypeDifferences);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaTypeParameter type parameters} are equivalent. It uses
+	 * {@link #findTypeParameterDifferences(JavaTypeParameter, JavaTypeParameter)} to find any
+	 * differences between the two {@link JavaTypeParameter type parameters} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedTypeParameter The "expected" {@link JavaTypeParameter type parameter}
+	 * @param actualTypeParameter The "actual" {@link JavaTypeParameter type parameter}
+	 */
+	public static void assertTypeParameterEquals(
+			JavaTypeParameter expectedTypeParameter, JavaTypeParameter actualTypeParameter){
+		baseAssertEquals(expectedTypeParameter, actualTypeParameter, JavaCodeTypeTest::findTypeParameterDifferences);
+	}
+	
+	/**
+	 * Finds any differences between the two given {@link JavaType types}
+	 *
+	 * @param expectedType The "expected" {@link JavaType type}
+	 * @param actualType The "actual" {@link JavaType type}
+	 * @return The List of differences between the {@link JavaType type}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findTypeDifferences(JavaType expectedType, JavaType actualType){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedType == null && actualType == null){
+			return differences;
+		}else if(expectedType == null || actualType == null){
+			differences.add("One of the types is null, and the other isn't!");
+			return differences;
+		}
+		
+		// baseType, type parameters, and canonical name
+		checkString(expectedType, actualType, differences, "Base Type", JavaType::getBaseType);
+		checkListSubtype(expectedType, actualType, differences, "Type Parameters",
+				JavaType::getTypeParameters, JavaCodeTypeTest::findTypeParameterDifferences);
+		checkString(expectedType, actualType, differences, "Canonical Name", JavaType::getCanonicalName);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaType types} are equivalent. It uses
+	 * {@link #findTypeDifferences(JavaType, JavaType)} to find any
+	 * differences between the two {@link JavaType types} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedType The "expected" {@link JavaType type}
+	 * @param actualType The "actual" {@link JavaType type}
+	 */
+	public static void assertTypeEquals(JavaType expectedType, JavaType actualType){
+		baseAssertEquals(expectedType, actualType, JavaCodeTypeTest::findTypeDifferences);
+	}
+	
+	/**
+	 * Finds any differences between the two given {@link JavaParameter parameters}
+	 *
+	 * @param expectedParameter The "expected" {@link JavaParameter parameter}
+	 * @param actualParameter The "actual" {@link JavaParameter parameter}
+	 * @return The List of differences between the {@link JavaParameter parameters}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findParameterDifferences(JavaParameter expectedParameter, JavaParameter actualParameter){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedParameter == null && actualParameter == null){
+			return differences;
+		}else if(expectedParameter == null || actualParameter == null){
+			differences.add("One of the parameters is null, and the other isn't!");
+			return differences;
+		}
+		
+		// Type, Vararg, and Name
+		checkSingleSubtype(expectedParameter, actualParameter, differences, "Type",
+				JavaParameter::getType, JavaCodeTypeTest::findTypeDifferences);
+		checkBoolean(expectedParameter, actualParameter, differences, "Vararg", JavaParameter::isVararg);
+		checkString(expectedParameter, actualParameter, differences, "Name", JavaParameter::getName);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaParameter parameters} are equivalent. It uses
+	 * {@link #findParameterDifferences(JavaParameter, JavaParameter)} to find any
+	 * differences between the two {@link JavaParameter parameters} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedParameter The "expected" {@link JavaParameter parameter}
+	 * @param actualParameter The "actual" {@link JavaParameter parameter}
+	 */
+	public static void assertParameterEquals(JavaParameter expectedParameter, JavaParameter actualParameter){
+		baseAssertEquals(expectedParameter, actualParameter, JavaCodeTypeTest::findParameterDifferences);
 	}
 	
 	/**
@@ -392,6 +525,47 @@ public class JavaCodeTypeTest{
 	}
 	
 	/**
+	 * Finds any differences between the two given {@link JavaStaticCodeBlock static code blocks}
+	 *
+	 * @param expectedStaticCodeBlock The "expected" {@link JavaStaticCodeBlock static code block}
+	 * @param actualStaticCodeBlock The "actual" {@link JavaStaticCodeBlock static code block}
+	 * @return The List of differences found between the given {@link JavaStaticCodeBlock static code blocks}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findStaticCodeBlockDifferences(
+			JavaStaticCodeBlock expectedStaticCodeBlock, JavaStaticCodeBlock actualStaticCodeBlock){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedStaticCodeBlock == null && actualStaticCodeBlock == null){
+			return differences;
+		}else if(expectedStaticCodeBlock == null || actualStaticCodeBlock == null){
+			differences.add("One of the static code blocks is null, and the other isn't!");
+			return differences;
+		}
+		
+		// Editable and Content
+		checkBoolean(expectedStaticCodeBlock, actualStaticCodeBlock, differences, "Editable", JavaStaticCodeBlock::isEditable);
+		checkList(expectedStaticCodeBlock, actualStaticCodeBlock, differences, "Lines", JavaStaticCodeBlock::getLines, StringUtil::equals);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaStaticCodeBlock static code blocks} are equivalent. It uses
+	 * {@link #findStaticCodeBlockDifferences(JavaStaticCodeBlock, JavaStaticCodeBlock)} to find any
+	 * differences between the two {@link JavaStaticCodeBlock static code blocks} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedStaticCodeBlock The "expected" {@link JavaStaticCodeBlock static code block}
+	 * @param actualStaticCodeBlock The "actual" {@link JavaStaticCodeBlock static code block}
+	 */
+	public static void assertStaticCodeBlockEquals(
+			JavaStaticCodeBlock expectedStaticCodeBlock, JavaStaticCodeBlock actualStaticCodeBlock){
+		baseAssertEquals(expectedStaticCodeBlock, actualStaticCodeBlock, JavaCodeTypeTest::findStaticCodeBlockDifferences);
+	}
+	
+	/**
 	 * Finds any differences between the two given {@link JavaSingleLineComment single-line comments}
 	 *
 	 * @param expectedComment The "expected" {@link JavaSingleLineComment single-line comment}
@@ -506,7 +680,8 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedField, actualField, differences, "Static", JavaField::isStatic);
 		checkBoolean(expectedField, actualField, differences, "Final", JavaField::isFinal);
 		// Other Info
-		checkString(expectedField, actualField, differences, "Type", JavaField::getType);
+		checkSingleSubtype(expectedField, actualField, differences, "Type",
+				JavaField::getType, JavaCodeTypeTest::findTypeDifferences);
 		checkString(expectedField, actualField, differences, "Name", JavaField::getName);
 		checkString(expectedField, actualField, differences, "Value", JavaField::getValue);
 		
@@ -560,12 +735,18 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedMethod, actualMethod, differences, "Static", JavaMethod::isStatic);
 		checkBoolean(expectedMethod, actualMethod, differences, "Final", JavaMethod::isFinal);
 		
+		// Type Parameters
+		checkListSubtype(expectedMethod, actualMethod, differences, "Type Parameters",
+				JavaMethod::getTypeParameters, JavaCodeTypeTest::findTypeParameterDifferences);
+		
 		// Type and Name
-		checkString(expectedMethod, actualMethod, differences, "Return Type", JavaMethod::getReturnType);
+		checkSingleSubtype(expectedMethod, actualMethod, differences, "Return Type",
+				JavaMethod::getReturnType, JavaCodeTypeTest::findTypeDifferences);
 		checkString(expectedMethod, actualMethod, differences, "Name", JavaMethod::getName);
 		
 		// Parameters, Throw Types, and Content
-		checkList(expectedMethod, actualMethod, differences, "Parameters", JavaMethod::getParameters, Pair::equals);
+		checkListSubtype(expectedMethod, actualMethod, differences, "Parameters",
+				JavaMethod::getParameters, JavaCodeTypeTest::findParameterDifferences);
 		checkList(expectedMethod, actualMethod, differences, "Throw Types", JavaMethod::getThrowTypes, StringUtil::equals);
 		checkList(expectedMethod, actualMethod, differences, "Content", JavaMethod::getLines, StringUtil::equals);
 		
@@ -631,10 +812,16 @@ public class JavaCodeTypeTest{
 		checkBoolean(expectedClass, actualClass, differences, "Final", JavaClass::isFinal);
 		
 		// Class Name, Extends, Implements
-		checkString(expectedClass, actualClass, differences, "Class Name", JavaClass::getClassName);
-		checkString(expectedClass, actualClass, differences, "Super Class Name", JavaClass::getSuperClassName);
-		checkList(expectedClass, actualClass, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, StringUtil::equals);
+		checkSingleSubtype(expectedClass, actualClass, differences, "Class Name",
+				JavaClass::getClassName, JavaCodeTypeTest::findTypeDifferences);
+		checkSingleSubtype(expectedClass, actualClass, differences, "Super Class Name",
+				JavaClass::getSuperClassName, JavaCodeTypeTest::findTypeDifferences);
+		checkListSubtype(expectedClass, actualClass, differences, "Implements Interface Names",
+				JavaClass::getImplementsInterfaceNames, JavaCodeTypeTest::findTypeDifferences);
+		
+		// Static Code Blocks
+		checkListSubtype(expectedClass, actualClass, differences, "Static Code Blocks",
+				JavaClass::getStaticCodeBlocks, JavaCodeTypeTest::findStaticCodeBlockDifferences);
 		
 		// Single Line Comments
 		checkListSubtype(expectedClass, actualClass, differences, "Single Line Comments",

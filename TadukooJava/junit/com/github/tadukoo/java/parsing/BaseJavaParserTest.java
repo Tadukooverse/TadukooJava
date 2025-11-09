@@ -14,7 +14,7 @@ import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public abstract class BaseJavaParserTest implements JavaTokens{
 	
@@ -41,7 +41,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaPackageDeclaration runFullParserForPackageDeclaration(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.PACKAGE_DECLARATION, type.getJavaCodeType());
-		assertTrue(type instanceof JavaPackageDeclaration);
+		assertInstanceOf(JavaPackageDeclaration.class, type);
 		return (JavaPackageDeclaration) type;
 	}
 	
@@ -56,7 +56,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaImportStatement runFullParserForImportStatement(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.IMPORT_STATEMENT, type.getJavaCodeType());
-		assertTrue(type instanceof JavaImportStatement);
+		assertInstanceOf(JavaImportStatement.class, type);
 		return (JavaImportStatement) type;
 	}
 	
@@ -71,7 +71,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static Javadoc runFullParserForJavadoc(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.JAVADOC, type.getJavaCodeType());
-		assertTrue(type instanceof Javadoc);
+		assertInstanceOf(Javadoc.class, type);
 		return (Javadoc) type;
 	}
 	
@@ -86,7 +86,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaSingleLineComment runFullParserForSingleLineComment(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.SINGLE_LINE_COMMENT, type.getJavaCodeType());
-		assertTrue(type instanceof JavaSingleLineComment);
+		assertInstanceOf(JavaSingleLineComment.class, type);
 		return (JavaSingleLineComment) type;
 	}
 	
@@ -101,7 +101,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaMultiLineComment runFullParserForMultiLineComment(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.MULTI_LINE_COMMENT, type.getJavaCodeType());
-		assertTrue(type instanceof JavaMultiLineComment);
+		assertInstanceOf(JavaMultiLineComment.class, type);
 		return (JavaMultiLineComment) type;
 	}
 	
@@ -116,7 +116,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaAnnotation runFullParserForAnnotation(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.ANNOTATION, type.getJavaCodeType());
-		assertTrue(type instanceof JavaAnnotation);
+		assertInstanceOf(JavaAnnotation.class, type);
 		return (JavaAnnotation) type;
 	}
 	
@@ -131,7 +131,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaField runFullParserForField(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.FIELD, type.getJavaCodeType());
-		assertTrue(type instanceof JavaField);
+		assertInstanceOf(JavaField.class, type);
 		return (JavaField) type;
 	}
 	
@@ -146,7 +146,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaMethod runFullParserForMethod(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.METHOD, type.getJavaCodeType());
-		assertTrue(type instanceof JavaMethod);
+		assertInstanceOf(JavaMethod.class, type);
 		return (JavaMethod) type;
 	}
 	
@@ -161,7 +161,7 @@ public abstract class BaseJavaParserTest implements JavaTokens{
 	protected static JavaClass runFullParserForClass(String content) throws JavaParsingException{
 		JavaCodeType type = FullJavaParser.parseType(content);
 		assertEquals(JavaCodeTypes.CLASS, type.getJavaCodeType());
-		assertTrue(type instanceof JavaClass);
+		assertInstanceOf(JavaClass.class, type);
 		return (JavaClass) type;
 	}
 }

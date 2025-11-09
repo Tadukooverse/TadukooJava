@@ -2,8 +2,10 @@ package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaClassType;
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -26,7 +28,7 @@ import java.util.Map;
  * Java Class is used to represent a class in Java.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as old version that is now more like UneditableJavaClass), Alpha v.0.4 (as newer version)
  */
 public abstract class JavaClass implements JavaClassType{
@@ -51,12 +53,14 @@ public abstract class JavaClass implements JavaClassType{
 	protected boolean isStatic;
 	/** Whether this is a final class or not */
 	protected boolean isFinal;
-	/** The name of the class */
-	protected String className;
-	/** The name of the class this one extends (may be null) */
-	protected String superClassName;
-	/** The names of interfaces this class implements */
-	protected List<String> implementsInterfaceNames;
+	/** The name of the class, along with type parameters to form a {@link JavaType} */
+	protected JavaType className;
+	/** The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType} */
+	protected JavaType superClassName;
+	/** The names of interfaces this class implements, along with type parameters to form a {@link JavaType} */
+	protected List<JavaType> implementsInterfaceNames;
+	/** The {@link JavaStaticCodeBlock static code blocks} inside the class */
+	protected List<JavaStaticCodeBlock> staticCodeBlocks;
 	/** The {@link JavaSingleLineComment single-line comments} inside the class */
 	protected List<JavaSingleLineComment> singleLineComments;
 	/** The {@link JavaMultiLineComment multi-line comments} inside the class */
@@ -83,9 +87,10 @@ public abstract class JavaClass implements JavaClassType{
 	 * @param isAbstract Whether this is an abstract class or not
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
-	 * @param className The name of the class
-	 * @param superClassName The name of the class this one extends (can be null)
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
+	 * @param superClassName The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType}
+	 * @param implementsInterfaceNames The names of interfaces this class implements, along with type parameters to form a {@link JavaType}
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -97,8 +102,9 @@ public abstract class JavaClass implements JavaClassType{
 			boolean editable, boolean isInnerClass,
 			JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
-			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, String className,
-			String superClassName, List<String> implementsInterfaceNames,
+			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal, JavaType className,
+			JavaType superClassName, List<JavaType> implementsInterfaceNames,
+			List<JavaStaticCodeBlock> staticCodeBlocks,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -115,6 +121,7 @@ public abstract class JavaClass implements JavaClassType{
 		this.className = className;
 		this.superClassName = superClassName;
 		this.implementsInterfaceNames = implementsInterfaceNames;
+		this.staticCodeBlocks = staticCodeBlocks;
 		this.singleLineComments = singleLineComments;
 		this.multiLineComments = multiLineComments;
 		this.innerClasses = innerClasses;
@@ -200,24 +207,38 @@ public abstract class JavaClass implements JavaClassType{
 	}
 	
 	/**
-	 * @return The name of the class
+	 * @return The name of the class, along with type parameters to form a {@link JavaType}
 	 */
-	public String getClassName(){
+	public JavaType getClassName(){
 		return className;
 	}
 	
 	/**
-	 * @return The name of the class this one extends (may be null)
+	 * @return The simple name of the class, not including any type parameters
 	 */
-	public String getSuperClassName(){
+	public String getSimpleClassName(){
+		return className.getBaseType();
+	}
+	
+	/**
+	 * @return The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType}
+	 */
+	public JavaType getSuperClassName(){
 		return superClassName;
 	}
 	
 	/**
-	 * @return The names of interfaces this class implements
+	 * @return The names of interfaces this class implements, along with type parameters to form a {@link JavaType}
 	 */
-	public List<String> getImplementsInterfaceNames(){
+	public List<JavaType> getImplementsInterfaceNames(){
 		return implementsInterfaceNames;
+	}
+	
+	/**
+	 * @return The {@link JavaStaticCodeBlock static code blocks} inside this class
+	 */
+	public List<JavaStaticCodeBlock> getStaticCodeBlocks(){
+		return staticCodeBlocks;
 	}
 	
 	/**
@@ -247,7 +268,7 @@ public abstract class JavaClass implements JavaClassType{
 	public Map<String, JavaClass> getInnerClassesMap(){
 		Map<String, JavaClass> classMap = new HashMap<>();
 		for(JavaClass clazz: innerClasses){
-			classMap.put(clazz.getClassName(), clazz);
+			classMap.put(clazz.getSimpleClassName(), clazz);
 		}
 		return classMap;
 	}
@@ -393,14 +414,14 @@ public abstract class JavaClass implements JavaClassType{
 		declaration.append(CLASS_TOKEN).append(' ').append(className);
 		
 		// Optionally append super class name to the declaration
-		if(StringUtil.isNotBlank(superClassName)){
+		if(superClassName != null){
 			declaration.append(' ').append(EXTENDS_TOKEN).append(' ').append(superClassName);
 		}
 		
 		// Optionally append implemented interfaces to the declaration
 		if(ListUtil.isNotBlank(implementsInterfaceNames)){
 			declaration.append(' ').append(IMPLEMENTS_TOKEN);
-			for(String implementsInterfaceName: implementsInterfaceNames){
+			for(JavaType implementsInterfaceName: implementsInterfaceNames){
 				declaration.append(' ').append(implementsInterfaceName).append(',');
 			}
 			// Remove final comma
@@ -415,13 +436,18 @@ public abstract class JavaClass implements JavaClassType{
 		content.add("\t");
 		
 		if(ListUtil.isNotBlank(innerElementsOrder)){
-			int singleLineCommentIndex = 0, multiLineCommentIndex = 0;
+			int staticCodeBlockIndex = 0, singleLineCommentIndex = 0, multiLineCommentIndex = 0;
 			Map<String, JavaClass> innerClassesByName = getInnerClassesMap();
 			Map<String, JavaField> fieldsByName = getFieldsMap();
 			Map<String, JavaMethod> methodsByName = getMethodsMap();
 			JavaCodeTypes lastType = null;
 			for(Pair<JavaCodeTypes, String> elementInfo: innerElementsOrder){
 				switch(elementInfo.getLeft()){
+					case STATIC_CODE_BLOCK -> {
+						content.add(StringUtil.indentAllLines(
+								staticCodeBlocks.get(staticCodeBlockIndex).toString()));
+						staticCodeBlockIndex++;
+					}
 					case SINGLE_LINE_COMMENT -> {
 						content.add(StringUtil.indentAllLines(
 								singleLineComments.get(singleLineCommentIndex).toString()));
@@ -540,10 +566,45 @@ public abstract class JavaClass implements JavaClassType{
 		
 		// Add Import Statements if present
 		if(ListUtil.isNotBlank(importStatements)){
-			for(JavaImportStatement importStatement: importStatements){
-				codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
-						.append(importStatement.getImportName()).append("\", ")
-						.append(importStatement.isStatic()).append(')');
+			// Separate into regular and static imports
+			List<JavaImportStatement> regularImports = new ArrayList<>();
+			List<JavaImportStatement> staticImports = new ArrayList<>();
+			importStatements.forEach(stmt -> {
+				if(stmt.isStatic()){
+					staticImports.add(stmt);
+				}else{
+					regularImports.add(stmt);
+				}
+			});
+			
+			// Handle regular imports if we have them
+			if(ListUtil.isNotBlank(regularImports)){
+				MultiMap<String, JavaImportStatement> sortedImports = sortImports(regularImports);
+				List<String> alphabetizedKeys = sortedImports.keySet().stream().sorted().toList();
+				for(String key: alphabetizedKeys){
+					List<String> alphabetizedImports = sortedImports.get(key).stream()
+							.map(JavaImportStatement::getImportName)
+							.sorted().toList();
+					for(String importName: alphabetizedImports){
+						codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
+								.append(importName).append("\", false)");
+					}
+				}
+			}
+			
+			// Handle static imports if we have them
+			if(ListUtil.isNotBlank(staticImports)){
+				MultiMap<String, JavaImportStatement> sortedImports = sortImports(staticImports);
+				List<String> alphabetizedKeys = sortedImports.keySet().stream().sorted().toList();
+				for(String key: alphabetizedKeys){
+					List<String> alphabetizedImports = sortedImports.get(key).stream()
+							.map(JavaImportStatement::getImportName)
+							.sorted().toList();
+					for(String importName: alphabetizedImports){
+						codeString.append(NEWLINE_WITH_2_TABS).append(".importName(\"")
+								.append(importName).append("\", true)");
+					}
+				}
 			}
 		}
 		
@@ -587,13 +648,13 @@ public abstract class JavaClass implements JavaClassType{
 		codeString.append(NEWLINE_WITH_2_TABS).append(".className(\"").append(className).append("\")");
 		
 		// Extends
-		if(StringUtil.isNotBlank(superClassName)){
+		if(superClassName != null){
 			codeString.append(NEWLINE_WITH_2_TABS).append(".superClassName(\"").append(superClassName).append("\")");
 		}
 		
 		// Implements
 		if(ListUtil.isNotBlank(implementsInterfaceNames)){
-			for(String interfaceName: implementsInterfaceNames){
+			for(JavaType interfaceName: implementsInterfaceNames){
 				codeString.append(NEWLINE_WITH_2_TABS).append(".implementsInterfaceName(\"")
 						.append(interfaceName).append("\")");
 			}
@@ -601,25 +662,42 @@ public abstract class JavaClass implements JavaClassType{
 		
 		// Other types based on innerElementsOrder
 		if(ListUtil.isNotBlank(innerElementsOrder)){
-			int singleLineCommentIndex = 0, multiLineCommentIndex = 0;
+			int staticCodeBlockIndex = 0, singleLineCommentIndex = 0, multiLineCommentIndex = 0;
 			Map<String, JavaClass> innerClassesMap = getInnerClassesMap();
 			Map<String, JavaField> fieldsMap = getFieldsMap();
 			Map<String, JavaMethod> methodsMap = getMethodsMap();
 			
 			for(Pair<JavaCodeTypes, String> innerElementInfo: innerElementsOrder){
 				switch(innerElementInfo.getLeft()){
+					case STATIC_CODE_BLOCK -> {
+						codeString.append(NEWLINE_WITH_2_TABS).append(".staticCodeBlock(ListUtil.createList(");
+						for(String line: staticCodeBlocks.get(staticCodeBlockIndex).getLines()){
+							codeString.append(NEWLINE_WITH_4_TABS).append('"').append(line).append('"').append(",");
+						}
+						codeString.delete(codeString.length()-1, codeString.length());
+						codeString.append(NEWLINE_WITH_2_TABS).append("))");
+						staticCodeBlockIndex++;
+					}
 					case SINGLE_LINE_COMMENT -> {
-						codeString.append(NEWLINE_WITH_2_TABS).append(".singleLineComment(")
-								.append(singleLineComments.get(singleLineCommentIndex).toBuilderCode()
-										.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
-								.append(')');
+						codeString.append(NEWLINE_WITH_2_TABS).append(".singleLineComment(\"")
+								.append(singleLineComments.get(singleLineCommentIndex).getContent())
+								.append("\")");
 						singleLineCommentIndex++;
 					}
 					case MULTI_LINE_COMMENT -> {
-						codeString.append(NEWLINE_WITH_2_TABS).append(".multiLineComment(")
-								.append(multiLineComments.get(multiLineCommentIndex).toBuilderCode()
-										.replace(NEWLINE_WITH_2_TABS, NEWLINE_WITH_4_TABS))
-								.append(')');
+						codeString.append(NEWLINE_WITH_2_TABS).append(".multiLineComment(");
+						List<String> lines = multiLineComments.get(multiLineCommentIndex).getContent();
+						for(int lineNum = 0; lineNum < lines.size(); lineNum++){
+							String line = lines.get(lineNum);
+							if(lineNum == 0){
+								codeString.append('"').append(line).append("\", ");
+							}else{
+								codeString.append(NEWLINE_WITH_4_TABS).append('"').append(line).append("\", ");
+							}
+						}
+						// Remove the last comma
+						codeString.delete(codeString.length()-2, codeString.length());
+						codeString.append(')');
 						multiLineCommentIndex++;
 					}
 					case CLASS -> codeString.append(NEWLINE_WITH_2_TABS).append(".innerClass(")

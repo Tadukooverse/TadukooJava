@@ -6,9 +6,10 @@
 	<parent>
 		<groupId>com.github.tadukoo.java</groupId>
 		<artifactId>TadukooJavaParent</artifactId>
-		<version>0.5-Beta</version>
+		<version>0.6-Beta</version>
 	</parent>
 	<artifactId>TadukooJava</artifactId>
+	<name>${project.artifactId}</name>
 	<dependencies>
 		<!-- Tadukoo Util -->
 		<dependency>
@@ -19,10 +20,6 @@
 		<dependency>
 			<groupId>${junit.jupiter.groupID}</groupId>
 			<artifactId>${junit.jupiter.artifactID}</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${junit.platform.groupID}</groupId>
-			<artifactId>${junit.platform.artifactID}</artifactId>
 		</dependency>
 	</dependencies>
 </project>

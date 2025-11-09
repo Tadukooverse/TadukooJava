@@ -6,9 +6,10 @@
 	<parent>
 		<groupId>com.github.tadukoo.java</groupId>
 		<artifactId>TadukooJavaParent</artifactId>
-		<version>0.5-Beta</version>
+		<version>0.6-Beta</version>
 	</parent>
 	<artifactId>AdvancedTadukooJavaTesting</artifactId>
+	<name>${project.artifactId}</name>
 	<dependencies>
 		<!-- Tadukoo Java -->
 		<dependency>
@@ -21,10 +22,6 @@
 			<artifactId>${junit.jupiter.artifactID}</artifactId>
 			<!-- Need this different due to creating JUnit testing functions -->
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${junit.platform.groupID}</groupId>
-			<artifactId>${junit.platform.artifactID}</artifactId>
 		</dependency>
 		<!-- Tadukoo JUnit -->
 		<dependency>

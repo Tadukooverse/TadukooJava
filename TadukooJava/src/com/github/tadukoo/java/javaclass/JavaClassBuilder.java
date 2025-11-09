@@ -1,10 +1,15 @@
 package com.github.tadukoo.java.javaclass;
 
 import com.github.tadukoo.java.JavaCodeTypes;
+import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlockBuilder;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
+import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
+import com.github.tadukoo.java.comment.JavaSingleLineCommentBuilder;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
 import com.github.tadukoo.java.importstatement.JavaImportStatementBuilder;
@@ -12,6 +17,7 @@ import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
+import com.github.tadukoo.java.parsing.FullJavaParser;
 import com.github.tadukoo.util.ListUtil;
 import com.github.tadukoo.util.SetUtil;
 import com.github.tadukoo.util.StringUtil;
@@ -21,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Java Class Builder is used to create a {@link JavaClass}. It has the following parameters:
@@ -93,6 +100,11 @@ import java.util.Set;
  *         <td>An empty List</td>
  *     </tr>
  *     <tr>
+ *         <td>staticCodeBlocks</td>
+ *         <td>The {@link JavaStaticCodeBlock static code blocks} inside the class</td>
+ *         <td>An empty List</td>
+ *     </tr>
+ *     <tr>
  *         <td>singleLineComments</td>
  *         <td>The {@link JavaSingleLineComment single-line comments} inside the class</td>
  *         <td>An empty List</td>
@@ -125,7 +137,7 @@ import java.util.Set;
  * </table>
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (in JavaClass), Alpha v.0.4 (as a separate class)
  */
 public abstract class JavaClassBuilder<ClassType extends JavaClass>{
@@ -148,12 +160,14 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected boolean isStatic = false;
 	/** Whether the class is final or not */
 	protected boolean isFinal = false;
-	/** The name of the class */
-	protected String className = null;
-	/** The name of the class this one extends (can be null) */
-	protected String superClassName = null;
-	/** The names of interfaces the class implements */
-	protected List<String> implementsInterfaceNames = new ArrayList<>();
+	/** The name of the class, along with type parameters to form a {@link JavaType} */
+	protected JavaType className = null;
+	/** The name of the class this one extends (can be null), along with type parameters to form a {@link JavaType} */
+	protected JavaType superClassName = null;
+	/** The names of interfaces this class implements, along with type parameters to form a {@link JavaType} */
+	protected List<JavaType> implementsInterfaceNames = new ArrayList<>();
+	/** The {@link JavaStaticCodeBlock static code blocks} inside the class */
+	protected List<JavaStaticCodeBlock> staticCodeBlocks = new ArrayList<>();
 	/** The {@link JavaSingleLineComment single-line comments} inside the class */
 	protected List<JavaSingleLineComment> singleLineComments = new ArrayList<>();
 	/** The {@link JavaMultiLineComment multi-line comments} inside the class */
@@ -191,6 +205,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		this.className = clazz.getClassName();
 		this.superClassName = clazz.getSuperClassName();
 		this.implementsInterfaceNames = clazz.getImplementsInterfaceNames();
+		this.staticCodeBlocks = clazz.getStaticCodeBlocks();
 		this.singleLineComments = clazz.getSingleLineComments();
 		this.multiLineComments = clazz.getMultiLineComments();
 		this.innerClasses = clazz.getInnerClasses();
@@ -385,38 +400,120 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
-	 * @param className The name of the class
+	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> className(String className){
+	public JavaClassBuilder<ClassType> className(JavaType className){
 		this.className = className;
 		return this;
 	}
 	
 	/**
-	 * @param superClassName The name of the class this one extends (may be null)
+	 * @param classNameText The text to parse for name of the class, along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> superClassName(String superClassName){
+	public JavaClassBuilder<ClassType> className(String classNameText){
+		this.className = FullJavaParser.parseJavaType(classNameText);
+		return this;
+	}
+	
+	/**
+	 * @param superClassName The name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> superClassName(JavaType superClassName){
 		this.superClassName = superClassName;
 		return this;
 	}
 	
 	/**
-	 * @param implementsInterfaceName The name of an interface this class implements
+	 * @param superClassNameText The text to parse for the name of the class this one extends (can be null),
+	 * along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> implementsInterfaceName(String implementsInterfaceName){
+	public JavaClassBuilder<ClassType> superClassName(String superClassNameText){
+		this.superClassName = FullJavaParser.parseJavaType(superClassNameText);
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceName The name of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceName(JavaType implementsInterfaceName){
 		implementsInterfaceNames.add(implementsInterfaceName);
 		return this;
 	}
 	
 	/**
-	 * @param implementsInterfaceNames The names of interfaces this class implements
+	 * @param implementsInterfaceNameText The text for the name of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
 	 * @return this, to continue building
 	 */
-	public JavaClassBuilder<ClassType> implementsInterfaceNames(List<String> implementsInterfaceNames){
+	public JavaClassBuilder<ClassType> implementsInterfaceName(String implementsInterfaceNameText){
+		implementsInterfaceNames.add(FullJavaParser.parseJavaType(implementsInterfaceNameText));
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceNames(List<JavaType> implementsInterfaceNames){
 		this.implementsInterfaceNames = implementsInterfaceNames;
+		return this;
+	}
+	
+	/**
+	 * @param implementsInterfaceNameTexts The text for the names of interfaces this class implements,
+	 * along with type parameters to form a {@link JavaType}
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> implementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
+		this.implementsInterfaceNames = implementsInterfaceNameTexts.stream()
+				.map(FullJavaParser::parseJavaType).collect(Collectors.toList());
+		return this;
+	}
+	
+	/**
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> staticCodeBlocks(List<JavaStaticCodeBlock> staticCodeBlocks){
+		this.staticCodeBlocks = staticCodeBlocks;
+		for(int i = 0; i < staticCodeBlocks.size(); i++){
+			innerElementsOrder.add(Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null));
+		}
+		return this;
+	}
+	
+	/**
+	 * @param staticCodeBlock A {@link JavaStaticCodeBlock static code block} inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> staticCodeBlock(JavaStaticCodeBlock staticCodeBlock){
+		staticCodeBlocks.add(staticCodeBlock);
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null));
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaStaticCodeBlockBuilder} to use to build a {@link JavaStaticCodeBlock}
+	 */
+	protected abstract JavaStaticCodeBlockBuilder<?> getStaticCodeBlockBuilder();
+	
+	/**
+	 * @param lines A {@link JavaStaticCodeBlock static code block} as a List of Strings inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> staticCodeBlock(List<String> lines){
+		staticCodeBlocks.add(getStaticCodeBlockBuilder()
+				.lines(lines)
+				.build());
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null));
 		return this;
 	}
 	
@@ -437,7 +534,24 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @return this, to continue building
 	 */
 	public JavaClassBuilder<ClassType> singleLineComment(JavaSingleLineComment singleLineComment){
-		this.singleLineComments.add(singleLineComment);
+		singleLineComments.add(singleLineComment);
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null));
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaSingleLineCommentBuilder} to use to build a {@link JavaSingleLineComment}
+	 */
+	protected abstract JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder();
+	
+	/**
+	 * @param singleLineComment A {@link JavaSingleLineComment single-line comment} as a String inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> singleLineComment(String singleLineComment){
+		singleLineComments.add(getSingleLineCommentBuilder()
+				.content(singleLineComment)
+				.build());
 		innerElementsOrder.add(Pair.of(JavaCodeTypes.SINGLE_LINE_COMMENT, null));
 		return this;
 	}
@@ -459,7 +573,24 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 * @return this, to continue building
 	 */
 	public JavaClassBuilder<ClassType> multiLineComment(JavaMultiLineComment multiLineComment){
-		this.multiLineComments.add(multiLineComment);
+		multiLineComments.add(multiLineComment);
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null));
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaMultiLineCommentBuilder} to use to build a {@link JavaMultiLineComment}
+	 */
+	protected abstract JavaMultiLineCommentBuilder<?> getMultiLineCommentBuilder();
+	
+	/**
+	 * @param multiLineComment A {@link JavaMultiLineComment multi-line comment} as Strings inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> multiLineComment(String... multiLineComment){
+		multiLineComments.add(getMultiLineCommentBuilder()
+				.content(ListUtil.createList(multiLineComment))
+				.build());
 		innerElementsOrder.add(Pair.of(JavaCodeTypes.MULTI_LINE_COMMENT, null));
 		return this;
 	}
@@ -471,7 +602,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	public JavaClassBuilder<ClassType> innerClasses(List<JavaClass> innerClasses){
 		this.innerClasses = innerClasses;
 		for(JavaClass innerClass: innerClasses){
-			innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getClassName()));
+			innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getSimpleClassName()));
 		}
 		return this;
 	}
@@ -482,7 +613,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	 */
 	public JavaClassBuilder<ClassType> innerClass(JavaClass innerClass){
 		this.innerClasses.add(innerClass);
-		innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getClassName()));
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.CLASS, innerClass.getSimpleClassName()));
 		return this;
 	}
 	
@@ -553,7 +684,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		}
 		
 		// ClassName required
-		if(StringUtil.isBlank(className)){
+		if(className == null){
 			errors.add("Must specify className!");
 		}
 		
@@ -570,17 +701,20 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 			}
 		}
 		
-		// If we have comments, we need innerElementOrder
+		// If we have static code blocks or comments, we need innerElementOrder
 		if(ListUtil.isBlank(innerElementsOrder) &&
-				(ListUtil.isNotBlank(singleLineComments) || ListUtil.isNotBlank(multiLineComments))){
-			errors.add("innerElementsOrder is required when comments are present!");
+				(ListUtil.isNotBlank(staticCodeBlocks) ||
+						ListUtil.isNotBlank(singleLineComments) || ListUtil.isNotBlank(multiLineComments))){
+			errors.add("innerElementsOrder is required when static code blocks or comments are present!");
 		}
 		
 		// If innerElementOrder is specified, verify it's valid and includes all inner elements
 		if(ListUtil.isNotBlank(innerElementsOrder)){
+			// Count static code blocks usage
+			int numStaticCodeBlocks = staticCodeBlocks.size();
 			// Count comments usage
 			int numSingleLineComments = singleLineComments.size(), numMultiLineComments = multiLineComments.size();
-			Set<String> innerClassNames = SetUtil.createOrderedSet(innerClasses.stream().map(JavaClass::getClassName)
+			Set<String> innerClassNames = SetUtil.createOrderedSet(innerClasses.stream().map(JavaClass::getSimpleClassName)
 					.toList().toArray(new String[0]));
 			Set<String> fieldNames = SetUtil.createOrderedSet(fields.stream().map(JavaField::getName).toList()
 					.toArray(new String[0]));
@@ -591,6 +725,12 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 			Set<String> usedMethodNames = new HashSet<>();
 			for(Pair<JavaCodeTypes, String> elementInfo: innerElementsOrder){
 				switch(elementInfo.getLeft()){
+					case STATIC_CODE_BLOCK -> {
+						numStaticCodeBlocks--;
+						if(numStaticCodeBlocks == -1){
+							errors.add("Specified more static code blocks in innerElementsOrder than we have!");
+						}
+					}
 					case SINGLE_LINE_COMMENT -> {
 						numSingleLineComments--;
 						if(numSingleLineComments == -1){
@@ -644,6 +784,10 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 					}
 					default -> errors.add("Unknown inner element type: " + elementInfo.getLeft().getStandardName());
 				}
+			}
+			// If we didn't use all static code blocks, it's a problem
+			if(numStaticCodeBlocks > 0){
+				errors.add("Missed " + numStaticCodeBlocks + " static code blocks in innerElementsOrder!");
 			}
 			// If we didn't use all comments, it's a problem
 			if(numSingleLineComments > 0){

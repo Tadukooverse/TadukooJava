@@ -1,9 +1,11 @@
 package com.github.tadukoo.java.method;
 
+import com.github.tadukoo.java.JavaParameter;
+import com.github.tadukoo.java.JavaType;
+import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.javadoc.Javadoc;
 import com.github.tadukoo.java.Visibility;
-import com.github.tadukoo.util.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
  * Represents a method in Java that is not modifiable
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
  * @since Alpha v.0.2 (as JavaMethod), Alpha v.0.4 (as UneditableJavaMethod)
  */
 public class UneditableJavaMethod extends JavaMethod{
@@ -21,7 +23,7 @@ public class UneditableJavaMethod extends JavaMethod{
 	 * A builder used to make an {@link UneditableJavaMethod}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.5
+	 * @version Beta v.0.6
 	 * @since Alpha v.0.4
 	 * @see JavaMethodBuilder
 	 */
@@ -58,7 +60,7 @@ public class UneditableJavaMethod extends JavaMethod{
 		protected UneditableJavaMethod constructMethod(){
 			return new UneditableJavaMethod(javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal,
-					returnType, name,
+					typeParameters, returnType, name,
 					parameters, throwTypes, lines);
 		}
 	}
@@ -72,20 +74,21 @@ public class UneditableJavaMethod extends JavaMethod{
 	 * @param isAbstract Whether the method is abstract or not
 	 * @param isStatic Whether the method is static or not
 	 * @param isFinal Whether the method is final or not
-	 * @param returnType The return type of the method
+	 * @param typeParameters Any {@link JavaTypeParameter type parameters} for the method
+	 * @param returnType The return {@link JavaType type} of the method
 	 * @param name The name of the method
-	 * @param parameters The parameters used in the method - pairs of type, then name
+	 * @param parameters The {@link JavaParameter parameters} used in the method
 	 * @param throwTypes The types that can be thrown by the method
 	 * @param lines The actual lines of code in the method
 	 */
 	private UneditableJavaMethod(
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			String returnType, String name,
-			List<Pair<String, String>> parameters, List<String> throwTypes, List<String> lines){
+			List<JavaTypeParameter> typeParameters, JavaType returnType, String name,
+			List<JavaParameter> parameters, List<String> throwTypes, List<String> lines){
 		super(false, javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal,
-				returnType, name,
+				typeParameters, returnType, name,
 				parameters, throwTypes, lines);
 	}
 	

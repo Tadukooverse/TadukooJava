@@ -8,7 +8,8 @@ import java.util.Set;
  * An interface containing constants for various tokens in Java
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.5
+ * @version Beta v.0.6
+ * @since Beta v.0.5
  */
 public interface JavaTokens{
 	
@@ -60,6 +61,12 @@ public interface JavaTokens{
 	String BLOCK_CLOSE_TOKEN = "}";
 	/** Used to make an assignment - {@value} */
 	String ASSIGNMENT_OPERATOR_TOKEN = "=";
+	/** Used to start a list of type parameters - {@value} */
+	String TYPE_PARAMETER_OPEN_TOKEN = "<";
+	/** Used to end a list of type parameters - {@value} */
+	String TYPE_PARAMETER_CLOSE_TOKEN = ">";
+	/** Used to designate a parameter as a variable argument - {@value} */
+	String VARARGS_TOKEN = "...";
 	
 	/*
 	 * Javadoc "Tokens"
