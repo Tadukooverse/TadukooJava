@@ -6,9 +6,10 @@
 	<parent>
 		<groupId>com.github.tadukoo.java</groupId>
 		<artifactId>TadukooJavaParent</artifactId>
-		<version>0.6-Beta-SNAPSHOT</version>
+		<version>0.6-Beta</version>
 	</parent>
 	<artifactId>AdvancedTadukooJavaTesting</artifactId>
+	<name>${project.artifactId}</name>
 	<dependencies>
 		<!-- Tadukoo Java -->
 		<dependency>

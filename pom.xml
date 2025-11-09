@@ -6,12 +6,13 @@
 	<parent>
 		<groupId>com.github.tadukoo.maven</groupId>
 		<artifactId>TadukooUtilPOM</artifactId>
-		<version>0.5.1-Beta</version>
+		<version>0.5.3-Beta</version>
 	</parent>
 	<groupId>com.github.tadukoo.java</groupId>
 	<artifactId>TadukooJavaParent</artifactId>
-	<version>0.6-Beta-SNAPSHOT</version>
+	<version>0.6-Beta</version>
 	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
 	<description>Libraries for dealing with Java code</description>
 	<modules>
 		<module>TadukooJava</module>
@@ -20,7 +21,7 @@
 	<properties>
 		<!-- Info -->
 		<shortName>TadukooJava</shortName>
-		<tadukoo.util.version>0.7-Beta-SNAPSHOT</tadukoo.util.version>
+		<tadukoo.util.version>0.7-Beta</tadukoo.util.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
