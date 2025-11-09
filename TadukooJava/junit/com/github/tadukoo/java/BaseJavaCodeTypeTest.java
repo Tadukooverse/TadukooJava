@@ -4,6 +4,10 @@ import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotationBuilder;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.EditableJavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlockBuilder;
+import com.github.tadukoo.java.code.staticcodeblock.UneditableJavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
@@ -380,6 +384,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
 				JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
+				List<JavaStaticCodeBlock> staticCodeBlocks,
 				List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 				List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -387,6 +392,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
+					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
 					innerElementsOrder);
@@ -416,6 +422,11 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 		
 		@Override
+		protected JavaStaticCodeBlockBuilder<?> getStaticCodeBlockBuilder(){
+			return UneditableJavaStaticCodeBlock.builder();
+		}
+		
+		@Override
 		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
 			return UneditableJavaSingleLineComment.builder();
 		}
@@ -436,9 +447,40 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
+					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
 					innerElementsOrder);
+		}
+	}
+	
+	/*
+	 * Static Code Block Info
+	 */
+	
+	protected static class TestJavaStaticCodeBlock extends JavaStaticCodeBlock{
+		
+		private TestJavaStaticCodeBlock(
+				boolean editable, List<String> lines){
+			super(editable, lines);
+		}
+		
+		public static TestJavaStaticCodeBlockBuilder builder(){
+			return new TestJavaStaticCodeBlockBuilder(false);
+		}
+	}
+	
+	protected static class TestJavaStaticCodeBlockBuilder extends JavaStaticCodeBlockBuilder<TestJavaStaticCodeBlock>{
+		
+		private final boolean editable;
+		
+		private TestJavaStaticCodeBlockBuilder(boolean editable){
+			this.editable = editable;
+		}
+		
+		@Override
+		protected TestJavaStaticCodeBlock constructStaticCodeBlock(){
+			return new TestJavaStaticCodeBlock(editable, lines);
 		}
 	}
 	
@@ -451,7 +493,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 			Supplier<JavaAnnotationBuilder<? extends JavaAnnotation>> annotationBuilder,
 			Supplier<JavaFieldBuilder<? extends JavaField>> fieldBuilder,
 			Supplier<JavaMethodBuilder<? extends JavaMethod>> methodBuilder,
-			Supplier<JavaClassBuilder<? extends JavaClass>> classBuilder
+			Supplier<JavaClassBuilder<? extends JavaClass>> classBuilder,
+			Supplier<JavaStaticCodeBlockBuilder<? extends JavaStaticCodeBlock>> staticCodeBlockBuilder
 			){
 	}
 	
@@ -464,7 +507,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 			String annotationSimpleClassName,
 			String fieldSimpleClassName,
 			String methodSimpleClassName,
-			String classSimpleClassName
+			String classSimpleClassName,
+			String staticCodeBlockSimpleClassName
 	){
 	}
 	
@@ -477,7 +521,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					UneditableJavaAnnotation::builder,
 					UneditableJavaField::builder,
 					UneditableJavaMethod::builder,
-					UneditableJavaClass::builder),
+					UneditableJavaClass::builder,
+					UneditableJavaStaticCodeBlock::builder),
 			new Builders(EditableJavaPackageDeclaration::builder,
 					EditableJavaImportStatement::builder,
 					EditableJavaSingleLineComment::builder,
@@ -486,7 +531,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					EditableJavaAnnotation::builder,
 					EditableJavaField::builder,
 					EditableJavaMethod::builder,
-					EditableJavaClass::builder),
+					EditableJavaClass::builder,
+					EditableJavaStaticCodeBlock::builder),
 			new Builders(TestJavaPackageDeclaration::builder,
 					TestJavaImportStatement::builder,
 					TestJavaSingleLineComment::builder,
@@ -495,7 +541,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					TestJavaAnnotation::builder,
 					TestJavaField::builder,
 					TestJavaMethod::builder,
-					TestJavaClass::builder)
+					TestJavaClass::builder,
+					TestJavaStaticCodeBlock::builder)
 	);
 	
 	protected static final List<SimpleClassNames> simpleClassNames = ListUtil.createList(
@@ -507,7 +554,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					UneditableJavaAnnotation.class.getSimpleName(),
 					UneditableJavaField.class.getSimpleName(),
 					UneditableJavaMethod.class.getSimpleName(),
-					UneditableJavaClass.class.getSimpleName()),
+					UneditableJavaClass.class.getSimpleName(),
+					UneditableJavaStaticCodeBlock.class.getSimpleName()),
 			new SimpleClassNames(EditableJavaPackageDeclaration.class.getSimpleName(),
 					EditableJavaImportStatement.class.getSimpleName(),
 					EditableJavaSingleLineComment.class.getSimpleName(),
@@ -516,7 +564,8 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					EditableJavaAnnotation.class.getSimpleName(),
 					EditableJavaField.class.getSimpleName(),
 					EditableJavaMethod.class.getSimpleName(),
-					EditableJavaClass.class.getSimpleName()),
+					EditableJavaClass.class.getSimpleName(),
+					EditableJavaStaticCodeBlock.class.getSimpleName()),
 			new SimpleClassNames(TestJavaPackageDeclaration.class.getSimpleName(),
 					TestJavaImportStatement.class.getSimpleName(),
 					TestJavaSingleLineComment.class.getSimpleName(),
@@ -525,6 +574,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 					TestJavaAnnotation.class.getSimpleName(),
 					TestJavaField.class.getSimpleName(),
 					TestJavaMethod.class.getSimpleName(),
-					TestJavaClass.class.getSimpleName())
+					TestJavaClass.class.getSimpleName(),
+					TestJavaStaticCodeBlock.class.getSimpleName())
 	);
 }

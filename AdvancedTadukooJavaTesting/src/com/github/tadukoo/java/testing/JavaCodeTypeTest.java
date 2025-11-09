@@ -6,6 +6,7 @@ import com.github.tadukoo.java.JavaParameter;
 import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.JavaTypeParameter;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -524,6 +525,47 @@ public class JavaCodeTypeTest{
 	}
 	
 	/**
+	 * Finds any differences between the two given {@link JavaStaticCodeBlock static code blocks}
+	 *
+	 * @param expectedStaticCodeBlock The "expected" {@link JavaStaticCodeBlock static code block}
+	 * @param actualStaticCodeBlock The "actual" {@link JavaStaticCodeBlock static code block}
+	 * @return The List of differences found between the given {@link JavaStaticCodeBlock static code blocks}
+	 * - will be an empty List if there are no differences
+	 */
+	public static List<String> findStaticCodeBlockDifferences(
+			JavaStaticCodeBlock expectedStaticCodeBlock, JavaStaticCodeBlock actualStaticCodeBlock){
+		// Keep track of differences
+		List<String> differences = new ArrayList<>();
+		// Check if both are null
+		if(expectedStaticCodeBlock == null && actualStaticCodeBlock == null){
+			return differences;
+		}else if(expectedStaticCodeBlock == null || actualStaticCodeBlock == null){
+			differences.add("One of the static code blocks is null, and the other isn't!");
+			return differences;
+		}
+		
+		// Editable and Content
+		checkBoolean(expectedStaticCodeBlock, actualStaticCodeBlock, differences, "Editable", JavaStaticCodeBlock::isEditable);
+		checkList(expectedStaticCodeBlock, actualStaticCodeBlock, differences, "Lines", JavaStaticCodeBlock::getLines, StringUtil::equals);
+		
+		return differences;
+	}
+	
+	/**
+	 * Asserts that the two given {@link JavaStaticCodeBlock static code blocks} are equivalent. It uses
+	 * {@link #findStaticCodeBlockDifferences(JavaStaticCodeBlock, JavaStaticCodeBlock)} to find any
+	 * differences between the two {@link JavaStaticCodeBlock static code blocks} and will throw an
+	 * {@link AssertionFailedError} if any differences are found
+	 *
+	 * @param expectedStaticCodeBlock The "expected" {@link JavaStaticCodeBlock static code block}
+	 * @param actualStaticCodeBlock The "actual" {@link JavaStaticCodeBlock static code block}
+	 */
+	public static void assertStaticCodeBlockEquals(
+			JavaStaticCodeBlock expectedStaticCodeBlock, JavaStaticCodeBlock actualStaticCodeBlock){
+		baseAssertEquals(expectedStaticCodeBlock, actualStaticCodeBlock, JavaCodeTypeTest::findStaticCodeBlockDifferences);
+	}
+	
+	/**
 	 * Finds any differences between the two given {@link JavaSingleLineComment single-line comments}
 	 *
 	 * @param expectedComment The "expected" {@link JavaSingleLineComment single-line comment}
@@ -776,6 +818,10 @@ public class JavaCodeTypeTest{
 				JavaClass::getSuperClassName, JavaCodeTypeTest::findTypeDifferences);
 		checkListSubtype(expectedClass, actualClass, differences, "Implements Interface Names",
 				JavaClass::getImplementsInterfaceNames, JavaCodeTypeTest::findTypeDifferences);
+		
+		// Static Code Blocks
+		checkListSubtype(expectedClass, actualClass, differences, "Static Code Blocks",
+				JavaClass::getStaticCodeBlocks, JavaCodeTypeTest::findStaticCodeBlockDifferences);
 		
 		// Single Line Comments
 		checkListSubtype(expectedClass, actualClass, differences, "Single Line Comments",

@@ -840,6 +840,116 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								"""
 				),
+				// With Static Code Block
+				Triple.of(
+						"""
+								class Test{
+									static{
+										doSomething();
+									}
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
+								.build(),
+						"""
+								class Test{
+								\t
+									static{
+										doSomething();
+									}
+								}
+								"""
+				),
+				// With Static Code Block Multiple Lines
+				Triple.of(
+						"""
+								class Test{
+									static{
+										doSomething();
+										doSomethingElse();
+										doSomethingEvenMore();
+									}
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(ListUtil.createList(
+										"doSomething();",
+										"doSomethingElse();",
+										"doSomethingEvenMore();"
+								))
+								.build(),
+						"""
+								class Test{
+								\t
+									static{
+										doSomething();
+										doSomethingElse();
+										doSomethingEvenMore();
+									}
+								}
+								"""
+				),
+				// With Static Code Block Multiple Lines and indentation
+				Triple.of(
+						"""
+								class Test{
+									static{
+										doSomething();
+										for(int i = 0; i < 5; i++){
+											doSomethingElse();
+											doSomethingEvenMore();
+										}
+									}
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(ListUtil.createList(
+										"doSomething();",
+										"for(int i = 0; i < 5; i++){",
+										"\tdoSomethingElse();",
+										"\tdoSomethingEvenMore();",
+										"}"
+								))
+								.build(),
+						"""
+								class Test{
+								\t
+									static{
+										doSomething();
+										for(int i = 0; i < 5; i++){
+											doSomethingElse();
+											doSomethingEvenMore();
+										}
+									}
+								}
+								"""
+				),
+				// With Static Code Block No whitespace
+				Triple.of(
+						"""
+								class Test{
+									static{doSomething();}
+								}
+								""",
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(ListUtil.createList(
+										"doSomething();"
+								))
+								.build(),
+						"""
+								class Test{
+								\t
+									static{
+										doSomething();
+									}
+								}
+								"""
+				),
 				// With Single Line Comment
 				Triple.of(
 						"""
@@ -2771,6 +2881,44 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 					buildJavaParsingExceptionMessage(JavaCodeTypes.CLASS,
 							"The first token of a class must be 'class'"),
 					e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testStaticCodeBlockWithPrivate(){
+		try{
+			JavaClassParser.parseClass("""
+					class Test{
+						private{
+							doSomething();
+						}
+					}""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.STATIC_CODE_BLOCK,
+							"Static Code Block can only have 'static' as a modifier"),
+					e.getMessage()
+			);
+		}
+	}
+	
+	@Test
+	public void testStaticCodeBlockWithMultipleModifiers(){
+		try{
+			JavaClassParser.parseClass("""
+					class Test{
+						private static{
+							doSomething();
+						}
+					}""");
+			fail();
+		}catch(JavaParsingException e){
+			assertEquals(
+					buildJavaParsingExceptionMessage(JavaCodeTypes.STATIC_CODE_BLOCK,
+							"Static Code Block can only have 'static' as a modifier"),
+					e.getMessage()
+			);
 		}
 	}
 }

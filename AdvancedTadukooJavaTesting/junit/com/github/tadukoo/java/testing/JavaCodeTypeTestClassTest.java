@@ -3,6 +3,7 @@ package com.github.tadukoo.java.testing;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.EditableJavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.UneditableJavaMultiLineComment;
@@ -334,6 +335,53 @@ public class JavaCodeTypeTestClassTest{
 								.build(),
 						ListUtil.createList("Implements Interface Names length is different!",
 								"Implements Interface Names differs on #2!")
+				),
+				// Static Code Blocks
+				Arguments.of(
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
+										.line("doSomething();")
+										.build())
+								.build(),
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
+										.line("doSomethingElse();")
+										.build())
+								.build(),
+						ListUtil.createList("Static Code Blocks differs on #1:\n" +
+								"\tLines differs on #1!")
+				),
+				// Static Code Blocks Length
+				Arguments.of(
+						EditableJavaClass.builder()
+								.className("Test")
+								.build(),
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
+										.line("doSomethingElse();")
+										.build())
+								.build(),
+						ListUtil.createList("Static Code Blocks length is different!",
+								"Inner Elements Order length is different!")
+				),
+				// Static Code Blocks Length 1 Longer
+				Arguments.of(
+						EditableJavaClass.builder()
+								.className("Test")
+								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
+										.line("doSomethingElse();")
+										.build())
+								.build(),
+						EditableJavaClass.builder()
+								.className("Test")
+								.build(),
+						ListUtil.createList("Static Code Blocks length is different!",
+								"Static Code Blocks differs on #1!",
+								"Inner Elements Order length is different!",
+								"Inner Elements Order differs on #1!")
 				),
 				// Single Line Comments
 				Arguments.of(

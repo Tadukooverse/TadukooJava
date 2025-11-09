@@ -4,6 +4,8 @@ import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlockBuilder;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineCommentBuilder;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
@@ -98,6 +100,11 @@ import java.util.stream.Collectors;
  *         <td>An empty List</td>
  *     </tr>
  *     <tr>
+ *         <td>staticCodeBlocks</td>
+ *         <td>The {@link JavaStaticCodeBlock static code blocks} inside the class</td>
+ *         <td>An empty List</td>
+ *     </tr>
+ *     <tr>
  *         <td>singleLineComments</td>
  *         <td>The {@link JavaSingleLineComment single-line comments} inside the class</td>
  *         <td>An empty List</td>
@@ -159,6 +166,8 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	protected JavaType superClassName = null;
 	/** The names of interfaces this class implements, along with type parameters to form a {@link JavaType} */
 	protected List<JavaType> implementsInterfaceNames = new ArrayList<>();
+	/** The {@link JavaStaticCodeBlock static code blocks} inside the class */
+	protected List<JavaStaticCodeBlock> staticCodeBlocks = new ArrayList<>();
 	/** The {@link JavaSingleLineComment single-line comments} inside the class */
 	protected List<JavaSingleLineComment> singleLineComments = new ArrayList<>();
 	/** The {@link JavaMultiLineComment multi-line comments} inside the class */
@@ -196,6 +205,7 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 		this.className = clazz.getClassName();
 		this.superClassName = clazz.getSuperClassName();
 		this.implementsInterfaceNames = clazz.getImplementsInterfaceNames();
+		this.staticCodeBlocks = clazz.getStaticCodeBlocks();
 		this.singleLineComments = clazz.getSingleLineComments();
 		this.multiLineComments = clazz.getMultiLineComments();
 		this.innerClasses = clazz.getInnerClasses();
@@ -469,6 +479,45 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 	}
 	
 	/**
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> staticCodeBlocks(List<JavaStaticCodeBlock> staticCodeBlocks){
+		this.staticCodeBlocks = staticCodeBlocks;
+		for(int i = 0; i < staticCodeBlocks.size(); i++){
+			innerElementsOrder.add(Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null));
+		}
+		return this;
+	}
+	
+	/**
+	 * @param staticCodeBlock A {@link JavaStaticCodeBlock static code block} inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> staticCodeBlock(JavaStaticCodeBlock staticCodeBlock){
+		staticCodeBlocks.add(staticCodeBlock);
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null));
+		return this;
+	}
+	
+	/**
+	 * @return A {@link JavaStaticCodeBlockBuilder} to use to build a {@link JavaStaticCodeBlock}
+	 */
+	protected abstract JavaStaticCodeBlockBuilder<?> getStaticCodeBlockBuilder();
+	
+	/**
+	 * @param lines A {@link JavaStaticCodeBlock static code block} as a List of Strings inside the class to add to the list
+	 * @return this, to continue building
+	 */
+	public JavaClassBuilder<ClassType> staticCodeBlock(List<String> lines){
+		staticCodeBlocks.add(getStaticCodeBlockBuilder()
+				.lines(lines)
+				.build());
+		innerElementsOrder.add(Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null));
+		return this;
+	}
+	
+	/**
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @return this, to continue building
 	 */
@@ -652,14 +701,17 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 			}
 		}
 		
-		// If we have comments, we need innerElementOrder
+		// If we have static code blocks or comments, we need innerElementOrder
 		if(ListUtil.isBlank(innerElementsOrder) &&
-				(ListUtil.isNotBlank(singleLineComments) || ListUtil.isNotBlank(multiLineComments))){
-			errors.add("innerElementsOrder is required when comments are present!");
+				(ListUtil.isNotBlank(staticCodeBlocks) ||
+						ListUtil.isNotBlank(singleLineComments) || ListUtil.isNotBlank(multiLineComments))){
+			errors.add("innerElementsOrder is required when static code blocks or comments are present!");
 		}
 		
 		// If innerElementOrder is specified, verify it's valid and includes all inner elements
 		if(ListUtil.isNotBlank(innerElementsOrder)){
+			// Count static code blocks usage
+			int numStaticCodeBlocks = staticCodeBlocks.size();
 			// Count comments usage
 			int numSingleLineComments = singleLineComments.size(), numMultiLineComments = multiLineComments.size();
 			Set<String> innerClassNames = SetUtil.createOrderedSet(innerClasses.stream().map(JavaClass::getSimpleClassName)
@@ -673,6 +725,12 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 			Set<String> usedMethodNames = new HashSet<>();
 			for(Pair<JavaCodeTypes, String> elementInfo: innerElementsOrder){
 				switch(elementInfo.getLeft()){
+					case STATIC_CODE_BLOCK -> {
+						numStaticCodeBlocks--;
+						if(numStaticCodeBlocks == -1){
+							errors.add("Specified more static code blocks in innerElementsOrder than we have!");
+						}
+					}
 					case SINGLE_LINE_COMMENT -> {
 						numSingleLineComments--;
 						if(numSingleLineComments == -1){
@@ -726,6 +784,10 @@ public abstract class JavaClassBuilder<ClassType extends JavaClass>{
 					}
 					default -> errors.add("Unknown inner element type: " + elementInfo.getLeft().getStandardName());
 				}
+			}
+			// If we didn't use all static code blocks, it's a problem
+			if(numStaticCodeBlocks > 0){
+				errors.add("Missed " + numStaticCodeBlocks + " static code blocks in innerElementsOrder!");
 			}
 			// If we didn't use all comments, it's a problem
 			if(numSingleLineComments > 0){

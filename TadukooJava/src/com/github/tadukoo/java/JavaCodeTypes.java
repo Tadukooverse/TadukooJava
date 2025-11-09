@@ -1,6 +1,7 @@
 package com.github.tadukoo.java;
 
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
@@ -143,7 +144,16 @@ public enum JavaCodeTypes{
 	 * <br>
 	 * Standard name: class
 	 */
-	CLASS(JavaClass.class, "class");
+	CLASS(JavaClass.class, "class"),
+	
+	/**
+	 * Represents a static code block within a class
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaStaticCodeBlock}
+	 * <br>
+	 * Standard name: static code block
+	 */
+	STATIC_CODE_BLOCK(JavaStaticCodeBlock.class, "static code block");
 	
 	/** The main {@link JavaCodeType} class for the enum */
 	private final Class<? extends JavaCodeType> clazz;

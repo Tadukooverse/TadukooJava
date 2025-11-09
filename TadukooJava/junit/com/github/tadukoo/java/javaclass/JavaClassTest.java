@@ -7,6 +7,9 @@ import com.github.tadukoo.java.Visibility;
 import com.github.tadukoo.java.annotation.EditableJavaAnnotation;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
 import com.github.tadukoo.java.annotation.UneditableJavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.EditableJavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.UneditableJavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
@@ -170,6 +173,14 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.className("AClassName")
 								.build()
 								.getImplementsInterfaceNames()
+				),
+				// Default Static Code Blocks
+				Pair.of(
+						builders -> new ArrayList<>(),
+						builders -> builders.classBuilder().get()
+								.className("AClassName")
+								.build()
+								.getStaticCodeBlocks()
 				),
 				// Default Single Line Comments
 				Pair.of(
@@ -366,6 +377,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.className("AClassName")
 								.superClassName("BClassName")
 								.implementsInterfaceName("SomeInterface")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
 								.singleLineComment("some comment")
 								.multiLineComment("some content", "more comment")
 								.innerClass(builders.classBuilder().get()
@@ -393,6 +405,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.className("AClassName")
 										.superClassName("BClassName")
 										.implementsInterfaceName("SomeInterface")
+										.staticCodeBlock(ListUtil.createList("doSomething();"))
 										.singleLineComment("some comment")
 										.multiLineComment("some content", "more comment")
 										.innerClass(builders.classBuilder().get()
@@ -792,6 +805,59 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 												.build()))
 								.build()
 								.getImplementsInterfaceNames()
+				),
+				// Set Static Code Block
+				Pair.of(
+						builders -> ListUtil.createList(
+								builders.staticCodeBlockBuilder().get()
+										.line("doSomething();")
+										.build()
+						),
+						builders -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(builders.staticCodeBlockBuilder().get()
+										.line("doSomething();")
+										.build())
+								.build()
+								.getStaticCodeBlocks()
+				),
+				// Set Multiple Static Code Blocks
+				Pair.of(
+						builders -> ListUtil.createList(
+								builders.staticCodeBlockBuilder().get()
+										.line("doSomething();")
+										.build(),
+								builders.staticCodeBlockBuilder().get()
+										.line("doSomethingElse();")
+										.build()
+						),
+						builders -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlocks(ListUtil.createList(builders.staticCodeBlockBuilder().get()
+												.line("doSomething();")
+												.build(),
+										builders.staticCodeBlockBuilder().get()
+												.line("doSomethingElse();")
+												.build()))
+								.build()
+								.getStaticCodeBlocks()
+				),
+				// Set Static Code Block using lines
+				Pair.of(
+						builders -> ListUtil.createList(
+								builders.staticCodeBlockBuilder().get()
+										.line("doSomething();")
+										.line("doSomethingElse();")
+										.build()
+						),
+						builders -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList(
+										"doSomething();",
+										"doSomethingElse();"
+								))
+								.build()
+								.getStaticCodeBlocks()
 				),
 				// Set Single Line Comment
 				Pair.of(
@@ -1550,6 +1616,55 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 												.name("Derp")
 												.build())
 										.className("AClassName")
+										.build()"""
+				),
+				// With Static Code Block
+				Triple.of(
+						builders -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
+								.build(),
+						"""
+								class AClassName{
+								\t
+									static{
+										doSomething();
+									}
+								}
+								""",
+						classNames -> classNames.classSimpleClassName() + """
+								.builder()
+										.className("AClassName")
+										.staticCodeBlock(ListUtil.createList(
+												"doSomething();"
+										))
+										.build()"""
+				),
+				// With Multiline Static Code Block
+				Triple.of(
+						builders -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList(
+										"doSomething();",
+										"doSomethingElse();"
+								))
+								.build(),
+						"""
+								class AClassName{
+								\t
+									static{
+										doSomething();
+										doSomethingElse();
+									}
+								}
+								""",
+						classNames -> classNames.classSimpleClassName() + """
+								.builder()
+										.className("AClassName")
+										.staticCodeBlock(ListUtil.createList(
+												"doSomething();",
+												"doSomethingElse();"
+										))
 										.build()"""
 				),
 				// With Single-Line Comment
@@ -2577,6 +2692,15 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 							Not allowed to have package declaration for an inner class!
 							Not allowed to have import statements for an inner class!"""
 				),
+				// Missing Inner Elements Order when Static Code Block Present
+				Pair.of(
+						builders -> () -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
+								.innerElementsOrder(new ArrayList<>())
+								.build(),
+						"innerElementsOrder is required when static code blocks or comments are present!"
+				),
 				// Missing Inner Elements Order when Single Line Comment Present
 				Pair.of(
 						builders -> () -> builders.classBuilder().get()
@@ -2584,7 +2708,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.singleLineComment("some comment")
 								.innerElementsOrder(new ArrayList<>())
 								.build(),
-						"innerElementsOrder is required when comments are present!"
+						"innerElementsOrder is required when static code blocks or comments are present!"
 				),
 				// Missing Inner Elements Order when Multi Line Comment Present
 				Pair.of(
@@ -2593,7 +2717,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.multiLineComment("some comment", "more content")
 								.innerElementsOrder(new ArrayList<>())
 								.build(),
-						"innerElementsOrder is required when comments are present!"
+						"innerElementsOrder is required when static code blocks or comments are present!"
 				),
 				// Missing Inner Elements Order when Both Types of Comment Present
 				Pair.of(
@@ -2603,7 +2727,19 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.multiLineComment("some comment", "more content")
 								.innerElementsOrder(new ArrayList<>())
 								.build(),
-						"innerElementsOrder is required when comments are present!"
+						"innerElementsOrder is required when static code blocks or comments are present!"
+				),
+				// Too Many Static Code Blocks in Elements Order
+				Pair.of(
+						builders -> () -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
+								.innerElementsOrder(ListUtil.createList(
+										Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null),
+										Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null)
+								))
+								.build(),
+						"Specified more static code blocks in innerElementsOrder than we have!"
 				),
 				// Too Many Single Line Comments in Elements Order
 				Pair.of(
@@ -2722,6 +2858,33 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.innerElementsOrder(ListUtil.createList(Pair.of(JavaCodeTypes.ANNOTATION, "something")))
 								.build(),
 						"Unknown inner element type: " + JavaCodeTypes.ANNOTATION.getStandardName()
+				),
+				// Missed 1 Static Code Block in Elements Order
+				Pair.of(
+						builders -> () -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
+								.staticCodeBlock(ListUtil.createList("doSomethingElse();"))
+								.staticCodeBlock(ListUtil.createList("doSomethingEvenMore();"))
+								.innerElementsOrder(ListUtil.createList(
+										Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null),
+										Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null)
+								))
+								.build(),
+						"Missed 1 static code blocks in innerElementsOrder!"
+				),
+				// Missed 2 Static Code Blocks in Elements Order
+				Pair.of(
+						builders -> () -> builders.classBuilder().get()
+								.className("AClassName")
+								.staticCodeBlock(ListUtil.createList("doSomething();"))
+								.staticCodeBlock(ListUtil.createList("doSomethingElse();"))
+								.staticCodeBlock(ListUtil.createList("doSomethingEvenMore();"))
+								.innerElementsOrder(ListUtil.createList(
+										Pair.of(JavaCodeTypes.STATIC_CODE_BLOCK, null)
+								))
+								.build(),
+						"Missed 2 static code blocks in innerElementsOrder!"
 				),
 				// Missed 1 Single Line Comment in Elements Order
 				Pair.of(
@@ -2915,6 +3078,16 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.build(),
 						"some annotations are not uneditable in this uneditable JavaClass"
 				),
+				// Editable Static Code Block in Uneditable JavaClass
+				Pair.of(
+						() -> UneditableJavaClass.builder()
+								.className("AClassName")
+								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
+										.line("some comment")
+										.build())
+								.build(),
+						"some static code blocks are not uneditable in this uneditable JavaClass"
+				),
 				// Editable Single Line Comment in Uneditable JavaClass
 				Pair.of(
 						() -> UneditableJavaClass.builder()
@@ -2981,6 +3154,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.name("Test")
 										.build())
 								.className("AClassName")
+								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
+										.line("doSomething();")
+										.build())
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("some comment")
 										.build())
@@ -3003,6 +3179,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								some import statements are not uneditable in this uneditable JavaClass
 								javadoc is not uneditable in this uneditable JavaClass
 								some annotations are not uneditable in this uneditable JavaClass
+								some static code blocks are not uneditable in this uneditable JavaClass
 								some single-line comments are not uneditable in this uneditable JavaClass
 								some multi-line comments are not uneditable in this uneditable JavaClass
 								some inner classes are not uneditable in this uneditable JavaClass
@@ -3047,6 +3224,16 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								.className("AClassName")
 								.build(),
 						"some annotations are not editable in this editable JavaClass"
+				),
+				// Uneditable Static Code Block in Editable JavaClass
+				Pair.of(
+						() -> EditableJavaClass.builder()
+								.className("AClassName")
+								.staticCodeBlock(UneditableJavaStaticCodeBlock.builder()
+										.line("doSomething();")
+										.build())
+								.build(),
+						"some static code blocks are not editable in this editable JavaClass"
 				),
 				// Uneditable Single Line Comment in Editable JavaClass
 				Pair.of(
@@ -3114,6 +3301,9 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 										.name("Test")
 										.build())
 								.className("AClassName")
+								.staticCodeBlock(UneditableJavaStaticCodeBlock.builder()
+										.line("doSomething();")
+										.build())
 								.singleLineComment(UneditableJavaSingleLineComment.builder()
 										.content("some comment")
 										.build())
@@ -3136,6 +3326,7 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 								some import statements are not editable in this editable JavaClass
 								javadoc is not editable in this editable JavaClass
 								some annotations are not editable in this editable JavaClass
+								some static code blocks are not editable in this editable JavaClass
 								some single-line comments are not editable in this editable JavaClass
 								some multi-line comments are not editable in this editable JavaClass
 								some inner classes are not editable in this editable JavaClass
@@ -3763,6 +3954,117 @@ public class JavaClassTest extends BaseJavaCodeTypeTest<JavaClass>{
 				.build(), JavaType.builder()
 				.baseType("BInterface")
 				.build()), clazz.getImplementsInterfaceNames());
+	}
+	
+	@Test
+	public void testAddStaticCodeBlockComment(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		JavaStaticCodeBlock codeBlock1 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomething();")
+				.build();
+		JavaStaticCodeBlock codeBlock2 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingElse();")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getStaticCodeBlocks());
+		clazz.addStaticCodeBlock(codeBlock1);
+		assertEquals(ListUtil.createList(codeBlock1), clazz.getStaticCodeBlocks());
+		clazz.addStaticCodeBlock(codeBlock2);
+		assertEquals(ListUtil.createList(codeBlock1, codeBlock2), clazz.getStaticCodeBlocks());
+	}
+	
+	@Test
+	public void testAddStaticCodeBlockUneditable(){
+		try{
+			EditableJavaClass clazz = EditableJavaClass.builder()
+					.className("AClassName")
+					.build();
+			clazz.addStaticCodeBlock(UneditableJavaStaticCodeBlock.builder()
+					.line("doSomething();")
+					.build());
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable static code blocks", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testAddStaticCodeBlockComments(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		JavaStaticCodeBlock codeBlock1 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomething();")
+				.build();
+		JavaStaticCodeBlock codeBlock2 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingElse();")
+				.build();
+		JavaStaticCodeBlock codeBlock3 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingEvenMore();")
+				.build();
+		JavaStaticCodeBlock codeBlock4 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingElseEvenMore();")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getStaticCodeBlocks());
+		clazz.addStaticCodeBlocks(ListUtil.createList(codeBlock1, codeBlock2));
+		assertEquals(ListUtil.createList(codeBlock1, codeBlock2), clazz.getStaticCodeBlocks());
+		clazz.addStaticCodeBlocks(ListUtil.createList(codeBlock3, codeBlock4));
+		assertEquals(ListUtil.createList(codeBlock1, codeBlock2, codeBlock3, codeBlock4), clazz.getStaticCodeBlocks());
+	}
+	
+	@Test
+	public void testAddStaticCodeBlocksUneditable(){
+		try{
+			EditableJavaClass clazz = EditableJavaClass.builder()
+					.className("AClassName")
+					.build();
+			clazz.addStaticCodeBlocks(ListUtil.createList(UneditableJavaStaticCodeBlock.builder()
+					.line("doSomething();")
+					.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable static code blocks", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSetStaticCodeBlocks(){
+		EditableJavaClass clazz = EditableJavaClass.builder()
+				.className("AClassName")
+				.build();
+		JavaStaticCodeBlock codeBlock1 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomething();")
+				.build();
+		JavaStaticCodeBlock codeBlock2 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingElse();")
+				.build();
+		JavaStaticCodeBlock codeBlock3 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingEvenMore();")
+				.build();
+		JavaStaticCodeBlock codeBlock4 = EditableJavaStaticCodeBlock.builder()
+				.line("doSomethingElseEvenMore();")
+				.build();
+		assertEquals(new ArrayList<>(), clazz.getStaticCodeBlocks());
+		clazz.setStaticCodeBlocks(ListUtil.createList(codeBlock1, codeBlock2));
+		assertEquals(ListUtil.createList(codeBlock1, codeBlock2), clazz.getStaticCodeBlocks());
+		clazz.setStaticCodeBlocks(ListUtil.createList(codeBlock3, codeBlock4));
+		assertEquals(ListUtil.createList(codeBlock3, codeBlock4), clazz.getStaticCodeBlocks());
+	}
+	
+	@Test
+	public void testSetStaticCodeBlocksUneditable(){
+		try{
+			EditableJavaClass clazz = EditableJavaClass.builder()
+					.className("AClassName")
+					.build();
+			clazz.setStaticCodeBlocks(ListUtil.createList(UneditableJavaStaticCodeBlock.builder()
+					.line("doSomething();")
+					.build()));
+			fail();
+		}catch(IllegalArgumentException e){
+			assertEquals("editable Java Class requires editable static code blocks", e.getMessage());
+		}
 	}
 	
 	@Test

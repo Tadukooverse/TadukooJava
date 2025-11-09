@@ -3,6 +3,7 @@ package com.github.tadukoo.java.parsing.classtypes;
 import com.github.tadukoo.java.JavaCodeType;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.EditableJavaField;
@@ -353,7 +354,10 @@ public class JavaClassParser extends AbstractJavaParser{
 		Javadoc doc = null;
 		List<JavaAnnotation> annotations = new ArrayList<>();
 		for(JavaCodeType type: itemsInClass){
-			if(type instanceof JavaSingleLineComment singleLineComment){
+			if(type instanceof JavaStaticCodeBlock staticCodeBlock){
+				// Static Code Block goes on the class
+				builder.staticCodeBlock(staticCodeBlock);
+			}else if(type instanceof JavaSingleLineComment singleLineComment){
 				// Single-Line comment goes on the class
 				builder.singleLineComment(singleLineComment);
 			}else if(type instanceof JavaMultiLineComment multiLineComment){

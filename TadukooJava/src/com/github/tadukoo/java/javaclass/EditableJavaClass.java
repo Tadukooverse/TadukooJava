@@ -3,6 +3,9 @@ package com.github.tadukoo.java.javaclass;
 import com.github.tadukoo.java.JavaCodeTypes;
 import com.github.tadukoo.java.JavaType;
 import com.github.tadukoo.java.annotation.JavaAnnotation;
+import com.github.tadukoo.java.code.staticcodeblock.EditableJavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlock;
+import com.github.tadukoo.java.code.staticcodeblock.JavaStaticCodeBlockBuilder;
 import com.github.tadukoo.java.comment.EditableJavaMultiLineComment;
 import com.github.tadukoo.java.comment.EditableJavaSingleLineComment;
 import com.github.tadukoo.java.comment.JavaMultiLineComment;
@@ -64,6 +67,12 @@ public class EditableJavaClass extends JavaClass{
 		
 		/** {@inheritDoc} */
 		@Override
+		protected JavaStaticCodeBlockBuilder<?> getStaticCodeBlockBuilder(){
+			return EditableJavaStaticCodeBlock.builder();
+		}
+		
+		/** {@inheritDoc} */
+		@Override
 		protected JavaSingleLineCommentBuilder<?> getSingleLineCommentBuilder(){
 			return EditableJavaSingleLineComment.builder();
 		}
@@ -101,6 +110,14 @@ public class EditableJavaClass extends JavaClass{
 			for(JavaAnnotation annotation: annotations){
 				if(!annotation.isEditable()){
 					errors.add("some annotations are not editable in this editable JavaClass");
+					break;
+				}
+			}
+			
+			// Static Code Blocks can't be uneditable
+			for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+				if(!staticCodeBlock.isEditable()){
+					errors.add("some static code blocks are not editable in this editable JavaClass");
 					break;
 				}
 			}
@@ -154,6 +171,7 @@ public class EditableJavaClass extends JavaClass{
 					javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal, className,
 					superClassName, implementsInterfaceNames,
+					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
 					innerElementsOrder);
@@ -177,6 +195,7 @@ public class EditableJavaClass extends JavaClass{
 	 * along with type parameters to form a {@link JavaType}
 	 * @param implementsInterfaceNames The names of interfaces this class implements,
 	 * along with type parameters to form a {@link JavaType}
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
 	 * @param multiLineComments The {@link JavaMultiLineComment multi-line comments} inside the class
 	 * @param innerClasses Inner {@link JavaClass classes} inside the class
@@ -189,6 +208,7 @@ public class EditableJavaClass extends JavaClass{
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
 			JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
+			List<JavaStaticCodeBlock> staticCodeBlocks,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
 			List<Pair<JavaCodeTypes, String>> innerElementsOrder){
@@ -196,6 +216,7 @@ public class EditableJavaClass extends JavaClass{
 				javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal, className,
 				superClassName, implementsInterfaceNames,
+				staticCodeBlocks,
 				singleLineComments, multiLineComments,
 				innerClasses, fields, methods,
 				innerElementsOrder);
@@ -450,6 +471,43 @@ public class EditableJavaClass extends JavaClass{
 	public void setImplementsInterfaceNameTexts(List<String> implementsInterfaceNameTexts){
 		this.implementsInterfaceNames = implementsInterfaceNameTexts.stream()
 				.map(FullJavaParser::parseJavaType).collect(Collectors.toList());
+	}
+	
+	/**
+	 * @param staticCodeBlock A {@link JavaStaticCodeBlock static code block} to be added inside the class
+	 * - must be editable
+	 */
+	public void addStaticCodeBlock(JavaStaticCodeBlock staticCodeBlock){
+		if(!staticCodeBlock.isEditable()){
+			throw new IllegalArgumentException("editable Java Class requires editable static code blocks");
+		}
+		staticCodeBlocks.add(staticCodeBlock);
+	}
+	
+	/**
+	 * @param staticCodeBlocks {@link JavaStaticCodeBlock static code blocks} to be added inside the class
+	 * - must be editable
+	 */
+	public void addStaticCodeBlocks(List<JavaStaticCodeBlock> staticCodeBlocks){
+		for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+			if(!staticCodeBlock.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable static code blocks");
+			}
+		}
+		this.staticCodeBlocks.addAll(staticCodeBlocks);
+	}
+	
+	/**
+	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
+	 * - must be editable
+	 */
+	public void setStaticCodeBlocks(List<JavaStaticCodeBlock> staticCodeBlocks){
+		for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
+			if(!staticCodeBlock.isEditable()){
+				throw new IllegalArgumentException("editable Java Class requires editable static code blocks");
+			}
+		}
+		this.staticCodeBlocks = staticCodeBlocks;
 	}
 	
 	/**
