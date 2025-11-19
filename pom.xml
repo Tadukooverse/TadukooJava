@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.github.tadukoo.java</groupId>
 	<artifactId>TadukooJavaParent</artifactId>
-	<version>0.6-Beta</version>
+	<version>0.7-Beta-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 	<description>Libraries for dealing with Java code</description>
