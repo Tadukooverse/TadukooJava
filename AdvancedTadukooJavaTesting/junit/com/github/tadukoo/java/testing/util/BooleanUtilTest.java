@@ -76,7 +76,7 @@ public class BooleanUtilTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
-				.className("BooleanUtil")
+				.name("BooleanUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

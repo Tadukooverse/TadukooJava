@@ -69,10 +69,10 @@ public class JavaCodeTypeTestClassTest{
 				// None
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						new ArrayList<>()
 				),
@@ -85,14 +85,14 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						null,
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("One of the classes is null, and the other isn't!")
 				),
 				// 2 Null 1 Not
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						null,
 						ListUtil.createList("One of the classes is null, and the other isn't!")
@@ -100,21 +100,21 @@ public class JavaCodeTypeTestClassTest{
 				// Editable
 				Arguments.of(
 						UneditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Editable is different!")
 				),
 				// Inner Class
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.innerClass()
-								.className("Test")
+								.innerType()
+								.name("Test")
 								.build(),
 						ListUtil.createList("Inner Class is different!")
 				),
@@ -122,11 +122,11 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						EditableJavaClass.builder()
 								.packageName("com.test")
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Package Declaration differs:\n" +
 								"\tPackage Name is different!")
@@ -134,11 +134,11 @@ public class JavaCodeTypeTestClassTest{
 				// Import Statements Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.importName("com.example.Thing", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Import Statements length is different!")
 				),
@@ -146,10 +146,10 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						EditableJavaClass.builder()
 								.importName("com.example.Thing", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Import Statements length is different!",
 								"Import Statements differs on #1!")
@@ -158,11 +158,11 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						EditableJavaClass.builder()
 								.importName("com.example.Thing", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.importName("com.example.Thing", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Import Statements differs on #1:\n" +
 								"\tStatic is different!")
@@ -172,10 +172,10 @@ public class JavaCodeTypeTestClassTest{
 						EditableJavaClass.builder()
 								.javadoc(EditableJavadoc.builder()
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("""
 				Javadoc differs:
@@ -187,7 +187,7 @@ public class JavaCodeTypeTestClassTest{
 								.annotation(EditableJavaAnnotation.builder()
 										.name("getTest")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.annotation(EditableJavaAnnotation.builder()
@@ -196,7 +196,7 @@ public class JavaCodeTypeTestClassTest{
 								.annotation(EditableJavaAnnotation.builder()
 										.name("getDerp")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Annotations length is different!")
 				),
@@ -209,13 +209,13 @@ public class JavaCodeTypeTestClassTest{
 								.annotation(EditableJavaAnnotation.builder()
 										.name("getDerp")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.annotation(EditableJavaAnnotation.builder()
 										.name("getTest")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Annotations length is different!",
 								"Annotations differs on #2!")
@@ -226,13 +226,13 @@ public class JavaCodeTypeTestClassTest{
 								.annotation(EditableJavaAnnotation.builder()
 										.name("getTest")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.annotation(EditableJavaAnnotation.builder()
 										.name("getDerp")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("""
 				Annotations differs on #1:
@@ -242,11 +242,11 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						EditableJavaClass.builder()
 								.visibility(Visibility.PUBLIC)
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
 								.visibility(Visibility.PRIVATE)
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Visibility is different!")
 				),
@@ -254,23 +254,23 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						EditableJavaClass.builder()
 								.isAbstract()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Abstract is different!")
 				),
 				// Static
 				Arguments.of(
 						EditableJavaClass.builder()
-								.innerClass()
+								.innerType()
 								.isStatic()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.innerClass()
-								.className("Test")
+								.innerType()
+								.name("Test")
 								.build(),
 						ListUtil.createList("Static is different!")
 				),
@@ -278,60 +278,60 @@ public class JavaCodeTypeTestClassTest{
 				Arguments.of(
 						EditableJavaClass.builder()
 								.isFinal()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Final is different!")
 				),
 				// Class Name
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Derp")
+								.name("Derp")
 								.build(),
 						ListUtil.createList("Class Name differs:\n\tBase Type is different!")
 				),
 				// Super Class Name
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test").superClassName("Something")
+								.name("Test").extendsType("Something")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Super Class Name differs:\n\tOne of the types is null, and the other isn't!")
 				),
 				// Implements Interface Names
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test").implementsInterfaceName("Something")
+								.name("Test").implementsType("Something")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test").implementsInterfaceName("SomethingElse")
+								.name("Test").implementsType("SomethingElse")
 								.build(),
 						ListUtil.createList("Implements Interface Names differs on #1:\n\tBase Type is different!")
 				),
 				// Implements Interface Names Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test").implementsInterfaceName("Something")
+								.name("Test").implementsType("Something")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test").implementsInterfaceName("Something").implementsInterfaceName("SomethingElse")
+								.name("Test").implementsType("Something").implementsType("SomethingElse")
 								.build(),
 						ListUtil.createList("Implements Interface Names length is different!")
 				),
 				// Implements Interface Names Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test").implementsInterfaceName("Something").implementsInterfaceName("SomethingElse")
+								.name("Test").implementsType("Something").implementsType("SomethingElse")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test").implementsInterfaceName("Something")
+								.name("Test").implementsType("Something")
 								.build(),
 						ListUtil.createList("Implements Interface Names length is different!",
 								"Implements Interface Names differs on #2!")
@@ -339,13 +339,13 @@ public class JavaCodeTypeTestClassTest{
 				// Static Code Blocks
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
 										.line("doSomething();")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
 										.line("doSomethingElse();")
 										.build())
@@ -356,10 +356,10 @@ public class JavaCodeTypeTestClassTest{
 				// Static Code Blocks Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
 										.line("doSomethingElse();")
 										.build())
@@ -370,13 +370,13 @@ public class JavaCodeTypeTestClassTest{
 				// Static Code Blocks Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(EditableJavaStaticCodeBlock.builder()
 										.line("doSomethingElse();")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Static Code Blocks length is different!",
 								"Static Code Blocks differs on #1!",
@@ -386,13 +386,13 @@ public class JavaCodeTypeTestClassTest{
 				// Single Line Comments
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("Something useful")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("Something different")
 										.build())
@@ -403,10 +403,10 @@ public class JavaCodeTypeTestClassTest{
 				// Single Line Comments Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("Something different")
 										.build())
@@ -417,13 +417,13 @@ public class JavaCodeTypeTestClassTest{
 				// Single Line Comments Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("Something different")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Single Line Comments length is different!",
 								"Single Line Comments differs on #1!",
@@ -433,13 +433,13 @@ public class JavaCodeTypeTestClassTest{
 				// Multi Line Comments
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.multiLineComment(EditableJavaMultiLineComment.builder()
 										.content("Something useful")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.multiLineComment(EditableJavaMultiLineComment.builder()
 										.content("Something different")
 										.build())
@@ -450,10 +450,10 @@ public class JavaCodeTypeTestClassTest{
 				// Multi Line Comments Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.multiLineComment(EditableJavaMultiLineComment.builder()
 										.content("Something different")
 										.build())
@@ -464,13 +464,13 @@ public class JavaCodeTypeTestClassTest{
 				// Multi Line Comments Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.multiLineComment(EditableJavaMultiLineComment.builder()
 										.content("Something different")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Multi Line Comments length is different!",
 								"Multi Line Comments differs on #1!",
@@ -480,17 +480,17 @@ public class JavaCodeTypeTestClassTest{
 				// Inner Classes
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Something")
+										.innerType()
+										.name("Something")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("SomethingElse")
+										.innerType()
+										.name("SomethingElse")
 										.build())
 								.build(),
 						ListUtil.createList("""
@@ -502,13 +502,13 @@ public class JavaCodeTypeTestClassTest{
 				// Inner Classes Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Something")
+										.innerType()
+										.name("Something")
 										.build())
 								.build(),
 						ListUtil.createList("Inner Classes length is different!",
@@ -517,14 +517,14 @@ public class JavaCodeTypeTestClassTest{
 				// Inner Classes Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Something")
+										.innerType()
+										.name("Something")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Inner Classes length is different!",
 								"Inner Classes differs on #1!",
@@ -534,13 +534,13 @@ public class JavaCodeTypeTestClassTest{
 				// Fields
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.type("String").name("version")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.type("String").name("test")
 										.build())
@@ -552,10 +552,10 @@ public class JavaCodeTypeTestClassTest{
 				// Fields Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.type("String").name("test")
 										.build())
@@ -566,13 +566,13 @@ public class JavaCodeTypeTestClassTest{
 				// Fields Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.type("String").name("test")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Fields length is different!",
 								"Fields differs on #1!",
@@ -582,13 +582,13 @@ public class JavaCodeTypeTestClassTest{
 				// Methods
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.returnType("String").name("getVersion")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.returnType("String").name("getTest")
 										.build())
@@ -600,10 +600,10 @@ public class JavaCodeTypeTestClassTest{
 				// Methods Length
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.returnType("String").name("getTest")
 										.build())
@@ -614,13 +614,13 @@ public class JavaCodeTypeTestClassTest{
 				// Methods Length 1 Longer
 				Arguments.of(
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.returnType("String").name("getTest")
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						ListUtil.createList("Methods length is different!",
 								"Methods differs on #1!",
@@ -642,8 +642,8 @@ public class JavaCodeTypeTestClassTest{
 										.build())
 								.visibility(Visibility.PUBLIC)
 								.isAbstract()
-								.className("Test").superClassName("Something")
-								.implementsInterfaceName("Something").implementsInterfaceName("SomethingElse")
+								.name("Test").extendsType("Something")
+								.implementsType("Something").implementsType("SomethingElse")
 								.singleLineComment(UneditableJavaSingleLineComment.builder()
 										.content("Something different")
 										.build())
@@ -651,8 +651,8 @@ public class JavaCodeTypeTestClassTest{
 										.content("Something different")
 										.build())
 								.innerClass(UneditableJavaClass.builder()
-										.innerClass()
-										.className("Something")
+										.innerType()
+										.name("Something")
 										.build())
 								.field(UneditableJavaField.builder()
 										.type("String").name("test")
@@ -662,14 +662,14 @@ public class JavaCodeTypeTestClassTest{
 										.build())
 								.build(),
 						EditableJavaClass.builder()
-								.innerClass()
+								.innerType()
 								.annotation(EditableJavaAnnotation.builder()
 										.name("Derp")
 										.build())
 								.visibility(Visibility.PRIVATE)
 								.isStatic().isFinal()
-								.className("Derp")
-								.implementsInterfaceName("Something")
+								.name("Derp")
+								.implementsType("Something")
 								.build(),
 						ListUtil.createList("Editable is different!",
 								"Inner Class is different!",

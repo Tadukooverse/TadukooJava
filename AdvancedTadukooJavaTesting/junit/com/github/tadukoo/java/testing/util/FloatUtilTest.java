@@ -49,7 +49,7 @@ public class FloatUtilTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
-				.className("FloatUtil")
+				.name("FloatUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

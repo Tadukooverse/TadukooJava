@@ -206,7 +206,7 @@ public class ByteUtilTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
-				.className("ByteUtil")
+				.name("ByteUtil")
 				.field(EditableJavaField.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

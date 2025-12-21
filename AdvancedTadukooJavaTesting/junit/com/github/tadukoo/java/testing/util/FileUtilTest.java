@@ -613,7 +613,7 @@ public class FileUtilTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
-				.className("FileUtil")
+				.name("FileUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

@@ -52,7 +52,7 @@ public class ManyToManyMapUtilTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
-				.className("ManyToManyMapUtil")
+				.name("ManyToManyMapUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

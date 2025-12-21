@@ -118,7 +118,7 @@ public class DownloadUtilTest extends JavaClassParsingTest{
 						.version("Beta v.0.5.2")
 						.build())
 				.visibility(Visibility.PUBLIC)
-				.className("DownloadUtil")
+				.name("DownloadUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

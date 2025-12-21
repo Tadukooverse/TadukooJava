@@ -23,7 +23,7 @@ public class JavaValidatorTest{
 	public void testDetermineCanonicalNamesNotEditableJavaClass(){
 		try{
 			validator.determineCanonicalNames(UneditableJavaClass.builder()
-					.className("Test")
+					.name("Test")
 					.build());
 			fail();
 		}catch(IllegalArgumentException e){
@@ -39,7 +39,7 @@ public class JavaValidatorTest{
 		String canonicalName = "com.example.Something";
 		validator.determineCanonicalNames(EditableJavaClass.builder()
 				.importName(canonicalName, false)
-				.className("Test")
+				.name("Test")
 				.annotation(annotation)
 				.build());
 		assertEquals(canonicalName, annotation.getCanonicalName());

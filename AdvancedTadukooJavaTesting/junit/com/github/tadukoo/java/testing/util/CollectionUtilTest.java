@@ -54,7 +54,7 @@ public class CollectionUtilTest extends JavaClassParsingTest{
 						.version("Beta v.0.5.2")
 						.build())
 				.visibility(Visibility.PUBLIC)
-				.className("CollectionUtil")
+				.name("CollectionUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

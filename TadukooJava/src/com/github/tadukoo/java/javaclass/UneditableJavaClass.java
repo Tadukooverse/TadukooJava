@@ -24,14 +24,13 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclarationBuilder;
 import com.github.tadukoo.java.packagedeclaration.UneditableJavaPackageDeclaration;
 import com.github.tadukoo.util.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Represents a class in Java that is not modifiable
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.6
+ * @version Beta v.0.7
  * @since Alpha v.0.2 (as JavaClass), Alpha v.0.4 (as UneditableJavaClass)
  */
 public class UneditableJavaClass extends JavaClass{
@@ -40,7 +39,7 @@ public class UneditableJavaClass extends JavaClass{
 	 * A builder used to make an {@link UneditableJavaClass}
 	 *
 	 * @author Logan Ferree (Tadukoo)
-	 * @version Beta v.0.6
+	 * @version Beta v.0.7
 	 * @since Alpha v.0.4
 	 * @see JavaClassBuilder
 	 */
@@ -49,6 +48,7 @@ public class UneditableJavaClass extends JavaClass{
 		/** Not allowed to instantiate outside {@link UneditableJavaClass} */
 		private UneditableJavaClassBuilder(){
 			super();
+			isEditable = false;
 		}
 		
 		/** {@inheritDoc} */
@@ -83,92 +83,11 @@ public class UneditableJavaClass extends JavaClass{
 		
 		/** {@inheritDoc} */
 		@Override
-		protected List<String> checkForSpecificErrors(){
-			List<String> errors = new ArrayList<>();
-			
-			// Package Declaration can't be editable
-			if(packageDeclaration != null && packageDeclaration.isEditable()){
-				errors.add("package declaration is not uneditable in this uneditable JavaClass");
-			}
-			
-			// Import Statements can't be editable
-			for(JavaImportStatement importStatement: importStatements){
-				if(importStatement.isEditable()){
-					errors.add("some import statements are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Javadoc can't be editable
-			if(javadoc != null && javadoc.isEditable()){
-				errors.add("javadoc is not uneditable in this uneditable JavaClass");
-			}
-			
-			// Annotations can't be editable
-			for(JavaAnnotation annotation: annotations){
-				if(annotation.isEditable()){
-					errors.add("some annotations are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Static Code Blocks can't be editable
-			for(JavaStaticCodeBlock staticCodeBlock: staticCodeBlocks){
-				if(staticCodeBlock.isEditable()){
-					errors.add("some static code blocks are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Single-Line Comments can't be editable
-			for(JavaSingleLineComment singleLineComment: singleLineComments){
-				if(singleLineComment.isEditable()){
-					errors.add("some single-line comments are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Multi-Line Comments can't be editable
-			for(JavaMultiLineComment multiLineComment: multiLineComments){
-				if(multiLineComment.isEditable()){
-					errors.add("some multi-line comments are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Inner Classes can't be editable
-			for(JavaClass clazz: innerClasses){
-				if(clazz.isEditable()){
-					errors.add("some inner classes are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Fields can't be editable
-			for(JavaField field: fields){
-				if(field.isEditable()){
-					errors.add("some fields are not uneditable in this uneditable JavaClass");
-					break;
-				}
-			}
-			
-			// Methods can't be editable
-			for(JavaMethod method: methods){
-				if(method.isEditable()){
-					errors.add("some methods are not uneditable in this uneditable JavaClass");
-				}
-			}
-			
-			return errors;
-		}
-		
-		/** {@inheritDoc} */
-		@Override
 		protected UneditableJavaClass constructClass(){
-			return new UneditableJavaClass(isInnerClass, packageDeclaration, importStatements,
+			return new UneditableJavaClass(isInnerType, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isAbstract, isStatic, isFinal, className,
-					superClassName, implementsInterfaceNames,
+					visibility, isAbstract, isStatic, isFinal, name,
+					extendsTypes, implementsTypes,
 					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
@@ -189,9 +108,9 @@ public class UneditableJavaClass extends JavaClass{
 	 * @param isStatic Whether this is a static class or not
 	 * @param isFinal Whether this is a final class or not
 	 * @param className The name of the class, along with type parameters to form a {@link JavaType}
-	 * @param superClassName The name of the class this one extends (can be null),
+	 * @param extendsTypes The name of the class this one extends (can be null),
 	 * along with type parameters to form a {@link JavaType}
-	 * @param implementsInterfaceNames The names of interfaces this class implements,
+	 * @param implementsTypes The names of interfaces this class implements,
 	 * along with type parameters to form a {@link JavaType}
 	 * @param staticCodeBlocks The {@link JavaStaticCodeBlock static code blocks} inside the class
 	 * @param singleLineComments The {@link JavaSingleLineComment single-line comments} inside the class
@@ -205,7 +124,7 @@ public class UneditableJavaClass extends JavaClass{
 			boolean isInnerClass, JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 			Javadoc javadoc, List<JavaAnnotation> annotations,
 			Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-			JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
+			JavaType className, List<JavaType> extendsTypes, List<JavaType> implementsTypes,
 			List<JavaStaticCodeBlock> staticCodeBlocks,
 			List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 			List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
@@ -213,7 +132,7 @@ public class UneditableJavaClass extends JavaClass{
 		super(false, isInnerClass, packageDeclaration, importStatements,
 				javadoc, annotations,
 				visibility, isAbstract, isStatic, isFinal, className,
-				superClassName, implementsInterfaceNames,
+				extendsTypes, implementsTypes,
 				staticCodeBlocks,
 				singleLineComments, multiLineComments,
 				innerClasses, fields, methods,

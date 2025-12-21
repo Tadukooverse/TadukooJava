@@ -91,7 +91,7 @@ public class QueueTest extends JavaClassParsingTest{
 						.param("<E>", "The type of item stored in this {@link Queue}")
 						.build())
 				.visibility(Visibility.PUBLIC)
-				.className("Queue<E>")
+				.name("Queue<E>")
 				.field(EditableJavaField.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

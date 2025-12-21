@@ -787,7 +787,7 @@ public class JavaCodeTypeTest{
 		
 		// Editable and Inner Class
 		checkBoolean(expectedClass, actualClass, differences, "Editable", JavaClass::isEditable);
-		checkBoolean(expectedClass, actualClass, differences, "Inner Class", JavaClass::isInnerClass);
+		checkBoolean(expectedClass, actualClass, differences, "Inner Class", JavaClass::isInnerType);
 		
 		// Package Declaration
 		checkSingleSubtype(expectedClass, actualClass, differences, "Package Declaration",
@@ -813,11 +813,11 @@ public class JavaCodeTypeTest{
 		
 		// Class Name, Extends, Implements
 		checkSingleSubtype(expectedClass, actualClass, differences, "Class Name",
-				JavaClass::getClassName, JavaCodeTypeTest::findTypeDifferences);
+				JavaClass::getName, JavaCodeTypeTest::findTypeDifferences);
 		checkSingleSubtype(expectedClass, actualClass, differences, "Super Class Name",
-				JavaClass::getSuperClassName, JavaCodeTypeTest::findTypeDifferences);
+				JavaClass::getExtendsType, JavaCodeTypeTest::findTypeDifferences);
 		checkListSubtype(expectedClass, actualClass, differences, "Implements Interface Names",
-				JavaClass::getImplementsInterfaceNames, JavaCodeTypeTest::findTypeDifferences);
+				JavaClass::getImplementsTypes, JavaCodeTypeTest::findTypeDifferences);
 		
 		// Static Code Blocks
 		checkListSubtype(expectedClass, actualClass, differences, "Static Code Blocks",

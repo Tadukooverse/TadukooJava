@@ -66,7 +66,7 @@ public class EventTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isAbstract()
-				.className("Event")
+				.name("Event")
 				.field(EditableJavaField.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

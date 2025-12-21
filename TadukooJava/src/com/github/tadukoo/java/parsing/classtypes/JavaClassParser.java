@@ -38,7 +38,7 @@ import java.util.List;
  * A parser used for parsing {@link JavaClass classes in Java}
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.6
+ * @version Beta v.0.7
  * @since Beta v.0.5
  */
 public class JavaClassParser extends AbstractJavaParser{
@@ -343,13 +343,13 @@ public class JavaClassParser extends AbstractJavaParser{
 		
 		// Start building a JavaClass
 		JavaClassBuilder<EditableJavaClass> builder = EditableJavaClass.builder()
-				.className(className);
+				.name(className);
 		// Only add extends and implements if we have them
 		if(StringUtil.isNotBlank(superClassName)){
-			builder.superClassName(superClassName);
+			builder.extendsType(superClassName);
 		}
 		if(ListUtil.isNotBlank(implementsInterfaces)){
-			builder.implementsInterfaceNameTexts(implementsInterfaces);
+			builder.implementsTypeTexts(implementsInterfaces);
 		}
 		Javadoc doc = null;
 		List<JavaAnnotation> annotations = new ArrayList<>();
@@ -404,7 +404,7 @@ public class JavaClassParser extends AbstractJavaParser{
 					clazz.setAnnotations(annotations);
 					annotations = new ArrayList<>();
 				}
-				clazz.setInnerClass(true);
+				clazz.setInnerType(true);
 				builder.innerClass(clazz);
 			}else{
 				errors.add("Don't know how to add '" + type.getJavaCodeType() + "' to a class");

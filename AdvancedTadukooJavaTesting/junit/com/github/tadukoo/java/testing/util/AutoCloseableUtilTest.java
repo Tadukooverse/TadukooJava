@@ -47,7 +47,7 @@ public class AutoCloseableUtilTest extends JavaClassParsingTest{
 						.build())
 				.visibility(Visibility.PUBLIC)
 				.isFinal()
-				.className("AutoCloseableUtil")
+				.name("AutoCloseableUtil")
 				.method(EditableJavaMethod.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

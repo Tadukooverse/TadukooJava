@@ -32,10 +32,10 @@ public class JavaCodeTypeTestTest{
 	@Test
 	public void testCheckBooleanSuccess(){
 		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
+				.name("Test")
 				.build();
 		JavaClass clazz2 = EditableJavaClass.builder()
-				.className("Test")
+				.name("Test")
 				.build();
 		List<String> differences = new ArrayList<>();
 		checkBoolean(clazz1, clazz2, differences, "Editable", JavaClass::isEditable);
@@ -45,10 +45,10 @@ public class JavaCodeTypeTestTest{
 	@Test
 	public void testCheckBooleanFailure(){
 		JavaClass clazz1 = EditableJavaClass.builder()
-				.className("Test")
+				.name("Test")
 				.build();
 		JavaClass clazz2 = UneditableJavaClass.builder()
-				.className("Test")
+				.name("Test")
 				.build();
 		List<String> differences = new ArrayList<>();
 		checkBoolean(clazz1, clazz2, differences, "Editable", JavaClass::isEditable);
@@ -101,7 +101,7 @@ public class JavaCodeTypeTestTest{
 		JavaClass clazz = runParserForClass("""
 				class Test{ }""");
 		assertEquals(clazz, EditableJavaClass.builder()
-				.className("Test")
+				.name("Test")
 				.build());
 	}
 	
@@ -160,11 +160,11 @@ public class JavaCodeTypeTestTest{
 	public void testCheckEnumSuccess(){
 		JavaClass clazz1 = EditableJavaClass.builder()
 				.visibility(Visibility.PUBLIC)
-				.className("Test")
+				.name("Test")
 				.build();
 		JavaClass clazz2 = EditableJavaClass.builder()
 				.visibility(Visibility.PUBLIC)
-				.className("Test")
+				.name("Test")
 				.build();
 		List<String> differences = new ArrayList<>();
 		checkEnum(clazz1, clazz2, differences, "Visibility", JavaClass::getVisibility);
@@ -175,11 +175,11 @@ public class JavaCodeTypeTestTest{
 	public void testCheckEnumFailure(){
 		JavaClass clazz1 = EditableJavaClass.builder()
 				.visibility(Visibility.PUBLIC)
-				.className("Test")
+				.name("Test")
 				.build();
 		JavaClass clazz2 = EditableJavaClass.builder()
 				.visibility(Visibility.PRIVATE)
-				.className("Test")
+				.name("Test")
 				.build();
 		List<String> differences = new ArrayList<>();
 		checkEnum(clazz1, clazz2, differences, "Visibility", JavaClass::getVisibility);

@@ -383,7 +383,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 				JavaPackageDeclaration packageDeclaration, List<JavaImportStatement> importStatements,
 				Javadoc javadoc, List<JavaAnnotation> annotations,
 				Visibility visibility, boolean isAbstract, boolean isStatic, boolean isFinal,
-				JavaType className, JavaType superClassName, List<JavaType> implementsInterfaceNames,
+				JavaType className, List<JavaType> extendsTypes, List<JavaType> implementsInterfaceNames,
 				List<JavaStaticCodeBlock> staticCodeBlocks,
 				List<JavaSingleLineComment> singleLineComments, List<JavaMultiLineComment> multiLineComments,
 				List<JavaClass> innerClasses, List<JavaField> fields, List<JavaMethod> methods,
@@ -391,7 +391,7 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 			super(editable, isInnerClass, packageDeclaration, importStatements,
 					javadoc, annotations,
 					visibility, isAbstract, isStatic, isFinal, className,
-					superClassName, implementsInterfaceNames,
+					extendsTypes, implementsInterfaceNames,
 					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,
@@ -437,16 +437,11 @@ public abstract class BaseJavaCodeTypeTest<CodeType extends JavaCodeType>{
 		}
 		
 		@Override
-		protected List<String> checkForSpecificErrors(){
-			return new ArrayList<>();
-		}
-		
-		@Override
 		protected TestJavaClass constructClass(){
-			return new TestJavaClass(editable, isInnerClass, packageDeclaration, importStatements,
+			return new TestJavaClass(editable, isInnerType, packageDeclaration, importStatements,
 					javadoc, annotations,
-					visibility, isAbstract, isStatic, isFinal, className,
-					superClassName, implementsInterfaceNames,
+					visibility, isAbstract, isStatic, isFinal, name,
+					extendsTypes, implementsTypes,
 					staticCodeBlocks,
 					singleLineComments, multiLineComments,
 					innerClasses, fields, methods,

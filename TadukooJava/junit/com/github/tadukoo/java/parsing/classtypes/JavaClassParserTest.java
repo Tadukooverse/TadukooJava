@@ -47,7 +47,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -65,7 +65,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -85,7 +85,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example;
@@ -107,7 +107,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 						EditableJavaClass.builder()
 								.importName("com.example.Something", false)
 								.importName("com.example.SomethingElse", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example.Something;
@@ -131,7 +131,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 						EditableJavaClass.builder()
 								.importName("com.example.Something", false)
 								.importName("org.example.SomethingElse", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example.Something;
@@ -153,7 +153,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example.SomethingStatic", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import static com.example.SomethingStatic;
@@ -175,7 +175,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 						EditableJavaClass.builder()
 								.importName("com.example.SomethingStatic", true)
 								.importName("com.example.SomethingElseStatic", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import static com.example.SomethingElseStatic;
@@ -199,7 +199,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 						EditableJavaClass.builder()
 								.importName("com.example.SomethingStatic", true)
 								.importName("org.example.SomethingElseStatic", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import static com.example.SomethingStatic;
@@ -228,7 +228,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.author("Logan Ferree (Tadukoo)")
 										.version("Alpha v.0.1")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								/**
@@ -253,7 +253,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								.annotation(EditableJavaAnnotation.builder()
 										.name("Test")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								@Test
@@ -278,7 +278,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.name("Derp")
 										.parameter("type", "String.class")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								@Test
@@ -296,7 +296,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.visibility(Visibility.PRIVATE)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								private class Test{
@@ -312,7 +312,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.visibility(Visibility.PROTECTED)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								protected class Test{
@@ -328,7 +328,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.visibility(Visibility.PUBLIC)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								public class Test{
@@ -344,7 +344,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.isAbstract()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								abstract class Test{
@@ -362,11 +362,11 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
+										.innerType()
 										.isStatic()
-										.className("Test")
+										.name("Test")
 										.build())
-								.className("Derp")
+								.name("Derp")
 								.build(),
 						"""
 								class Derp{
@@ -386,7 +386,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.isFinal()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								final class Test{
@@ -406,12 +406,12 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								.visibility(Visibility.PRIVATE)
 								.isFinal()
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
+										.innerType()
 										.visibility(Visibility.PUBLIC)
 										.isStatic().isFinal()
-										.className("Test")
+										.name("Test")
 										.build())
-								.className("Derp")
+								.name("Derp")
 								.build(),
 						"""
 								private final class Derp{
@@ -430,7 +430,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test<T>")
+								.name("Test<T>")
 								.build(),
 						"""
 								class Test<T>{
@@ -445,7 +445,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test<T>")
+								.name("Test<T>")
 								.build(),
 						"""
 								class Test<T>{
@@ -460,7 +460,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test<T, S>")
+								.name("Test<T, S>")
 								.build(),
 						"""
 								class Test<T, S>{
@@ -475,7 +475,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test<Map<String, Object>>")
+								.name("Test<Map<String, Object>>")
 								.build(),
 						"""
 								class Test<Map<String, Object>>{
@@ -490,7 +490,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test<Character, Map<Character, ?>>")
+								.name("Test<Character, Map<Character, ?>>")
 								.build(),
 						"""
 								class Test<Character, Map<Character, ?>>{
@@ -505,7 +505,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test<? extends List<String>, Object>")
+								.name("Test<? extends List<String>, Object>")
 								.build(),
 						"""
 								class Test<? extends List<String>, Object>{
@@ -520,8 +520,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp")
+								.name("Test")
+								.extendsType("Derp")
 								.build(),
 						"""
 								class Test extends Derp{
@@ -536,8 +536,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp<T>")
+								.name("Test")
+								.extendsType("Derp<T>")
 								.build(),
 						"""
 								class Test extends Derp<T>{
@@ -552,8 +552,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp<T, S>")
+								.name("Test")
+								.extendsType("Derp<T, S>")
 								.build(),
 						"""
 								class Test extends Derp<T, S>{
@@ -568,8 +568,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp<T, S>")
+								.name("Test")
+								.extendsType("Derp<T, S>")
 								.build(),
 						"""
 								class Test extends Derp<T, S>{
@@ -584,8 +584,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp<Map<String, Object>>")
+								.name("Test")
+								.extendsType("Derp<Map<String, Object>>")
 								.build(),
 						"""
 								class Test extends Derp<Map<String, Object>>{
@@ -600,8 +600,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp<Character, Map<Character, ?>>")
+								.name("Test")
+								.extendsType("Derp<Character, Map<Character, ?>>")
 								.build(),
 						"""
 								class Test extends Derp<Character, Map<Character, ?>>{
@@ -616,8 +616,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.superClassName("Derp<? extends List<String>, Object>")
+								.name("Test")
+								.extendsType("Derp<? extends List<String>, Object>")
 								.build(),
 						"""
 								class Test extends Derp<? extends List<String>, Object>{
@@ -632,8 +632,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp")
+								.name("Test")
+								.implementsType("Derp")
 								.build(),
 						"""
 								class Test implements Derp{
@@ -648,8 +648,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<String>")
+								.name("Test")
+								.implementsType("Derp<String>")
 								.build(),
 						"""
 								class Test implements Derp<String>{
@@ -664,8 +664,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<String, Object>")
+								.name("Test")
+								.implementsType("Derp<String, Object>")
 								.build(),
 						"""
 								class Test implements Derp<String, Object>{
@@ -680,8 +680,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<Map<String, Object>>")
+								.name("Test")
+								.implementsType("Derp<Map<String, Object>>")
 								.build(),
 						"""
 								class Test implements Derp<Map<String, Object>>{
@@ -696,8 +696,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<Character, Map<Character, ?>>")
+								.name("Test")
+								.implementsType("Derp<Character, Map<Character, ?>>")
 								.build(),
 						"""
 								class Test implements Derp<Character, Map<Character, ?>>{
@@ -712,8 +712,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<? extends List<String>, Object>")
+								.name("Test")
+								.implementsType("Derp<? extends List<String>, Object>")
 								.build(),
 						"""
 								class Test implements Derp<? extends List<String>, Object>{
@@ -728,9 +728,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp")
-								.implementsInterfaceName("Blah")
+								.name("Test")
+								.implementsType("Derp")
+								.implementsType("Blah")
 								.build(),
 						"""
 								class Test implements Derp, Blah{
@@ -745,9 +745,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<String>")
-								.implementsInterfaceName("Blah<String>")
+								.name("Test")
+								.implementsType("Derp<String>")
+								.implementsType("Blah<String>")
 								.build(),
 						"""
 								class Test implements Derp<String>, Blah<String>{
@@ -762,9 +762,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<String, Object>")
-								.implementsInterfaceName("Blah<String, Object>")
+								.name("Test")
+								.implementsType("Derp<String, Object>")
+								.implementsType("Blah<String, Object>")
 								.build(),
 						"""
 								class Test implements Derp<String, Object>, Blah<String, Object>{
@@ -779,9 +779,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<Map<String, Object>>")
-								.implementsInterfaceName("Blah<Map<String, Object>>")
+								.name("Test")
+								.implementsType("Derp<Map<String, Object>>")
+								.implementsType("Blah<Map<String, Object>>")
 								.build(),
 						"""
 								class Test implements Derp<Map<String, Object>>, Blah<Map<String, Object>>{
@@ -796,9 +796,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<Character, Map<Character, ?>>")
-								.implementsInterfaceName("Blah<Character, Map<Character, ?>>")
+								.name("Test")
+								.implementsType("Derp<Character, Map<Character, ?>>")
+								.implementsType("Blah<Character, Map<Character, ?>>")
 								.build(),
 						"""
 								class Test implements Derp<Character, Map<Character, ?>>, Blah<Character, Map<Character, ?>>{
@@ -813,9 +813,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp<? extends List<String>, Object>")
-								.implementsInterfaceName("Blah<? extends List<String>, Object>")
+								.name("Test")
+								.implementsType("Derp<? extends List<String>, Object>")
+								.implementsType("Blah<? extends List<String>, Object>")
 								.build(),
 						"""
 								class Test implements Derp<? extends List<String>, Object>, Blah<? extends List<String>, Object>{
@@ -830,9 +830,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Derp")
-								.implementsInterfaceName("Blah")
+								.name("Test")
+								.implementsType("Derp")
+								.implementsType("Blah")
 								.build(),
 						"""
 								class Test implements Derp, Blah{
@@ -850,7 +850,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(ListUtil.createList("doSomething();"))
 								.build(),
 						"""
@@ -874,7 +874,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(ListUtil.createList(
 										"doSomething();",
 										"doSomethingElse();",
@@ -906,7 +906,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(ListUtil.createList(
 										"doSomething();",
 										"for(int i = 0; i < 5; i++){",
@@ -936,7 +936,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.staticCodeBlock(ListUtil.createList(
 										"doSomething();"
 								))
@@ -958,7 +958,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.singleLineComment("some comment")
 								.build(),
 						"""
@@ -978,7 +978,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.multiLineComment("some comment")
 								.build(),
 						"""
@@ -999,10 +999,10 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Derp")
+										.innerType()
+										.name("Derp")
 										.build())
 								.build(),
 						"""
@@ -1026,14 +1026,14 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Derp")
+										.innerType()
+										.name("Derp")
 										.build())
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Yep")
+										.innerType()
+										.name("Yep")
 										.build())
 								.build(),
 						"""
@@ -1058,7 +1058,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.type("String").name("name")
 										.build())
@@ -1079,7 +1079,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.type("String").name("name")
 										.build())
@@ -1103,7 +1103,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.returnType("String").name("type")
 										.build())
@@ -1124,7 +1124,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.returnType("String").name("type")
 										.build())
@@ -1218,9 +1218,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.build())
 								.visibility(Visibility.PUBLIC)
 								.isFinal()
-								.className("Test")
-								.superClassName("Derp")
-								.implementsInterfaceName("Blah").implementsInterfaceName("Foo")
+								.name("Test")
+								.extendsType("Derp")
+								.implementsType("Blah").implementsType("Foo")
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("some comment")
 										.build())
@@ -1228,12 +1228,12 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.content("some comment")
 										.build())
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Derp")
+										.innerType()
+										.name("Derp")
 										.build())
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
-										.className("Yep")
+										.innerType()
+										.name("Yep")
 										.build())
 								.field(EditableJavaField.builder()
 										.type("String").name("name")
@@ -1429,9 +1429,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.build())
 								.visibility(Visibility.PUBLIC)
 								.isFinal()
-								.className("Test")
-								.superClassName("Derp")
-								.implementsInterfaceName("Blah").implementsInterfaceName("Foo")
+								.name("Test")
+								.extendsType("Derp")
+								.implementsType("Blah").implementsType("Foo")
 								.singleLineComment(EditableJavaSingleLineComment.builder()
 										.content("some comment")
 										.build())
@@ -1439,7 +1439,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.content("some comment")
 										.build())
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
+										.innerType()
 										.javadoc(EditableJavadoc.builder()
 												.content("Something here")
 												.author("Logan Ferree (Tadukoo)")
@@ -1454,8 +1454,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 												.build())
 										.visibility(Visibility.PRIVATE)
 										.isStatic().isFinal()
-										.className("Derp").superClassName("Blah")
-										.implementsInterfaceName("Blah").implementsInterfaceName("Foo")
+										.name("Derp").extendsType("Blah")
+										.implementsType("Blah").implementsType("Foo")
 										.singleLineComment(EditableJavaSingleLineComment.builder()
 												.content("some comment")
 												.build())
@@ -1517,7 +1517,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 												.build())
 										.build())
 								.innerClass(EditableJavaClass.builder()
-										.innerClass()
+										.innerType()
 										.javadoc(EditableJavadoc.builder()
 												.content("Something here")
 												.author("Logan Ferree (Tadukoo)")
@@ -1532,8 +1532,8 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 												.build())
 										.visibility(Visibility.PROTECTED)
 										.isStatic().isFinal()
-										.className("Yep").superClassName("Something")
-										.implementsInterfaceName("Blah").implementsInterfaceName("Foo")
+										.name("Yep").extendsType("Something")
+										.implementsType("Blah").implementsType("Foo")
 										.singleLineComment(EditableJavaSingleLineComment.builder()
 												.content("some comment")
 												.build())
@@ -1762,7 +1762,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -1778,7 +1778,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -1794,7 +1794,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -1811,7 +1811,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -1828,7 +1828,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								\t
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -1848,7 +1848,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								\t
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								class Test{
@@ -1867,7 +1867,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -1888,7 +1888,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -1911,7 +1911,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -1932,7 +1932,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -1952,7 +1952,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -1978,7 +1978,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.packageName("com.example")
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								package com.example;
@@ -1999,7 +1999,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example;
@@ -2020,7 +2020,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example;
@@ -2043,7 +2043,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example;
@@ -2065,7 +2065,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", false)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import com.example;
@@ -2086,7 +2086,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import static com.example;
@@ -2107,7 +2107,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import static com.example;
@@ -2135,7 +2135,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								""",
 						EditableJavaClass.builder()
 								.importName("com.example", true)
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								import static com.example;
@@ -2160,7 +2160,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.parameter("type", "String.class")
 										.parameter("defaultValue", "\"\"")
 										.build())
-								.className("Test")
+								.name("Test")
 								.build(),
 						"""
 								@Test(type = String.class, defaultValue = "")
@@ -2175,9 +2175,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								class Test implements Test ,Derp{
 								}""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Test")
-								.implementsInterfaceName("Derp")
+								.name("Test")
+								.implementsType("Test")
+								.implementsType("Derp")
 								.build(),
 						"""
 								class Test implements Test, Derp{
@@ -2191,9 +2191,9 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								class Test implements Test , Derp{
 								}""",
 						EditableJavaClass.builder()
-								.className("Test")
-								.implementsInterfaceName("Test")
-								.implementsInterfaceName("Derp")
+								.name("Test")
+								.implementsType("Test")
+								.implementsType("Derp")
 								.build(),
 						"""
 								class Test implements Test, Derp{
@@ -2221,7 +2221,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 								}
 								""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.annotation(EditableJavaAnnotation.builder()
 												.name("Test")
@@ -2278,7 +2278,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 									\t    \s
 								}""",
 						EditableJavaClass.builder()
-								.className("Test")
+								.name("Test")
 								.method(EditableJavaMethod.builder()
 										.annotation(EditableJavaAnnotation.builder()
 												.name("Test")
@@ -2421,7 +2421,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.build())
 								.visibility(Visibility.PUBLIC)
 								.isFinal()
-								.className("Test")
+								.name("Test")
 								.field(EditableJavaField.builder()
 										.annotation(EditableJavaAnnotation.builder()
 												.name("Test")
@@ -2551,7 +2551,7 @@ public class JavaClassParserTest extends BaseJavaParserTest{
 										.parameter("type", "String.class")
 										.parameter("defaultDefaultValue", "\"\\\"\\\"\"")
 										.build())
-								.visibility(Visibility.PUBLIC).className("BetterLabelFormField").superClassName("FormField<String>")
+								.visibility(Visibility.PUBLIC).name("BetterLabelFormField").extendsType("FormField<String>")
 								.method(EditableJavaMethod.builder()
 										.javadoc(EditableJavadoc.builder().condensed().content("{@inheritDoc}").build())
 										.annotation(EditableJavaAnnotation.builder().name("Override").build())

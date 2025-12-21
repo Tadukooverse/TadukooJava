@@ -261,7 +261,7 @@ public class EasyLoggerTest extends JavaClassParsingTest{
 						.since("Alpha v.0.2")
 						.build())
 				.visibility(Visibility.PUBLIC)
-				.className("EasyLogger")
+				.name("EasyLogger")
 				.field(EditableJavaField.builder()
 						.javadoc(EditableJavadoc.builder()
 								.condensed()

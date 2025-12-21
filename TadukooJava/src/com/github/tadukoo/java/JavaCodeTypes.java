@@ -6,8 +6,12 @@ import com.github.tadukoo.java.comment.JavaMultiLineComment;
 import com.github.tadukoo.java.comment.JavaSingleLineComment;
 import com.github.tadukoo.java.field.JavaField;
 import com.github.tadukoo.java.importstatement.JavaImportStatement;
+import com.github.tadukoo.java.javaannotationclass.JavaAnnotationClass;
 import com.github.tadukoo.java.javaclass.JavaClass;
 import com.github.tadukoo.java.javadoc.Javadoc;
+import com.github.tadukoo.java.javaenum.JavaEnum;
+import com.github.tadukoo.java.javainterface.JavaInterface;
+import com.github.tadukoo.java.javarecord.JavaRecord;
 import com.github.tadukoo.java.method.JavaMethod;
 import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
 
@@ -15,7 +19,7 @@ import com.github.tadukoo.java.packagedeclaration.JavaPackageDeclaration;
  * An enum for the various {@link JavaCodeTypes} types of Java classes and elements.
  *
  * @author Logan Ferree (Tadukoo)
- * @version Beta v.0.6
+ * @version Beta v.0.7
  * @since Beta v.0.5
  */
 public enum JavaCodeTypes{
@@ -145,6 +149,42 @@ public enum JavaCodeTypes{
 	 * Standard name: class
 	 */
 	CLASS(JavaClass.class, "class"),
+	
+	/**
+	 * Represents an enum in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaEnum}
+	 * <br>
+	 * Standard name: enum
+	 */
+	ENUM(JavaEnum.class, "enum"),
+	
+	/**
+	 * Represents an interface in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaInterface}
+	 * <br>
+	 * Standard name: interface
+	 */
+	INTERFACE(JavaInterface.class, "interface"),
+	
+	/**
+	 * Represents a record in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaRecord}
+	 * <br>
+	 * Standard name: record
+	 */
+	RECORD(JavaRecord.class, "record"),
+	
+	/**
+	 * Represents an annotation class in Java
+	 * <br>
+	 * Main {@link JavaCodeType} class: {@link JavaAnnotationClass}
+	 * <br>
+	 * Standard name: @interface
+	 */
+	ANNOTATION_CLASS(JavaAnnotationClass.class, "@interface"),
 	
 	/**
 	 * Represents a static code block within a class
